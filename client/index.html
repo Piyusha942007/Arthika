@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arthika | Empowering Woman</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Hide Google Translate UI -->
+  
+</head>
+
+<body>
+
+  <!-- Hidden Translator Container -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <!-- React Root -->
+  <div id="root"></div>
+
+  <!-- Google Translate Init -->
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: "en",
+        includedLanguages: "en,hi,mr,gu,bn,te,ta,ur,ml",
+        autoDisplay: false
+      }, "google_translate_element");
+    }
+  </script>
+
+  <!-- Google Script -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Remove Top Bar continuously (Google injects late) -->
+  <script>
+    const hideBar = setInterval(() => {
+      const frame = document.querySelector(".goog-te-banner-frame");
+      if (frame) {
+        frame.remove();
+        document.body.style.top = "0px";
+        clearInterval(hideBar);
+      }
+    }, 300);
+  </script>
+
+  <!-- React Entry -->
+  <script type="module" src="/src/main.jsx"></script>
+
+</body>
+</html>
