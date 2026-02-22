@@ -1,0 +1,156 @@
+.home-container {
+  background: #f8eac6;
+  font-family: "Outfit", sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  background: #fff9f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 60px;
+}
+
+.brand {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffcc4d;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Hero */
+.hero {
+  background: #fff9f1;
+  margin: 40px auto;
+  border-radius: 60px;
+  max-width: 1200px;
+  padding: 60px;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.hero-text h1 {
+  font-size: 56px;
+}
+
+.hero-text p {
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.primary {
+  background: #ffcc4d;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 40px;
+  font-size: 20px;
+}
+
+.secondary {
+  background: transparent;
+  border: 3px solid #ffcc4d;
+  padding: 15px 40px;
+  border-radius: 40px;
+  font-size: 20px;
+}
+
+/* Features */
+.features {
+  padding: 80px 60px;
+}
+
+.features h2 {
+  font-size: 60px;
+  text-align: center;
+}
+
+.feature-block {
+  display: flex;
+  gap: 50px;
+  margin-top: 80px;
+  align-items: center;
+}
+
+.feature-block.reverse {
+  flex-direction: row-reverse;
+}
+
+.feature-content h3 {
+  font-size: 48px;
+}
+
+.pink {
+  color: #f48fb1;
+}
+
+.cards {
+  display: flex;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.card {
+  padding: 30px;
+  border-radius: 40px;
+  font-size: 18px;
+}
+
+.yellow {
+  background: #ffcc4d;
+}
+
+.outline-yellow {
+  border: 4px solid #fbc02d;
+  background: white;
+  color: #fbc02d;
+  padding: 15px 40px;
+  border-radius: 40px;
+}
+
+.outline-pink {
+  border: 4px solid #f48fb1;
+  background: white;
+  color: #f48fb1;
+  padding: 15px 40px;
+  border-radius: 40px;
+}
+
+.community {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.community-actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.outline-black {
+  border: 4px solid black;
+  background: white;
+  padding: 15px 40px;
+  border-radius: 40px;
+}
+
+/* Footer */
+.footer {
+  background: black;
+  color: #ffcc4d;
+  padding: 40px;
+}
