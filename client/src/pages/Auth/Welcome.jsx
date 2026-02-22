@@ -41,7 +41,7 @@ export default function Welcome() {
         ))}
       </div>
 
-      <button className="proceed" onClick={() => navigate("/home")}>
+      <button className="proceed" onClick={() => navigate("/login")}>
         Proceed →
       </button>
     </div>
