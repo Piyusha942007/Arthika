@@ -1,0 +1,268 @@
+.lesson-page {
+  background: #f8eac6;
+  min-height: 100vh;
+  font-family: "Outfit", sans-serif;
+  /* FIX: Ensure content starts from the very top */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+/* NAVBAR */
+.lesson-navbar {
+  width: 100%;
+  height: 90px;
+  background: #fff9f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffcc4d;
+}
+
+.nav-links span {
+  margin-left: 24px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  /* ADDED: Smooth transition for hover */
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+}
+
+/* NAVBAR HOVER */
+.nav-links span:hover {
+  color: #f48fb1;
+  transform: translateY(-2px);
+}
+
+.nav-links .active {
+  text-decoration: underline;
+  color: #f48fb1;
+}
+
+/* PROGRESS */
+.lesson-progress {
+  width: 90%;
+  max-width: 1100px;
+  margin: 30px auto;
+  background: #f48fb1;
+  border-radius: 35px;
+  padding: 25px;
+  text-align: center;
+  box-sizing: border-box;
+  /* ADDED: Lift effect on hover */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lesson-progress:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(244, 143, 177, 0.4);
+}
+
+.lesson-progress h2 {
+  font-size: 26px;
+  color: black;
+  font-weight: 800;
+}
+
+.progress-track {
+  width: 100%;
+  max-width: 900px;
+  height: 22px;
+  background: white;
+  border-radius: 30px;
+  margin: 15px auto;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 60%;
+  height: 100%;
+  background: #ffcc4d;
+  border-radius: 30px;
+  transition: width 0.5s ease;
+}
+
+.lesson-progress p {
+  font-size: 18px;
+  color: white;
+  font-weight: 200;
+}
+
+/* VIDEO CARD */
+.lesson-card {
+  margin: 20px auto;
+  background: #ffcc4d;
+  border: 5px solid black;
+  border-radius: 60px;
+  width: 90%;
+  max-width: 1100px;
+  padding: 35px;
+  text-align: center;
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
+}
+
+/* Subtle lift on the video card */
+.lesson-card:hover {
+  transform: translateY(-3px);
+}
+
+.lesson-card h3 {
+  font-size: clamp(20px, 4vw, 30px);
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.video-box img {
+  width: 100%;
+  border-radius: 30px;
+  border: 4px solid black;
+  display: block;
+  transition: filter 0.3s ease;
+}
+
+.video-box:hover img {
+  filter: brightness(1.05);
+}
+
+.video-controls {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  font-size: 26px;
+  margin-top: 25px;
+}
+
+.video-controls span {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.video-controls span:hover {
+  transform: scale(1.2);
+}
+
+/* QUIZ BUTTON */
+.quiz-btn {
+  margin: 40px auto;
+  width: 90%;
+  max-width: 1100px;
+  background: #f48fb1;
+  border-radius: 60px;
+  text-align: center;
+  padding: 22px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  color: black;
+  box-sizing: border-box;
+  cursor: pointer;
+  /* ADDED: Bouncy hover effect */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.quiz-btn:hover {
+  transform: scale(1.03);
+  background: #e91e63;
+  color: white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.quiz-btn:active {
+  transform: scale(0.98);
+}
+
+/* QUIZ BOX */
+.quiz-box {
+  width: 90%;
+  max-width: 1100px;
+  margin: 0 auto 60px;
+  background: #feeab9;
+  border-radius: 60px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.quiz-box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.quiz-box li {
+  font-size: 22px;
+  line-height: 2.5;
+  font-weight: 400;
+  padding: 5px 20px;
+  border-radius: 15px;
+  cursor: pointer;
+  /* ADDED: Smooth option hover */
+  transition: all 0.2s ease;
+}
+
+/* QUIZ OPTION HOVER */
+.quiz-box li:hover {
+  background: rgba(244, 143, 177, 0.2);
+  padding-left: 30px; /* Slight slide effect */
+  color: #d81b60;
+  font-weight: 600;
+}
+
+/* FOOTER GRADIENT */
+.lesson-footer {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(90deg, #f48fb1, #ffcc4d);
+  border-radius: 32px 32px 0 0;
+  margin-top: auto;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .lesson-navbar {
+    height: auto;
+    padding: 15px 5%;
+  }
+
+  .nav-links {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .nav-links span {
+    margin-left: 0;
+    font-size: 16px;
+  }
+
+  .lesson-card, .quiz-box, .quiz-btn, .lesson-progress {
+    width: 95%;
+    padding: 20px;
+    border-radius: 30px;
+  }
+
+  .quiz-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}

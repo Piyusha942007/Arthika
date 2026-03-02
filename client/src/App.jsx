@@ -6,6 +6,8 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SsoCallback from "./pages/Auth/SsoCallback";
 import Home from "./pages/Home/Home";
+import Learn from './pages/Learn/Learn';
+import Lesson from "./pages/Learn/Lesson";
 
 function ProtectedRoute({ children }) {
   return (
@@ -35,7 +37,15 @@ export default function App() {
         <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
         <Route path="/signup/continue" element={<PublicRoute><Signup isContinue={true} /></PublicRoute>} />
         <Route path="/sso-callback" element={<SsoCallback />} />
-
+        <Route path="/learn" element={<Learn />} />
+        <Route
+          path="/learn/lesson/6"
+          element={
+            <ProtectedRoute>
+              <Lesson />
+            </ProtectedRoute>
+          }
+        />
         {/* PRIVATE */}
         <Route
           path="/home"

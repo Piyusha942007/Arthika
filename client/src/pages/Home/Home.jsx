@@ -18,21 +18,15 @@ export default function Home() {
         const ensureUsername = async () => {
             if (isLoaded && user && !user.username) {
                 try {
-                    // Auto-generate username from email prefix or first name
                     let autoUsername = user.firstName || (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress.split("@")[0]) || "user" + Math.floor(Math.random() * 10000);
-
-                    // Ensure it's valid (Clerk usernames usually require alphanumeric, lowercase, min length)
                     autoUsername = autoUsername.toLowerCase().replace(/[^a-z0-9]/g, "");
                     if (autoUsername.length < 4) autoUsername += Math.floor(Math.random() * 1000);
-
-                    // If autoUsername is still invalid or duplicate, this might throw, but it runs silently
                     await user.update({ username: autoUsername });
                 } catch (err) {
                     console.error("Failed to sync auto-username:", err);
                 }
             }
         };
-
         ensureUsername();
     }, [isLoaded, user]);
 
@@ -41,9 +35,10 @@ export default function Home() {
 
             {/* NAVBAR */}
             <header className="navbar">
-                <h1 className="logo">Arthika</h1>
+                <h1 className="logo" onClick={() => nav("/")} style={{ cursor: "pointer" }}>Arthika</h1>
                 <nav>
-                    <span>Learn</span>
+                    {/* Updated Navbar Link */}
+                    <span onClick={() => nav("/learn")} style={{ cursor: "pointer" }}>Learn</span>
                     <span>Community</span>
                     <span>Invest</span>
                     <div className="profile-menu-container" style={{ position: "relative", display: "inline-block" }}>
@@ -103,14 +98,14 @@ export default function Home() {
                     </p>
 
                     <div className="hero-buttons">
-                        <button className="primary">Learn</button>
+                        {/* Updated Hero Button */}
+                        <button className="primary" onClick={() => nav("/learn")}>Learn</button>
                         <button className="secondary">Invest</button>
                     </div>
                 </div>
 
                 <div className="hero-image">
                     <img src={heroImg} alt="Finance Illustration" />
-                    <h3></h3>
                 </div>
             </section>
 
@@ -118,100 +113,67 @@ export default function Home() {
             <section className="features">
                 <h2 className="section-title">FEATURES WE OFFER</h2>
 
-                {/* Learn to Earn */}
-
                 <div className="feature-block learn-section">
                     <h3 className="pink">Learn to Earn</h3>
-
                     <div className="feature-content">
                         <img src={learnImg} alt="Learning" />
-
                         <ul>
                             <li>Interactive quizzes to test your knowledge</li>
                             <li className="highlight">Watch lessons in your language</li>
                             <li>Track daily progress</li>
                         </ul>
                     </div>
-
-                    <button className="outline-yellow">Go to learn page</button>
+                    {/* Updated Feature Section Button */}
+                    <button className="outline-yellow" onClick={() => nav("/learn")}>Go to learn page</button>
                 </div>
 
                 {/* Invest Smartly */}
                 <div className="feature-block invest-section">
                     <h3 className="pink">Invest Smartly</h3>
-
                     <div className="cards">
                         <div className="card yellow">
                             <img src={goalIcon} alt="Goal Icon" />
                             <h4>Goal-Based Planning</h4>
-                            <p>
-                                Start saving for specific life milestones like a college fund,
-                                family groceries, or a new business venture.
-                            </p>
+                            <p>Start saving for milestones like a college fund or business venture.</p>
                         </div>
-
                         <div className="card yellow">
                             <img src={schemeIcon} alt="Scheme Icon" />
                             <h4>Government Schemes</h4>
-                            <p>
-                                Explore and choose from different bank-specific perks and
-                                government-backed savings programs.
-                            </p>
+                            <p>Explore bank-specific perks and government-backed programs.</p>
                         </div>
                     </div>
-
                     <button className="outline-pink">Go to invest page</button>
                 </div>
 
                 {/* Community */}
                 <div className="feature-block community-block">
                     <h3 className="pink">Build a Community</h3>
-
                     <img src={communityImg} alt="Community" className="community-img" />
-
                     <div className="community-actions">
                         <button className="yellow">Get Expert Help</button>
                         <button className="yellow">Grow with SHGs</button>
                     </div>
-
                     <button className="outline-black">Join a community</button>
                 </div>
             </section>
 
-            <footer class="footer">
-                <div class="footer-container">
-                    <div class="footer-brand">
-                        <h2 class="footer-logo">Arthika</h2>
+            <footer className="footer">
+                <div className="footer-container">
+                    <div className="footer-brand">
+                        <h2 className="footer-logo">Arthika</h2>
                         <p>A multilingual financial empowerment platform designed to make money management easy, accessible, and secure.</p>
-                        <div class="social-icons">
-                            <i class="fab fa-facebook"></i>
-                            <i class="fab fa-x-twitter"></i>
-                            <i class="fab fa-instagram"></i>
-                            <i class="fab fa-linkedin"></i>
-                        </div>
                     </div>
-
-                    <div class="footer-links">
+                    <div className="footer-links">
                         <h3>Quick Links</h3>
                         <ul>
-                            <li>About us</li>
-                            <li>Features</li>
+                            <li onClick={() => nav("/")} style={{cursor:'pointer'}}>Home</li>
+                            <li onClick={() => nav("/learn")} style={{cursor:'pointer'}}>Learn</li>
                             <li>Dashboard</li>
                             <li>Contact</li>
                         </ul>
                     </div>
-
-                    <div class="footer-links">
-                        <h3>Support</h3>
-                        <ul>
-                            <li>Help Center</li>
-                            <li>Privacy Policy</li>
-                            <li>Terms of Service</li>
-                        </ul>
-                    </div>
                 </div>
-
-                <div class="footer-bottom">
+                <div className="footer-bottom">
                     <p>© 2026 Arthika. All rights reserved.</p>
                 </div>
             </footer>
