@@ -1,86 +1,182 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSignIn } from "@clerk/clerk-react";
+import { useNavigate, Link } from "react-router-dom";
+import AuthPage from "./AuthPage";
+import "./Login.css";
 
 export default function Login() {
-  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const nav = useNavigate();
 
-  const handleLogin = (e) => {
+  const [method, setMethod] = useState("email");
+  const [form, setForm] = useState({ identifier: "", password: "" });
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [err, setErr] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  if (!isLoaded) return null;
+
+  const submit = async e => {
     e.preventDefault();
+    setErr("");
+    setLoading(true);
 
-    // TEMP: later this will be API authentication
-    if (email && password) {
-      navigate("/home"); // homepage (future)
-    } else {
-      alert("Please enter email and password");
+    try {
+      const res = await signIn.create({
+        identifier: form.identifier,
+        password: form.password
+      });
+
+      console.log("SignIn Response:", res);
+
+      if (res.status === "complete") {
+        await setActive({ session: res.createdSessionId });
+        nav("/home");
+      } else if (res.status === "needs_second_factor") {
+        // Log what factor it's asking for to debug
+        console.warn("Required 2FA factors:", res.supportedSecondFactors);
+        setErr("This specific account is stuck asking for 2FA. Please delete this test account and create a new one, or use Google Login.");
+      } else if (res.status === "needs_first_factor") {
+        setErr("Incorrect password or invalid login method.");
+      } else {
+        console.warn("Unhandled SignIn Status:", res.status);
+        setErr(`Unhandled login state: ${res.status}`);
+      }
+
+    } catch (e) {
+      console.error("Login Error:", e);
+      setErr(e.errors?.[0]?.longMessage || e.errors?.[0]?.message || e.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const phoneLogin = async () => {
+    try {
+      await signIn.create({
+        identifier: form.identifier
+      });
+
+      await signIn.prepareFirstFactor({
+        strategy: "phone_code"
+      });
+
+      setVerifying(true);
+
+    } catch (e) {
+      setErr(e.errors?.[0]?.message);
+    }
+  };
+
+  const verifyCode = async () => {
+    try {
+      const res = await signIn.attemptFirstFactor({
+        strategy: "phone_code",
+        code
+      });
+
+      if (res.status === "complete") {
+        await setActive({ session: res.createdSessionId });
+        nav("/home");
+      }
+
+    } catch (e) {
+      setErr("Invalid code");
+    }
+  };
+
+  const google = async (e) => {
+    e.preventDefault();
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: `${window.location.origin}/sso-callback`,
+        redirectUrlComplete: `${window.location.origin}/home`
+      });
+    } catch (error) {
+      console.error("OAuth Error:", error);
+      setErr(error.errors?.[0]?.message || error.message || "Google auth failed.");
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Login to Arthika</h1>
+    <AuthPage
+      left={<LeftPanel />}
+      right={
+        <div>
 
-      <form style={styles.form} onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
+          <h1 className="title">Welcome!</h1>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
+          <p className="switch">
+            Login or <Link to="/signup">Create account</Link>
+          </p>
 
-        <button type="submit" style={styles.button}>
-          Login →
-        </button>
-      </form>
-    </div>
+          <div className="toggle">
+            <button onClick={() => setMethod("email")}>Email</button>
+            <button onClick={() => setMethod("phone")}>Phone</button>
+          </div>
+
+          {!verifying ? (
+            <form onSubmit={submit}>
+
+              <label>{method === "email" ? "Email" : "Phone"}</label>
+              <input
+                value={form.identifier}
+                onChange={e => setForm({ ...form, identifier: e.target.value })}
+              />
+
+              {method === "email" && <>
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                />
+              </>}
+
+              {method === "email"
+                ? <button className="btn" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+                : <button type="button" onClick={phoneLogin} className="btn" disabled={loading}>Send Code</button>
+              }
+
+            </form>
+          ) : (
+            <div>
+              <input
+                placeholder="Enter code"
+                value={code}
+                onChange={e => setCode(e.target.value)}
+              />
+              <button onClick={verifyCode} className="btn">Verify</button>
+            </div>
+          )}
+
+          <div className="divider">OR</div>
+
+          <button type="button" className="btn dark" onClick={google}>
+            Continue with Google
+          </button>
+
+          {err && <p className="err">{err}</p>}
+
+        </div>
+      }
+    />
   );
 }
 
-/* Simple inline styles for now */
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#F8EAC6",
-  },
-  title: {
-    fontSize: "40px",
-    marginBottom: "30px",
-    color: "#333",
-  },
-  form: {
-    width: "320px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
-  input: {
-    padding: "12px 15px",
-    fontSize: "16px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-  },
-  button: {
-    padding: "12px",
-    fontSize: "18px",
-    borderRadius: "25px",
-    border: "none",
-    background: "#FBC02D",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-};
+function LeftPanel() {
+  return (
+    <>
+      <img src="../../assets/images/hero.png" alt="" className="art" />
+      <h1 className="brand">Arthika</h1>
+      <p className="tag">Aapka Paisa, Aapka Faisla</p>
+      <p className="desc">
+        A multilingual financial empowerment platform designed to make money management easy, accessible, and secure.
+      </p>
+    </>
+  );
+}
