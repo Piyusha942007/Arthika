@@ -1,7 +1,7 @@
 import React from "react";
 import "./InvestLearn.css";
 
-// Importing your assets as named
+// Importing your assets
 import beti from "../../assets/images/beti.png";
 import rastriya from "../../assets/images/rastriya.png";
 import pradhan from "../../assets/images/pradhan.png";
@@ -12,21 +12,10 @@ import bank from "../../assets/images/bank.png";
 export default function InvestLearn() {
   return (
     <div className="learn-page-container">
-      {/* NAVBAR */}
-      <nav className="learn-nav">
-        <h1 className="logo-text">Arthika</h1>
-        <div className="nav-menu">
-          <span>learn</span>
-          <span>community</span>
-          <span className="active-link">invest</span>
-          <span>profile</span>
-        </div>
-      </nav>
-
       {/* MAIN CONTENT */}
       <main className="learn-content-wrapper">
         <h1 className="main-headline">
-          Discover Government’s Schemes and bank benefits & perks offered.
+          Discover Government Schemes & Bank Benefits
         </h1>
 
         {/* TOP ROW: GOVT SCHEMES */}
@@ -80,9 +69,6 @@ export default function InvestLearn() {
 
         </div>
       </main>
-
-      {/* THE THIN GRADIENT LINE AT THE VERY FOOT */}
-      <div className="footer-line-gradient"></div>
     </div>
   );
 }

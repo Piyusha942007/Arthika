@@ -10,48 +10,34 @@ export default function Invest() {
 
   return (
     <div className="invest-container">
-      {/* NAVBAR */}
-      <nav className="invest-navbar">
-        <h1 className="logo">Arthika</h1>
-        <div className="nav-links">
-          <span>learn</span>
-          <span>community</span>
-          <span className="active">invest</span>
-          <span>profile</span>
-        </div>
-      </nav>
-
       {/* MAIN CONTENT AREA */}
       <main className="main-content">
         <div className="cards-wrapper">
           
           {/* LEFT CARD */}
-          <section className="invest-card black-card">
+          <section className="invest-card black-card" onClick={() => navigate("/invest/save")}>
             <h2 className="title-pink">save your<br/>future</h2>
             <div className="icon-container">
                <img src={saveIcon} alt="Save Icon" className="card-img" />
             </div>
-            <button className="btn-yellow" onClick={() => navigate("/invest/save")}>
+            <button className="btn-yellow">
               save
             </button>
           </section>
 
           {/* RIGHT CARD */}
-          <section className="invest-card yellow-card">
+          <section className="invest-card yellow-card" onClick={() => navigate("/invest/learn")}>
             <h2 className="title-white">unlock<br/>knowledge</h2>
             <div className="icon-container">
                <img src={learnIcon} alt="Learn Icon" className="card-img" />
             </div>
-            <button className="btn-pink" onClick={() => navigate("/invest/learn")}>
+            <button className="btn-pink">
               learn
             </button>
           </section>
 
         </div>
       </main>
-
-      {/* FOOTER BAR */}
-      <div className="footer-gradient"></div>
     </div>
   );
 }

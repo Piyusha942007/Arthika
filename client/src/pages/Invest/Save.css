@@ -1,294 +1,121 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
-
-
 .save-container {
-
   display: flex;
-
   flex-direction: column;
-
   min-height: 100vh;
-
   background-color: #F8EBCB;
-
   font-family: 'Outfit', sans-serif;
-
+  padding-bottom: 40px; /* Space at the bottom */
 }
 
-
-
-/* Navbar Fix: Only one underline */
-
-.save-navbar {
-
-  height: clamp(80px, 10vh, 120px);
-
-  background-color: #FFF9F1;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  padding: 0 5%;
-
-}
-
-
-
-.logo {
-
-  font-size: clamp(24px, 4vw, 48px);
-
-  color: #FFCC4D;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-}
-
-
-
-.nav-links span {
-
-  font-size: clamp(16px, 2vw, 32px);
-
-  margin-left: 30px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  text-decoration: none; /* Removes any default browser underlines */
-
-}
-
-
-
-.active {
-
-  text-decoration: underline !important;
-
-  text-underline-offset: 10px;
-
-  text-decoration-thickness: 4px;
-
-}
-
-
-
-/* Save Money Font Fix */
-
+/* Header Section - Tighter Padding */
 .save-header {
-
-  padding: 50px 5% 20px;
-
+  padding: 30px 8% 10px; /* Reduced from 50px */
   display: flex;
-
   justify-content: flex-start;
-
 }
-
-
 
 .title-wrapper {
-
   display: flex;
-
   align-items: center;
-
-  gap: 20px;
-
+  gap: 15px;
 }
-
-
 
 .save-title {
-
   font-family: 'Outfit', sans-serif;
-
-  font-size: clamp(50px, 10vw, 130px);
-
+  font-size: clamp(40px, 6vw, 80px); /* Scaled down from 130px */
   font-weight: 900;
-
   color: white;
-
   margin: 0;
-
   line-height: 1;
-
- 
-
-  /* The Stroke Fix */
-
-  -webkit-text-stroke: 5px #F48FB1;
-
-  paint-order: stroke fill; /* This prevents the stroke from overlapping the white center */
-
-  letter-spacing: 2px;
-
+  
+  /* Reduced stroke for cleaner look */
+  -webkit-text-stroke: 3px #F48FB1; 
+  paint-order: stroke fill;
+  letter-spacing: 1px;
 }
 
-
-
 .dollar-badge {
-  width: clamp(70px, 8vw, 110px);
-  height: clamp(70px, 8vw, 110px);
+  width: clamp(50px, 6vw, 75px); /* Scaled down */
+  height: clamp(50px, 6vw, 75px);
   background-color: #F48FB1;
-  border: 6px solid #000; /* Made slightly thicker to match image */
+  border: 4px solid #000;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Clips any square corners of the image */
+  overflow: hidden;
 }
 
 .coin-img {
-  width: 80%; /* Adjusted size */
+  width: 70%;
   height: auto;
-  /* If your image has that white background, this helps remove it */
   mix-blend-mode: multiply; 
 }
 
-
-
-/* Cards & Progress */
-
+/* Cards & Progress - Compact Layout */
 .save-content {
-
   flex: 1;
-
-  padding: 20px 5%;
-
+  padding: 10px 8%;
   display: flex;
-
   flex-direction: column;
-
-  gap: 25px;
-
-  max-width: 1400px;
-
+  gap: 15px; /* Tighter gap between cards */
+  max-width: 900px; /* Reduced from 1400px to prevent "ultra-wide" cards */
   width: 100%;
-
   margin: 0 auto;
-
 }
-
-
 
 .goal-card {
-
-  border-radius: 45px;
-
-  padding: 35px 50px;
-
-  /* Added black border to match Business/Groceries in your image */
-
-  border: 4px solid #000;
-
+  border-radius: 30px; /* Slightly smaller radius */
+  padding: 20px 35px; /* Much smaller padding */
+  border: 3px solid #000;
   transition: transform 0.2s ease;
-
 }
 
-
-
-.goal-card:hover { transform: scale(1.01); }
-
-
+.goal-card:hover { 
+  transform: translateY(-3px); 
+}
 
 .goal-info {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 20px;
-
+  margin-bottom: 12px;
 }
-
-
 
 .goal-name {
-
-  font-size: clamp(24px, 3vw, 42px);
-
+  font-size: clamp(20px, 2vw, 28px); /* Scaled down */
   font-weight: 800;
-
   margin: 0;
-
 }
-
-
 
 .goal-stats {
-
-  font-size: clamp(20px, 2.5vw, 36px);
-
+  font-size: clamp(16px, 1.5vw, 22px); /* Scaled down */
   font-weight: 700;
-
 }
-
-
 
 .progress-container {
-
   width: 100%;
-
-  height: 24px;
-
+  height: 16px; /* Slimmer progress bars */
   border-radius: 50px;
-
   overflow: hidden;
-
+  border: 1px solid rgba(0,0,0,0.1);
 }
-
-
 
 .progress-bar {
-
   height: 100%;
-
   border-radius: 50px;
-
 }
-
-
 
 /* Dynamic Colors */
+.pink-card { background-color: #F48FB1; color: white; border-color: #000; }
+.yellow-card { background-color: #FED05E; color: #000; border-color: #000; }
+.white-card { background-color: #FDFDFD; color: #F4A2BE; border-color: #000; }
 
-.pink-card { background-color: #F48FB1; color: white; border-color: transparent; }
-
-.yellow-card { background-color: #FED05E; color: white; border-color: #000; }
-
-.white-card { background-color: #FDFDFD; color: #F4A2BE; border-color: transparent; }
-
-
-
-.footer-gradient {
-  width: 100%;
-  height: 10px;
-  background: linear-gradient(90deg, #F48FB1 0%, #FFCC4D 100%);
-  position: fixed;
-  bottom: 0;
-  z-index: 10;
-}
-
-/* RESPONSIVENESS */
-@media (max-width: 1024px) {
-  .save-navbar, .save-header, .save-content {
-    padding: 20px 40px;
-  }
-  .save-title { -webkit-text-stroke: 4px #F48FB1; }
-}
-
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .goal-card { padding: 30px; border-radius: 40px; }
-  .goal-name { font-size: 28px; }
-  .goal-stats { font-size: 24px; }
+  .save-header { padding: 20px 5%; }
+  .goal-card { padding: 20px; border-radius: 25px; }
+  .save-title { -webkit-text-stroke: 2px #F48FB1; }
 }
