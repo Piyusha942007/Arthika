@@ -15,7 +15,7 @@
 }
 
 .main-headline {
-  font-size: clamp(32px, 5vw, 54px); /* Reduced from 90px */
+  font-size: clamp(32px, 5vw, 54px);
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 40px;
@@ -23,7 +23,7 @@
   text-align: center;
 }
 
-/* SCHEME CARDS - Much more compact */
+/* SCHEME CARDS */
 .schemes-row {
   display: flex;
   justify-content: center;
@@ -31,21 +31,24 @@
   margin-bottom: 50px;
 }
 
+/* Changed to include text-decoration: none because these are now <a> tags */
 .scheme-box {
   flex: 1;
   background: #FEFEFE;
-  border-radius: 40px; /* Reduced from 122px */
-  height: 220px; /* Reduced from 500px */
+  border-radius: 40px;
+  height: 220px;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
   border: 2px solid #EEE;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none; 
 }
 
 .scheme-box:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 
 .scheme-img {
@@ -54,7 +57,7 @@
   object-fit: contain;
 }
 
-/* BANK CARDS - Slimmer and cleaner */
+/* BANK CARDS */
 .bank-sections-list {
   display: flex;
   flex-direction: column;
@@ -63,17 +66,23 @@
 
 .bank-card-long {
   background: #FEFEFE;
-  border-radius: 40px; /* Reduced from 122px */
-  min-height: 160px; /* Reduced from 297px */
+  border-radius: 40px;
+  min-height: 160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 25px 50px; /* Reduced padding */
+  padding: 25px 50px;
   border: 2px solid #EEE;
+  text-decoration: none; /* Removes underline from links */
+  transition: transform 0.3s ease;
+}
+
+.bank-card-long:hover {
+  transform: scale(1.01);
 }
 
 .reversed { 
-  flex-direction: row-reverse; /* Corrected to actually reverse the layout */
+  flex-direction: row-reverse;
 }
 
 .benefit-bullets {
@@ -83,14 +92,14 @@
 }
 
 .benefit-bullets li {
-  font-size: clamp(16px, 1.8vw, 20px); /* Reduced from 30px */
+  font-size: clamp(16px, 1.8vw, 20px);
   line-height: 1.4;
   margin-bottom: 10px;
-  color: #444;
+  color: #444; /* Ensures text stays dark despite being a link */
 }
 
 .bank-brand-img {
-  width: clamp(120px, 15vw, 180px); /* Reduced from 300px */
+  width: clamp(120px, 15vw, 180px);
   height: auto;
   object-fit: contain;
 }
