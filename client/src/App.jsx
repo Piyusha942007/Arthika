@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 
 import Welcome from "./pages/Auth/Welcome";
@@ -45,26 +45,28 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* PUBLIC */}
-        <Route path="/" element={<Welcome />} />
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-        <Route path="/signup/continue" element={<PublicRoute><Signup isContinue={true} /></PublicRoute>} />
-        <Route path="/sso-callback" element={<SsoCallback />} />
+      <Layout>
+        <Routes>
+          {/* PUBLIC */}
+          <Route path="/" element={<Welcome />} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+          <Route path="/signup/continue" element={<PublicRoute><Signup isContinue={true} /></PublicRoute>} />
+          <Route path="/sso-callback" element={<SsoCallback />} />
 
-        {/* PRIVATE */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+          {/* PRIVATE */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
