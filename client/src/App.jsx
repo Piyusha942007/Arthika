@@ -6,6 +6,23 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SsoCallback from "./pages/Auth/SsoCallback";
 import Home from "./pages/Home/Home";
+import Navbar from "./components/common/Navbar";
+
+// Helper component to handle conditional rendering of Navbar
+function Layout({ children }) {
+  const location = useLocation();
+
+  // Define paths where the Navbar SHOULD NOT appear
+  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
+  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
+
+  return (
+    <>
+      {shouldShowNavbar && <Navbar />}
+      <main>{children}</main>
+    </>
+  );
+}
 
 function ProtectedRoute({ children }) {
   return (
