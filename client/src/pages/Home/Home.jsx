@@ -33,60 +33,6 @@ export default function Home() {
     return (
         <div className="home">
 
-            {/* NAVBAR */}
-            <header className="navbar">
-                <h1 className="logo" onClick={() => nav("/")} style={{ cursor: "pointer" }}>Arthika</h1>
-                <nav>
-                    {/* Updated Navbar Link */}
-                    <span onClick={() => nav("/learn")} style={{ cursor: "pointer" }}>Learn</span>
-                    <span>Community</span>
-                    <span>Invest</span>
-                    <div className="profile-menu-container" style={{ position: "relative", display: "inline-block" }}>
-                        <span
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
-                        >
-                            Profile {dropdownOpen ? "▲" : "▼"}
-                        </span>
-
-                        {dropdownOpen && (
-                            <div className="profile-dropdown" style={{
-                                position: "absolute",
-                                top: "100%",
-                                right: 0,
-                                marginTop: "10px",
-                                backgroundColor: "white",
-                                color: "black",
-                                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                                borderRadius: "8px",
-                                overflow: "hidden",
-                                zIndex: 1000,
-                                minWidth: "120px"
-                            }}>
-                                <button
-                                    onClick={() => signOut(() => nav("/"))}
-                                    style={{
-                                        width: "100%",
-                                        padding: "10px 15px",
-                                        background: "transparent",
-                                        border: "none",
-                                        color: "#ef4444",
-                                        fontWeight: "bold",
-                                        cursor: "pointer",
-                                        textAlign: "left",
-                                        fontSize: "14px"
-                                    }}
-                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
-                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                >
-                                    Log out
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </nav>
-            </header>
-
             {/* HERO SECTION */}
             <section className="hero">
                 <div className="hero-text">

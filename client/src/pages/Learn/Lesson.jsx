@@ -11,16 +11,7 @@ export default function Lesson() {
 
   return (
     <div className="lesson-page">
-      {/* NAVBAR */}
-      <div className="lesson-navbar">
-        <div className="logo">Arthika</div>
-        <div className="nav-links">
-          <span className="active">learn</span>
-          <span>community</span>
-          <span>invest</span>
-          <span>profile</span>
-        </div>
-      </div>
+      
 
       {/* PROGRESS */}
       <div className="lesson-progress">

@@ -1,9 +1,10 @@
-/* PAGE */
+/* GLOBAL & PAGE */
 .learn-page {
   min-height: 100vh;
   background: #fdf5e1;
   font-family: "Outfit", sans-serif;
   overflow-x: hidden;
+  padding-bottom: 100px;
 }
 
 /* NAVBAR */
@@ -13,242 +14,212 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5%;
+  padding: 0 8%;
   border-bottom: 2px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo {
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 30px;
+  font-weight: 900;
   color: #ffcc4d;
 }
 
 .nav-links span {
-  margin-left: 30px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
+  margin-left: 25px;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
-  /* ADDED: Transition for smooth hover */
-  transition: all 0.3s ease;
-}
-
-/* NAVBAR HOVER EFFECT */
-.nav-links span:hover {
-  color: #f48fb1;
-  transform: translateY(-2px);
+  transition: 0.3s;
 }
 
 .nav-links .active {
   color: #f48fb1;
-  border-bottom: 3px solid #f48fb1;
+  border-bottom: 4px solid #f48fb1;
+  padding-bottom: 5px;
 }
 
-/* PROGRESS SECTION */
+/* PROGRESS */
 .progress-section {
   background: #f48fb1;
-  margin: 20px;
-  padding: 30px;
-  border-radius: 30px;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 40px;
   text-align: center;
   color: white;
-  transition: transform 0.3s ease;
-}
-
-/* PROGRESS HOVER */
-.progress-section:hover {
-  transform: translateY(-5px);
-}
-
-.progress-section h2 {
-  font-size: 24px;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
+  max-width: 600px;
+  box-shadow: 0 15px 30px rgba(244, 143, 177, 0.3);
 }
 
 .progress-bar {
   width: 100%;
-  max-width: 600px;
   height: 20px;
-  background: #fff;
-  border-radius: 10px;
-  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  margin: 15px 0;
   overflow: hidden;
 }
 
 .progress-fill {
-  width: 60%;
   height: 100%;
   background: #ffcc4d;
 }
 
-.progress-text {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-/* MAIN CONTENT */
+/* PATH LAYOUT */
 .learn-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 20px;
-  position: relative;
+  padding: 40px 0;
 }
 
 .info-text-top h3 {
-  font-size: 26px;
   color: #f48fb1;
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 40px;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
-/* THE WINDING PATH */
-.path {
+.path-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 70px;
+  gap: 120px; 
   width: 100%;
-  max-width: 400px;
-  position: relative;
+  max-width: 600px;
 }
 
+.path-svg {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 180px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* STEP BUTTONS */
 .step {
-  width: 75px;
-  height: 75px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: #f48fb1;
   color: white;
   font-size: 30px;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.1);
   z-index: 2;
   cursor: pointer;
-  /* ADDED: Bouncy transition for circles */
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+  box-shadow: 0 10px 0 #d81b60; 
+  transition: box-shadow 0.2s, background 0.2s, filter 0.2s;
 }
 
-/* LEVEL CIRCLE HOVER EFFECT */
+/* SYMMETRICAL ZIG-ZAG */
+.step:nth-child(even) { transform: translateX(120px); }
+.step:nth-child(odd) { transform: translateX(-120px); }
+
+/* HOVER STATES */
 .step:hover {
-  /* Scale up slightly. !important ensures it works with the transform: translateX below */
-  transform: scale(1.15) !important;
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
-  filter: brightness(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 14px 0 #d81b60, 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* Zig-Zag Positions (Connectors Removed as requested) */
-.step:nth-child(1) { transform: translateX(40px); }
-.step:nth-child(2) { transform: translateX(10px); }
-.step:nth-child(3) { transform: translateX(-30px); }
-.step:nth-child(4) { transform: translateX(-10px); }
-.step:nth-child(5) { transform: translateX(30px); }
-.step:nth-child(6) { transform: translateX(60px); } 
-.step:nth-child(7) { transform: translateX(20px); }
+.step:active {
+  box-shadow: 0 4px 0 #d81b60 !important;
+  filter: brightness(0.9);
+}
 
-/* LEVEL 6 SPECIFIC IMPROVEMENTS */
+/* CURRENT LEVEL UI */
 .step.current {
-  border: 4px solid #ffcc4d;
-  background: #f48fb1;
-  box-shadow: 0 0 0 6px white, 0 12px 0 rgba(0,0,0,0.1);
-}
-
-/* CURRENT LEVEL HOVER */
-.step.current:hover {
-  box-shadow: 0 0 0 8px white, 0 15px 25px rgba(0,0,0,0.2);
+  border: 6px solid #ffcc4d;
+  box-shadow: 0 10px 0 #d81b60, 0 0 20px rgba(255, 204, 77, 0.5);
 }
 
 .step.pending {
   background: #ffcc4d;
+  box-shadow: 0 10px 0 #d4a017;
 }
 
-/* LEVEL TAG */
+/* START NOW BUBBLE (LEFT SIDE) */
+.current-indicator-wrapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
 .level-tag {
   position: absolute;
   top: -45px;
   background: #f2cf76;
   padding: 4px 15px;
-  font-size: 14px;
-  font-weight: 800;
   border-radius: 10px;
+  font-size: 14px;
   white-space: nowrap;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
 }
 
-/* START NOW BUBBLE */
 .start-now-bubble {
   position: absolute;
-  left: -155px;
+  right: 105px; 
   background: white;
   color: #f48fb1;
-  padding: 12px 20px;
-  border-radius: 18px;
-  font-weight: 800;
-  font-size: 18px;
+  padding: 12px 22px;
+  border-radius: 20px;
+  font-weight: 900;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  border: 2px solid #f48fb1;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  z-index: 10;
-  transition: transform 0.3s ease;
+  pointer-events: auto;
 }
 
-.start-now-bubble:hover {
-    transform: translateX(-5px);
-}
-
+/* Arrow pointer */
 .start-now-bubble::after {
   content: "";
   position: absolute;
-  right: -8px;
+  right: -10px;
   top: 50%;
   transform: translateY(-50%);
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
   border-left: 10px solid white;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
 }
 
-/* REWARD SECTION (Treasure) */
-.reward {
+/* REWARD SECTION */
+.reward-container {
+  margin-top: 40px;
   display: flex;
-  justify-content: center;
-  padding: 60px 0 100px 0;
-}
-
-.reward img {
-  width: 140px; 
-  height: auto;
-  filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.1));
-  animation: floatTreasure 3s ease-in-out infinite;
-  transition: transform 0.3s ease;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  z-index: 2;
   cursor: pointer;
 }
 
-.reward img:hover {
-    transform: scale(1.1);
+.treasure-chest {
+  width: 160px;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.2));
+  animation: float 3s ease-in-out infinite;
 }
 
-@keyframes floatTreasure {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(3deg); }
+.reward-text {
+  margin-top: 10px;
+  font-weight: 800;
+  color: #f48fb1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* RESPONSIVE */
-@media (max-width: 650px) {
-  .start-now-bubble {
-    left: 50%;
-    top: 90px;
-    transform: translateX(-50%);
-  }
-  .start-now-bubble::after {
-    right: 50%;
-    top: -8px;
-    transform: translateX(50%) rotate(90deg);
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 }
