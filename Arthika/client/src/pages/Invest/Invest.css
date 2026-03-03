@@ -1,0 +1,117 @@
+/* Container & Layout */
+.invest-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px); /* Adjust based on your global Navbar height */
+  width: 100%;
+  background-color: #F8EBCB;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Main Content Area - Center cards with tighter padding */
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 5%; /* Reduced from 40px */
+}
+
+.cards-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: clamp(15px, 3vw, 40px); /* Reduced gap */
+  width: 100%;
+  max-width: 900px; /* Reduced from 1100px for a tighter feel */
+}
+
+/* Card Styling - More Compact */
+.invest-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 380px; /* Reduced max-width */
+  padding: clamp(30px, 4vh, 50px) 25px; /* Significant padding reduction */
+  border-radius: 60px; /* Slightly smaller radius */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.invest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+.black-card {
+  background-color: #1A1A1A;
+  border: 3px solid #FFCC4D;
+}
+
+.yellow-card {
+  background-color: #FDD46D;
+  border: 3px solid #000000;
+}
+
+/* Typography & Icons scaled down */
+.invest-card h2 {
+  font-size: clamp(24px, 3vw, 42px); /* Scaled down from 56px */
+  line-height: 1.1;
+  text-align: center;
+  margin: 0;
+}
+
+.title-pink { color: #F48FB1; }
+.title-white { color: #FFFFFF; }
+
+.icon-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0; /* Reduced margin */
+}
+
+.card-img {
+  width: 45%; 
+  max-width: 140px; /* Reduced from 180px */
+  height: auto;
+  object-fit: contain;
+}
+
+/* Buttons - Slimmer version */
+.btn-yellow, .btn-pink {
+  width: 100%;
+  max-width: 220px; /* Reduced from 280px */
+  padding: 12px 0; /* Reduced from 18px */
+  border-radius: 40px;
+  font-size: clamp(18px, 1.5vw, 24px); /* Scaled down */
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn-yellow:active, .btn-pink:active { transform: scale(0.96); }
+.btn-yellow { background-color: #FFCC4D; color: #000; }
+.btn-pink { background-color: #F499B8; color: #FFF; border: 2px solid #FFCC4D; }
+
+/* Responsive Adjustments */
+@media (max-width: 850px) {
+  .cards-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .invest-card {
+    width: 90%;
+    min-width: unset;
+    padding: 35px 20px;
+  }
+}

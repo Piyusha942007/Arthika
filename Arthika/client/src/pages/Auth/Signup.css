@@ -1,0 +1,45 @@
+.title{
+  font-size:80px;
+  color:#FBC02D;
+}
+
+.switch{margin-bottom:25px;}
+
+.toggle{
+  display:flex;
+  gap:10px;
+  margin-bottom:30px;
+}
+
+.toggle button{
+  padding:12px 40px;
+  border:none;
+  border-radius:10px;
+  background:#F2848E;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+input{
+  width:100%;
+  padding:18px;
+  border-radius:50px;
+  border:none;
+  margin:8px 0 20px;
+}
+
+.btn{
+  width:100%;
+  padding:18px;
+  border-radius:50px;
+  border:none;
+  background:#110000;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.dark{margin-top:10px;}
+.divider{text-align:center;margin:20px 0;}
+.err{color:red;margin-top:10px;}

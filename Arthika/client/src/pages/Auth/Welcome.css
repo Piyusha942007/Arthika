@@ -1,0 +1,100 @@
+.welcome-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #F8EAC6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30px 20px;
+  font-family: 'Noto Sans', sans-serif;
+  text-align: center;
+}
+
+/* Logo */
+.logo {
+  margin-top: 20px;
+  font-size: clamp(48px, 8vw, 120px);
+  font-weight: 700;
+  color: #FBC02D;
+  font-family: 'Poppins';
+}
+
+/* Welcome text */
+.title {
+  font-size: clamp(22px, 4vw, 50px);
+  color: #333;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: clamp(20px, 3.5vw, 45px);
+  color: #FF72A1;
+  margin-bottom: 40px;
+}
+
+/* Language Grid */
+.grid {
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+/* Buttons */
+.lang-btn {
+  height: 64px;
+  border-radius: 30px;
+  border: 1px solid rgba(244,143,177,0.8);
+  background: #FFF9F1;
+  font-size: clamp(18px, 2vw, 30px);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.lang-btn:hover {
+  background: #ffe4ef;
+  transform: scale(1.05);
+}
+
+/* Proceed Button */
+.proceed {
+  margin-top: 50px;
+  padding: 15px 45px;
+  border-radius: 30px;
+  border: none;
+  background: #FBC02D;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.proceed:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- RESPONSIVE BREAKPOINTS ---------- */
+
+/* Tablet */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .proceed {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+.lang-btn:active {
+  transform: scale(0.95);
+}

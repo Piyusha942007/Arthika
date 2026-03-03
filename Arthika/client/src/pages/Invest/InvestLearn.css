@@ -1,0 +1,125 @@
+.learn-page-container {
+  min-height: 100vh;
+  background-color: #F8EBCB;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 60px;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* CONTENT WRAPPER */
+.learn-content-wrapper {
+  padding: 30px 8%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-headline {
+  font-size: clamp(32px, 5vw, 54px); /* Reduced from 90px */
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 40px;
+  color: #333;
+  text-align: center;
+}
+
+/* SCHEME CARDS - Much more compact */
+.schemes-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+.scheme-box {
+  flex: 1;
+  background: #FEFEFE;
+  border-radius: 40px; /* Reduced from 122px */
+  height: 220px; /* Reduced from 500px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid #EEE;
+  transition: transform 0.3s ease;
+}
+
+.scheme-box:hover {
+  transform: translateY(-5px);
+}
+
+.scheme-img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+}
+
+/* BANK CARDS - Slimmer and cleaner */
+.bank-sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.bank-card-long {
+  background: #FEFEFE;
+  border-radius: 40px; /* Reduced from 122px */
+  min-height: 160px; /* Reduced from 297px */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px 50px; /* Reduced padding */
+  border: 2px solid #EEE;
+}
+
+.reversed { 
+  flex-direction: row-reverse; /* Corrected to actually reverse the layout */
+}
+
+.benefit-bullets {
+  list-style: disc;
+  max-width: 60%;
+  padding-left: 20px;
+}
+
+.benefit-bullets li {
+  font-size: clamp(16px, 1.8vw, 20px); /* Reduced from 30px */
+  line-height: 1.4;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.bank-brand-img {
+  width: clamp(120px, 15vw, 180px); /* Reduced from 300px */
+  height: auto;
+  object-fit: contain;
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 900px) {
+  .schemes-row {
+    flex-wrap: wrap;
+  }
+  .scheme-box {
+    flex: unset;
+    width: calc(50% - 10px);
+    height: 180px;
+  }
+  .bank-card-long {
+    flex-direction: column !important;
+    text-align: center;
+    padding: 30px;
+    border-radius: 30px;
+  }
+  .benefit-bullets {
+    max-width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .scheme-box {
+    width: 100%;
+  }
+}

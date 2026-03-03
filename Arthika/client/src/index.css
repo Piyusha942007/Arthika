@@ -1,0 +1,27 @@
+/* Hide ALL Google Translate UI */
+.goog-tooltip,
+.goog-tooltip:hover,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+body > .skiptranslate > iframe.skiptranslate,
+iframe[class*="goog-te"] {
+  display: none !important;
+}
+
+/* Remove top spacing Google adds */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Remove translate icon */
+.goog-te-gadget-icon {
+  display: none !important;
+}
+
+/* Remove highlight tooltip shadow */
+.VIlpgJd-yAWNEb-V1pgJd-fmcmS-sn54Q {
+  box-shadow: none !important;
+}
