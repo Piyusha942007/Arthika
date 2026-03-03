@@ -5,7 +5,8 @@
     --text-main: #111827;
     --text-muted: #4b5563;
     --glass-bg: rgba(255, 255, 255, 0.95);
-    --border-color: #d1d5db; /* Slightly darker for visible box border */
+    --border-color: #d1d5db;
+    /* Slightly darker for visible box border */
 }
 
 /* ================= NAVBAR ================= */
@@ -103,7 +104,7 @@
 }
 
 .profile-pill:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .nav-avatar {
@@ -135,14 +136,14 @@
     right: 0;
     width: 260px;
     background: #ffffff;
-    
+
     /* Strong box look */
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    
+
     /* Shadow for depth */
-    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
-    
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+
     display: flex;
     flex-direction: column;
     z-index: 2000;
@@ -238,6 +239,7 @@
         opacity: 0;
         transform: translateY(-10px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -262,6 +264,7 @@
     .nav-menu {
         display: none;
         flex-direction: column;
+        align-items: flex-start;
         position: absolute;
         top: 85px;
         left: 0;
