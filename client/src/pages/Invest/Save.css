@@ -5,311 +5,249 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #F8EBCB;
+  opacity: 0.9;
   font-family: 'Outfit', sans-serif;
-  padding-bottom: 40px; /* Space at the bottom */
+  padding: 20px 20px 60px;
 }
 
-/* Header Section - Tighter Padding */
-.save-header {
-  padding: 30px 8% 10px; /* Reduced from 50px */
-  display: flex;
-  justify-content: flex-start;
-}
-
-.title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.save-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(40px, 6vw, 80px); /* Scaled down from 130px */
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  line-height: 1;
-  
-  /* Reduced stroke for cleaner look */
-  -webkit-text-stroke: 3px #F48FB1; 
-  paint-order: stroke fill;
-  letter-spacing: 1px;
-}
-
-.dollar-badge {
-  width: clamp(50px, 6vw, 75px); /* Scaled down */
-  height: clamp(50px, 6vw, 75px);
-  background-color: #F48FB1;
-  border: 4px solid #000;
-  border-radius: 50%;
+/* HEADER */
+.save-header.centered {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  padding: 40px 0 30px;
 }
 
-.coin-img {
-  width: 70%;
-  height: auto;
-  mix-blend-mode: multiply; 
+.title-wrapper { display: flex; align-items: center; gap: 15px; }
+
+.save-title {
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 900;
+  color: white;
+  margin: 0;
+  -webkit-text-stroke: 3px #F48FB1;
+  paint-order: stroke fill;
 }
 
-/* Cards & Progress - Compact Layout */
+.dollar-badge {
+  width: 65px; height: 65px;
+  background-color: #F48FB1;
+  border: 4px solid #000;
+  border-radius: 50%;
+  display: flex; justify-content: center; align-items: center;
+}
+
+.coin-img { width: 70%; height: auto; mix-blend-mode: multiply; }
+
+/* LAYOUT */
 .save-content {
-  flex: 1;
-  padding: 10px 8%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px; /* Tighter gap between cards */
-  max-width: 900px; /* Reduced from 1400px to prevent "ultra-wide" cards */
+  max-width: 850px;
   width: 100%;
   margin: 0 auto;
 }
 
-.goal-card {
-  border-radius: 30px; /* Slightly smaller radius */
-  padding: 20px 35px; /* Much smaller padding */
+/* INPUT CARD */
+.goal-input-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  border: 4px solid #000;
+  margin-bottom: 30px;
+  box-shadow: 8px 8px 0px #000;
+}
+
+.section-label { margin-bottom: 15px; font-weight: 800; }
+
+.input-row { display: flex; gap: 12px; }
+.input-row input {
+  flex: 1;
+  padding: 15px;
+  border-radius: 12px;
   border: 3px solid #000;
-  transition: transform 0.2s ease;
+  font-family: 'Outfit';
+  font-weight: 600;
 }
 
-.goal-card:hover { 
-  transform: translateY(-3px); 
+.primary-btn {
+  background: #000;
+  color: #fff;
+  padding: 0 30px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  box-shadow: 4px 4px 0px #F48FB1;
+  transition: transform 0.1s;
 }
 
-.goal-info {
+.primary-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #F48FB1; }
+
+/* SEARCH */
+.search-bar {
+  width: 100%;
+  padding: 15px 25px;
+  border-radius: 50px;
+  border: 3px solid #000;
+  margin-bottom: 30px;
+  font-family: 'Outfit';
+  font-weight: 600;
+}
+
+/* GOAL CARDS - COLORS FROM FIGMA */
+.goals-grid { display: flex; flex-direction: column; gap: 25px; }
+
+.goal-card {
+  position: relative;
+  border-radius: 45px;
+  padding: 30px;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0px #000;
+}
+
+.goal-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
-.goal-name {
-  font-size: clamp(20px, 2vw, 28px); /* Scaled down */
+.goal-card h2 {
+  font-size: 48px;
   font-weight: 800;
   margin: 0;
 }
 
-.goal-stats {
-  font-size: clamp(16px, 1.5vw, 22px); /* Scaled down */
+.percentage-text {
+  font-family: 'Outfit';
   font-weight: 700;
+  font-size: 32px;
+  color: #000;
 }
 
+.amount-display {
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* Cycle 1: Pink Background, Pink Darker Track, Yellow Progress */
+.goal-card:nth-child(3n+1) { background-color: #F48FB1; color: white; }
+.goal-card:nth-child(3n+1) .progress-container { background: #DD6890; }
+.goal-card:nth-child(3n+1) .progress-bar { background-color: #FFCC4D; }
+.goal-card:nth-child(3n+1) .percentage-text { color: #000; }
+
+/* Cycle 2: Yellow Background, White Track, Pinkish Progress */
+.goal-card:nth-child(3n+2) { background-color: #FED05E; color: white; }
+.goal-card:nth-child(3n+2) .progress-container { background: #FEFEFE; }
+.goal-card:nth-child(3n+2) .progress-bar { background-color: #DF769A; }
+.goal-card:nth-child(3n+2) .percentage-text { color: #000; }
+
+/* Cycle 3: White Background, Pink Track, Yellow Progress */
+.goal-card:nth-child(3n+3) { background-color: #FDFDFD; color: #F4A2BE; }
+.goal-card:nth-child(3n+3) .progress-container { background: #DF769A; }
+.goal-card:nth-child(3n+3) .progress-bar { background-color: #FED05E; }
+.goal-card:nth-child(3n+3) .percentage-text { color: #000; }
+
+/* PROGRESS BAR */
 .progress-container {
   width: 100%;
-  height: 16px; /* Slimmer progress bars */
-  border-radius: 50px;
+  height: 25px;
+  border-radius: 64.5px;
+  border: 3px solid #000;
+  margin: 20px 0;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .progress-bar {
   height: 100%;
-  border-radius: 50px;
+  border-radius: 64.5px;
+  transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Dynamic Colors */
-.pink-card { background-color: #F48FB1; color: white; border-color: #000; }
-.yellow-card { background-color: #FED05E; color: #000; border-color: #000; }
-.white-card { background-color: #FDFDFD; color: #F4A2BE; border-color: #000; }
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .save-header { padding: 20px 5%; }
-  .goal-card { padding: 20px; border-radius: 25px; }
-  .save-title { -webkit-text-stroke: 2px #F48FB1; }
-}
-/* ... Keep your existing @import ... */
-
-.save-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #F8EBCB;
-  font-family: 'Outfit', sans-serif;
-  padding: 20px;
-}
-
-.save-content {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* NEW: Input Section styling */
-.goal-input-card {
-  background: white;
-  padding: 20px;
-  border-radius: 20px;
-  border: 3px solid #000;
-  margin-bottom: 30px;
-  box-shadow: 6px 6px 0px #000;
-}
-
-.input-row {
-  display: flex;
-  gap: 10px;
-}
-
-.input-row input {
+/* CONTROLS */
+.update-controls { display: flex; gap: 10px; }
+.update-controls input {
   flex: 1;
   padding: 12px;
   border-radius: 10px;
-  border: 2px solid #eee;
-  font-family: 'Outfit';
-}
-
-.add-goal-btn {
-  background: #000;
-  color: white;
-  padding: 0 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-/* Update Progress Controls inside Card */
-.update-controls {
-  margin-top: 15px;
-  display: flex;
-  gap: 8px;
-}
-
-.update-controls input {
-  flex: 1;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.2);
-  background: rgba(255,255,255,0.5);
-}
-
-.update-controls button {
-  background: #000;
-  color: white;
-  border: none;
-  padding: 5px 15px;
-  border-radius: 8px;
+  border: 3px solid #000;
   font-weight: 600;
-  cursor: pointer;
+  color: #000;
 }
 
-.goals-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Header Centering */
-.save-header.centered {
-  display: flex;
-  justify-content: center; /* Centers horizontally */
-  align-items: center;
-  padding: 40px 0 20px 0;
-}
-
-/* Professional Button: Set Goal */
-.primary-btn {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 0 30px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 4px 4px 0px #F48FB1;
-}
-
-.primary-btn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #F48FB1;
-}
-
-/* Professional Button: Add Savings */
 .add-savings-btn {
   background: #000;
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  transition: transform 0.1s;
-}
-
-.add-savings-btn:active {
-  transform: scale(0.95);
-}
-
-/* Delete Button (The X) */
-.goal-card {
-  position: relative; /* Needed to position the X */
 }
 
 .delete-x {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(0,0,0,0.1);
+  top: 20px;
+  right: 20px;
+  background: transparent;
   border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 900;
   cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
+  color: #000;
 }
 
-.delete-x:hover {
-  background: #ff4d4d;
-  color: white;
+/* SAVING TIP */
+.saving-tip {
+  background: #000;
+  color: #FED05E;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
 }
 
-/* Typography Tweaks */
-.section-label {
-  margin-top: 0;
-  font-weight: 800;
-  color: #333;
-}
-
-.goal-perc-label {
-  margin-top: 12px;
-  font-size: 0.85rem;
-  text-align: center;
-  opacity: 0.8;
-}
-
-.current-amt { font-size: 1.2rem; color: #000; }
-.target-amt { font-size: 1rem; opacity: 0.6; }
-/* Animation for 100% Completion */
-@keyframes celebrate {
+/* WIN STATE */
+@keyframes pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.03); box-shadow: 0px 0px 20px rgba(255, 204, 77, 0.6); }
+  50% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
 
 .goal-completed {
-  animation: celebrate 1s ease infinite;
-  border: 4px solid #FFD700 !important; /* Gold border for winners */
+  animation: pulse 2s infinite ease-in-out;
+  border: 5px solid #000 !important;
+}
+/* ... keep your header and input card styles from before ... */
+
+.progress-container {
+  width: 100%;
+  height: 25px; /* Matches your Rectangle 2/3 height */
+  border-radius: 64.5px;
+  border: 3px solid #000;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative; /* Container for the bar */
 }
 
-.congrats-msg {
-  margin-top: 15px;
-  background: #000;
-  color: #FFD700;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 800;
-  font-size: 0.9rem;
+.progress-bar {
+  height: 100%;
+  border-radius: 64.5px;
+  /* Crucial for the "moving" feel */
+  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  min-width: 5px; /* Ensures you see it even at very low percentages */
 }
 
-/* Red Error styling for inputs when they exceed */
-input:invalid {
-  border-color: #ff4d4d;
-}
+/* Color Palette from your Figma Specs */
+.goal-card:nth-child(3n+1) { background-color: #F48FB1; color: white; }
+.goal-card:nth-child(3n+1) .progress-container { background: #DD6890; }
+.goal-card:nth-child(3n+1) .progress-bar { background-color: #FFCC4D; }
 
-/* ... keep all previous CSS ... */
+.goal-card:nth-child(3n+2) { background-color: #FED05E; color: white; }
+.goal-card:nth-child(3n+2) .progress-container { background: #FEFEFE; }
+.goal-card:nth-child(3n+2) .progress-bar { background-color: #DF769A; }
+
+.goal-card:nth-child(3n+3) { background-color: #FDFDFD; color: #F4A2BE; }
+.goal-card:nth-child(3n+3) .progress-container { background: #DF769A; }
+.goal-card:nth-child(3n+3) .progress-bar { background-color: #FED05E; }
+
+/* ... keep the rest of your button/tip styles ... */
