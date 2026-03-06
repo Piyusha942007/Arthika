@@ -6,14 +6,13 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SsoCallback from "./pages/Auth/SsoCallback";
 import Home from "./pages/Home/Home";
+import Profile from "./pages/Profile/Profile"; 
 import Navbar from "./components/common/Navbar";
 
-// Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
   const location = useLocation();
-
-  // Define paths where the Navbar SHOULD NOT appear
-  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
+  // We hide the global Navbar on these specific pages
+  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback", "/profile"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
@@ -25,14 +24,16 @@ function Layout({ children }) {
 }
 
 function ProtectedRoute({ children }) {
-  return (
-    <>
-      <SignedIn>{children}</SignedIn>
-      <SignedOut>
-        <Navigate to="/login" replace />
-      </SignedOut>
-    </>
-  );
+  const { isLoaded, isSignedIn } = useAuth();
+  
+  // Wait for Clerk to load before deciding to redirect
+  if (!isLoaded) return null; 
+
+  if (!isSignedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 function PublicRoute({ children }) {
@@ -55,15 +56,24 @@ export default function App() {
           <Route path="/sso-callback" element={<SsoCallback />} />
 
           {/* PRIVATE */}
-          <Route
-            path="/home"
+          <Route 
+            path="/home" 
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
-            }
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
           />
 
+          {/* FALLBACK */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>
