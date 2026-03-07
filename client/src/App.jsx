@@ -13,7 +13,7 @@ import Navbar from "./components/common/Navbar"; // Import the common Navbar
 // Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
   const location = useLocation();
-  
+
   // Define paths where the Navbar SHOULD NOT appear
   const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
@@ -56,13 +56,13 @@ export default function App() {
           <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
           <Route path="/signup/continue" element={<PublicRoute><Signup isContinue={true} /></PublicRoute>} />
           <Route path="/sso-callback" element={<SsoCallback />} />
-          
+
           {/* SHARED/CONTENT */}
           <Route path="/learn" element={<Learn />} />
           <Route path="/invest" element={<ProtectedRoute><div>Invest Page</div></ProtectedRoute>} />
           <Route path="/community" element={<ProtectedRoute><div>Community Page</div></ProtectedRoute>} />
           <Route
-            path="/learn/lesson/6"
+            path="/learn/lesson/:id"
             element={
               <ProtectedRoute>
                 <Lesson />

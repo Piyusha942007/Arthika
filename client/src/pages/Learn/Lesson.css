@@ -175,7 +175,7 @@
   transform: scale(1.03);
   background: #e91e63;
   color: white;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-btn:active {
@@ -207,23 +207,32 @@
   padding: 0;
 }
 
-.quiz-box li {
+.quiz-option {
   font-size: 22px;
-  line-height: 2.5;
-  font-weight: 400;
-  padding: 5px 20px;
+  line-height: 1.5;
+  font-weight: 500;
+  padding: 10px 20px;
   border-radius: 15px;
   cursor: pointer;
-  /* ADDED: Smooth option hover */
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+  background-color: transparent;
+  /* Removed the big white box */
+  color: #333;
 }
 
-/* QUIZ OPTION HOVER */
-.quiz-box li:hover {
-  background: rgba(244, 143, 177, 0.2);
-  padding-left: 30px; /* Slight slide effect */
-  color: #d81b60;
-  font-weight: 600;
+.quiz-option:hover {
+  background-color: #f48fb1;
+  /* Quite pink */
+  color: white;
+  padding-left: 30px;
+}
+
+.quiz-option.selected {
+  background-color: #f48fb1;
+  /* Quite pink */
+  color: white;
+  font-weight: 700;
 }
 
 /* FOOTER GRADIENT */
@@ -254,7 +263,10 @@
     font-size: 16px;
   }
 
-  .lesson-card, .quiz-box, .quiz-btn, .lesson-progress {
+  .lesson-card,
+  .quiz-box,
+  .quiz-btn,
+  .lesson-progress {
     width: 95%;
     padding: 20px;
     border-radius: 30px;
