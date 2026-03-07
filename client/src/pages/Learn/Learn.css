@@ -100,7 +100,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 600px;
-  height: 1400px;
+  height: 2000px;
   z-index: 1;
   pointer-events: none;
 }
