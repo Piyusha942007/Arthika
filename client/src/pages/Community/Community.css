@@ -1,0 +1,333 @@
+.community-page {
+    background: #F8EBCB;
+    min-height: 100vh;
+    padding: 60px 20px;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 120px;
+}
+
+.community-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    /* Separates top and bottom cards visibly */
+    position: relative;
+    z-index: 1;
+}
+
+/* SECTION 1: Help is Available (Taller layout) */
+.help-section-card {
+    background: #FEF9F1;
+    border-radius: 90px;
+    padding: 46px 21px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 56px);
+    text-align: center;
+    color: #000000;
+    margin-bottom: 40px;
+    margin-top: 0;
+}
+
+.help-cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.pink-card {
+    background: #F499B8;
+    border: 5px solid #F48FB1;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 440px;
+}
+
+.help-cards-container>.pink-card:first-child {
+    border-radius: 90px;
+}
+
+.help-cards-container>.pink-card:last-child {
+    border-radius: 90px;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.2;
+    text-align: center;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.pill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
+.pill {
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    color: #000000;
+    padding: 12px 16px;
+    border-radius: 60px;
+    width: 90%;
+    max-width: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.yellow-pill {
+    background: #FAB819;
+}
+
+.white-pill {
+    background: #FFFFFF;
+}
+
+.border-pink {
+    border: 5px solid #F48FB1;
+}
+
+.border-yellow {
+    background: #FFCC4D;
+    border: 3px solid #FAB819;
+}
+
+.large-pill {
+    min-height: 90px;
+}
+
+
+/* SECTION 2: Want to grow your business? (Highly squished vertically!) */
+.business-section-card {
+    background: #FDF9F1;
+    border-radius: 60px;
+    padding: 30px 40px 30px 40px;
+    /* Added slight lateral padding to breathe */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    /* Force it tighter around the content */
+    margin: 0 auto;
+}
+
+.business-section-card .section-title {
+    margin-bottom: 20px;
+    /* Squeezed heading margin */
+    font-size: clamp(28px, 4vw, 40px);
+}
+
+.location-search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    /* Reduced gap between location and business details */
+}
+
+.location-input-container {
+    background: #FCF9F1;
+    border: 5px solid #FFFFFF;
+    border-radius: 60px;
+    padding: 5px 20px;
+    /* Squeezed box height */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 650px;
+    box-sizing: border-box;
+}
+
+.location-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: clamp(18px, 3vw, 24px);
+    color: rgba(0, 0, 0, 0.5);
+    outline: none;
+}
+
+.location-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+.business-details-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    /* Squeezed gap to search button */
+}
+
+.business-details-card {
+    background: #D9D9D9;
+    border-radius: 40px;
+    padding: 20px 30px;
+    /* Removed 50px top/bottom paddings entirely */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+    box-sizing: border-box;
+}
+
+.business-card-title {
+    font-weight: 700;
+    font-size: clamp(20px, 3vw, 28px);
+    text-align: center;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 15px;
+    /* Shrunk title gap */
+}
+
+.business-name-input {
+    background: #FCF9F1;
+    border: 5px solid #FFFFFF;
+    border-radius: 60px;
+    width: 100%;
+    max-width: 550px;
+    padding: 8px 20px;
+    /* Halving the height */
+    font-family: inherit;
+    font-weight: 700;
+    font-size: clamp(14px, 2.5vw, 18px);
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    outline: none;
+    margin-bottom: 15px;
+    /* Tighter gap to upload zone */
+    box-sizing: border-box;
+}
+
+.business-name-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.upload-area {
+    background: #FBF9F1;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 450px;
+    padding: 10px 15px;
+    /* Crushed the massive 40px padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    box-sizing: border-box;
+}
+
+.upload-icon {
+    margin-bottom: 0px;
+}
+
+.upload-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.upload-text {
+    font-weight: 300;
+    font-size: clamp(12px, 2vw, 16px);
+    text-align: center;
+    color: #000000;
+    margin: 0;
+}
+
+.choose-files-btn {
+    background: #FED05E;
+    border-radius: 14.5px;
+    border: none;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-weight: 300;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.choose-files-btn:hover {
+    transform: scale(1.05);
+}
+
+.search-btn-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.search-shg-btn {
+    background: #D9D9D9;
+    border-radius: 60px;
+    border: none;
+    padding: 10px 20px;
+    /* Slightly compacted button */
+    font-family: inherit;
+    font-weight: 700;
+    font-size: clamp(16px, 2.5vw, 24px);
+    text-align: center;
+    color: #000000;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    width: 100%;
+    max-width: 450px;
+}
+
+.search-shg-btn:hover {
+    transform: scale(1.02);
+    background: #C0C0C0;
+}
+
+/* Graphic Element */
+.bottom-gradient-bar {
+    position: absolute;
+    bottom: 20px;
+    left: -5%;
+    width: 110%;
+    height: 60px;
+    background: linear-gradient(90deg, #F48FB1 0%, #FFCC4D 100%);
+    border-radius: 32px;
+    z-index: 0;
+}
+
+/* Responsiveness adjustments */
+@media (max-width: 900px) {
+
+    .help-section-card,
+    .business-section-card {
+        border-radius: 60px;
+        padding: 30px 15px;
+    }
+
+    .pink-card {
+        border-radius: 60px !important;
+    }
+}

@@ -6,7 +6,9 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SsoCallback from "./pages/Auth/SsoCallback";
 import Home from "./pages/Home/Home";
+import Community from "./pages/Community/Community";
 import Navbar from "./components/common/Navbar";
+import Chatbot from "./components/Chatbot/Chatbot";
 
 // Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
@@ -20,6 +22,7 @@ function Layout({ children }) {
     <>
       {shouldShowNavbar && <Navbar />}
       <main>{children}</main>
+      {shouldShowNavbar && <Chatbot />}
     </>
   );
 }
@@ -60,6 +63,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/community"
+            element={
+              <ProtectedRoute>
+                <Community />
               </ProtectedRoute>
             }
           />
