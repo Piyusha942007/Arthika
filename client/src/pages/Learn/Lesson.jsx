@@ -43,8 +43,10 @@ export default function Lesson() {
       setIsLoading(true);
       try {
         // Fetch progress
-        const progressRes = await fetch('http://localhost:5000/api/lessons/progress', {
-          headers: { 'x-user-id': user.id }
+        const lang = localStorage.getItem("lang") || "en";
+        const progressRes = await fetch(`http://localhost:5000/api/lessons/progress?lang=${lang}&t=${Date.now()}`, {
+          headers: { 'x-user-id': user.id },
+          cache: 'no-store'
         });
         if (progressRes.ok) {
           const progressData = await progressRes.json();
@@ -53,7 +55,7 @@ export default function Lesson() {
         }
 
         // Fetch video
-        const videoRes = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}`, {
+        const videoRes = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}?lang=${lang}`, {
           method: 'GET',
           headers: { 'x-user-id': user.id }
         });
@@ -83,7 +85,8 @@ export default function Lesson() {
     if (!user) return;
     // Fetch Quiz
     try {
-      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/quiz`, {
+      const lang = localStorage.getItem("lang") || "en";
+      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/quiz?lang=${lang}`, {
         headers: { 'x-user-id': user.id }
       });
       const data = await response.json();
@@ -106,7 +109,8 @@ export default function Lesson() {
   const submitQuiz = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/complete`, {
+      const lang = localStorage.getItem("lang") || "en";
+      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/complete?lang=${lang}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +154,7 @@ export default function Lesson() {
             style={{ width: `${(completedVideos / totalVideos) * 100}%` }}
           ></div>
         </div>
-        <p>{completedVideos}/{totalVideos} videos completed</p>
+        <p key={completedVideos}><span className="notranslate">{completedVideos}</span>/<span className="notranslate">{totalVideos}</span> videos completed</p>
       </div>
 
       <div className="lesson-card">

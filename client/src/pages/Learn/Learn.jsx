@@ -19,8 +19,10 @@ export default function Learn() {
 
     const fetchProgress = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/lessons/progress', {
-          headers: { 'x-user-id': user.id }
+        const lang = localStorage.getItem("lang") || "en";
+        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${lang}&t=${Date.now()}`, {
+          headers: { 'x-user-id': user.id },
+          cache: 'no-store'
         });
         if (response.ok) {
           const data = await response.json();
@@ -127,7 +129,9 @@ export default function Learn() {
             transition={{ duration: 1.5, ease: "easeOut" }}
           />
         </div>
-        <p className="progress-text">{completedVideos}/{totalVideos} Lessons Mastered</p>
+        <p className="progress-text" key={completedVideos}>
+          <span className="notranslate">{completedVideos}</span>/<span className="notranslate">{totalVideos}</span> Lessons Mastered
+        </p>
       </section>
 
       <section className="learn-content">

@@ -38,11 +38,20 @@ const getLessonVideo = async (req, res) => {
             return res.status(403).json({ message: 'Lesson locked. Complete previous stages to unlock.' });
         }
 
-        // Find the video using Cloudinary Search API based on language preference (now defaulted to English)
-        const folderPath = `Learn-Page/Level_${level}`;
+        // Find the video using Cloudinary Search API based on language preference
+        const langQuery = req.query.lang || 'en';
+        let languagePrefix = 'Learn-Page(English)';
+
+        if (langQuery === 'hi') {
+            languagePrefix = 'Learn-Page(Hindi)';
+        } else if (langQuery === 'mr') {
+            languagePrefix = 'Learn-Page(Marathi)';
+        }
+
+        const folderPath = `${languagePrefix}/Level_${level}`;
 
         const searchResult = await cloudinary.search
-            .expression(`resource_type:video AND folder:${folderPath} AND filename:Stage_${stage}*`)
+            .expression(`resource_type:video AND folder:"${folderPath}" AND filename:Stage_${stage}*`)
             .max_results(1)
             .execute();
 
@@ -72,7 +81,15 @@ const getQuiz = async (req, res) => {
         const userId = req.headers['x-user-id'] || 'test-user-id';
 
         let progress = await UserProgress.findOne({ userId });
-        const language = 'english'; // Default to english since selection is removed
+
+        const langQuery = req.query.lang || 'en';
+        let language = 'english';
+
+        if (langQuery === 'hi') {
+            language = 'hindi';
+        } else if (langQuery === 'mr') {
+            language = 'marathi';
+        }
 
         // Fetch quiz for this level, stage, and language
         const quiz = await Quiz.findOne({ level, stage, language });
@@ -110,7 +127,15 @@ const verifyQuizAndComplete = async (req, res) => {
         const { userAnswers } = req.body; // Expecting an array of selected option indexes
 
         let progress = await UserProgress.findOne({ userId });
-        const language = 'english'; // Default to english
+
+        const langQuery = req.query.lang || 'en';
+        let language = 'english';
+
+        if (langQuery === 'hi') {
+            language = 'hindi';
+        } else if (langQuery === 'mr') {
+            language = 'marathi';
+        }
 
         // Fetch quiz to check answers
         const quiz = await Quiz.findOne({ level, stage, language });
@@ -175,8 +200,17 @@ const getProgress = async (req, res) => {
         const userId = req.headers['x-user-id'] || 'test-user-id';
         let progress = await UserProgress.findOne({ userId });
 
+        const langQuery = req.query.lang || 'en';
+        let language = 'english';
+
+        if (langQuery === 'hi') {
+            language = 'hindi';
+        } else if (langQuery === 'mr') {
+            language = 'marathi';
+        }
+
         if (!progress) {
-            progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1 });
+            progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1, languagePreference: language });
         }
 
         // Example assumption: 10 levels, 3 stages each = 30 total videos
