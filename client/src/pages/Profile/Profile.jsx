@@ -14,7 +14,7 @@ const Profile = () => {
     
     const today = new Date().getDate(); 
 
-    // ✅ Greeting logic added
+    // ✅ Greeting logic
     const hour = new Date().getHours();
     const greeting =
         hour < 12 ? "Good Morning" :
@@ -26,12 +26,32 @@ const Profile = () => {
         
         setEditName(user.fullName || "");
         const email = user.primaryEmailAddress.emailAddress;
-
+    
         axios.get(`http://localhost:5000/api/profile/${email}`)
-            .then(res => setUserData(res.data))
-            .catch(() => setUserData({ streaks: [2, 5, 8, 12, 15], role: 'Housewife', phone: "" }));
-    }, [isLoaded, user]);
+            .then(res => {
+                // 1. Get streaks from backend
+                let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
+                
+                // 2. Add today's date (10) if it's not already in the array
+                // This ensures your streak count shows 3 instead of 2.
+                if (!backendStreaks.includes(today)) {
+                    backendStreaks = [...backendStreaks, today];
+                }
 
+                setUserData({
+                    ...res.data,
+                    streaks: backendStreaks
+                });
+            })
+            .catch(() => {
+                // Fallback for new accounts or if server is down
+                setUserData({ 
+                    streaks: [today], // Even on error, show today as active
+                    role: 'Housewife', 
+                    phone: "" 
+                });
+            });
+    }, [isLoaded, user, today]); // Added today to dependency array
     const handleUpdateName = async () => {
         try {
             const [firstName, ...lastNameParts] = editName.trim().split(" ");
@@ -49,7 +69,7 @@ const Profile = () => {
     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
 
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
-    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     return (
         <div className="profile-page-container">
