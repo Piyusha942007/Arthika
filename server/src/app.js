@@ -1,12 +1,13 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import "dotenv/config"; // Ensures .env is loaded BEFORE other imports
 
 import connectDB from "./config/db.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
-
-dotenv.config();
+import shgRoutes from "./routes/shgRoutes.js";
+import businessRoutes from "./routes/businessRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const app = express();
 
@@ -21,6 +22,9 @@ connectDB();
 
 app.use("/api/goals", goalRoutes);
 app.use("/api/lessons", lessonRoutes);
+app.use("/api/shgs", shgRoutes);
+app.use("/api/business", businessRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("Arthika API running 🚀");

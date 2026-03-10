@@ -4,6 +4,7 @@ import Quiz from '../models/Quiz.js';
 
 // Cloudinary usually initialized in app.js or here. 
 // Requires process.env variables.
+console.log("CLOUDINARY API KEY in Controller:", process.env.CLOUDINARY_API_KEY);
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -69,8 +70,8 @@ export const getLessonVideo = async (req, res) => {
             isAllowed
         });
     } catch (error) {
-        console.error('Error fetching lesson:', error);
-        res.status(500).json({ message: 'Error fetching lesson video' });
+        console.error('FULL ERROR:', error);
+        res.status(500).json({ message: 'Error fetching lesson video', rawError: String(error), jsonError: JSON.stringify(error) });
     }
 };
 
