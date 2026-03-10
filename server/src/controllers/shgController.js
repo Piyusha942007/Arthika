@@ -1,4 +1,4 @@
-const SHG = require('../models/SHG');
+import SHG from '../models/SHG.js';
 
 // @desc    Get all SHGs, optionally filtered by location
 // @route   GET /api/shgs
@@ -27,6 +27,6 @@ const getSHGs = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     getSHGs
 };

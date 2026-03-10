@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { getSHGs } = require('../controllers/shgController');
+import { getSHGs } from '../controllers/shgController.js';
 
 // Route: GET /api/shgs
 // Query params: ?location=keyword
 router.route('/').get(getSHGs);
 
-module.exports = router;
+export default router;

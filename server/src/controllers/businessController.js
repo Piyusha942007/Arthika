@@ -1,7 +1,11 @@
-const Business = require('../models/Business');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import Business from '../models/Business.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, '../../../uploads');
@@ -72,7 +76,7 @@ const registerBusiness = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     registerBusiness,
     upload
 };

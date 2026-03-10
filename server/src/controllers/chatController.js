@@ -1,9 +1,5 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-// Initialize Gemini SDK with the key from .env
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-exports.handleChat = async (req, res) => {
+import { GoogleGenerativeAI } from "@google/generative-ai";
+export const handleChat = async (req, res) => {
     const { message, language } = req.body;
 
     if (!message) {
@@ -15,6 +11,9 @@ exports.handleChat = async (req, res) => {
             console.error("Missing GEMINI_API_KEY! The server needs to be restarted.");
             return res.status(500).json({ error: "Server needs to be restarted to load the API key." });
         }
+
+        // Initialize Gemini SDK with the key from .env inside the request handle
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
         // We use gemini-2.5-flash as it is supported by the new API keys
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
