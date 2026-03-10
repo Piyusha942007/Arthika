@@ -17,10 +17,19 @@ export default function Welcome() {
   const navigate = useNavigate()
 
   const changeLanguage = (lang) => {
-    const select = document.querySelector(".goog-te-combo")
-    if (!select) return
-    select.value = lang
-    select.dispatchEvent(new Event("change"))
+    localStorage.setItem("lang", lang)
+    let retries = 0
+    const interval = setInterval(() => {
+      const select = document.querySelector(".goog-te-combo")
+      if (select) {
+        select.value = lang
+        select.dispatchEvent(new Event("change"))
+        clearInterval(interval)
+      } else if (retries > 10) {
+        clearInterval(interval)
+      }
+      retries++
+    }, 500)
   }
 
   return (

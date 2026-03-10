@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
 import goalRoutes from "./routes/goalRoutes.js";
+import lessonRoutes from "./routes/lessonRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/goals", goalRoutes);
+app.use("/api/lessons", lessonRoutes);
 
 app.get("/", (req, res) => {
   res.send("Arthika API running 🚀");
