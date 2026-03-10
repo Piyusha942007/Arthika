@@ -11,6 +11,9 @@ import Invest from "./pages/Invest/Invest";
 import Save from "./pages/Invest/Save";
 import InvestLearn from "./pages/Invest/InvestLearn";
 
+import Learn from "./pages/Learn/Learn";
+import Lesson from "./pages/Learn/Lesson";
+
 import Navbar from "./components/common/Navbar";
 
 // Helper component to handle conditional rendering of Navbar
@@ -66,6 +69,18 @@ export default function App() {
           <Route path="/home" element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/learn" element={
+            <ProtectedRoute>
+              <Learn />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/learn/lesson/:id" element={
+            <ProtectedRoute>
+              <Lesson />
             </ProtectedRoute>
           } />
 
