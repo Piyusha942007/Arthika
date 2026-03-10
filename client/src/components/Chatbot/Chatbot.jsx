@@ -26,14 +26,24 @@ export default function Chatbot() {
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const isMutedRef = useRef(false);
+    const lastBotMessageRef = useRef("Hello! I am Arthika. How can I help you with your finances today? You can speak to me in your own language.");
     const [inputText, setInputText] = useState("");
 
     const toggleMute = () => {
-        if (!isMuted) {
+        const newMuted = !isMuted;
+        setIsMuted(newMuted);
+        isMutedRef.current = newMuted;
+
+        if (newMuted) {
             synthRef.current?.cancel();
             setIsSpeaking(false);
+        } else {
+            // Unmuted! Replay the last bot message.
+            if (lastBotMessageRef.current) {
+                speakText(lastBotMessageRef.current);
+            }
         }
-        setIsMuted(!isMuted);
     };
 
     const getInitialLang = () => {
@@ -121,7 +131,7 @@ export default function Chatbot() {
     };
 
     const speakText = (text) => {
-        if (!synthRef.current || isMuted) return;
+        if (!synthRef.current || isMutedRef.current) return;
 
         synthRef.current.cancel();
 
@@ -184,6 +194,7 @@ export default function Chatbot() {
 
             if (response.ok && data.reply) {
                 setMessages([...newMessages, { role: "bot", text: data.reply }]);
+                lastBotMessageRef.current = data.reply;
                 speakText(data.reply);
             } else {
                 throw new Error(data.error || "Server encountered an error.");
@@ -192,6 +203,7 @@ export default function Chatbot() {
             console.error(err);
             const errorMsg = "Sorry, I am having trouble connecting to my brain right now. " + (err.message || "");
             setMessages([...newMessages, { role: "bot", text: errorMsg }]);
+            lastBotMessageRef.current = errorMsg;
             speakText(errorMsg);
         }
     };
