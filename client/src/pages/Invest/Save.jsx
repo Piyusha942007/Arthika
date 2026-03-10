@@ -25,7 +25,20 @@ export default function Save() {
       try {
         const res = await fetch(`${API}/${user.id}`);
         const data = await res.json();
-        setGoals(data);
+
+        // Normalize Decimal128 values from MongoDB
+        const normalizedData = data.map(goal => {
+          let normalizedGoal = { ...goal };
+          if (goal.savedAmount && typeof goal.savedAmount === "object" && goal.savedAmount.$numberDecimal) {
+            normalizedGoal.savedAmount = Number(goal.savedAmount.$numberDecimal);
+          }
+          if (goal.targetAmount && typeof goal.targetAmount === "object" && goal.targetAmount.$numberDecimal) {
+            normalizedGoal.targetAmount = Number(goal.targetAmount.$numberDecimal);
+          }
+          return normalizedGoal;
+        });
+
+        setGoals(normalizedData);
       } catch (err) {
         console.error("Fetch error:", err);
       }
@@ -58,6 +71,13 @@ export default function Save() {
 
       const savedGoal = await res.json();
 
+      if (savedGoal.savedAmount && typeof savedGoal.savedAmount === "object" && savedGoal.savedAmount.$numberDecimal) {
+        savedGoal.savedAmount = Number(savedGoal.savedAmount.$numberDecimal);
+      }
+      if (savedGoal.targetAmount && typeof savedGoal.targetAmount === "object" && savedGoal.targetAmount.$numberDecimal) {
+        savedGoal.targetAmount = Number(savedGoal.targetAmount.$numberDecimal);
+      }
+
       setGoals([...goals, savedGoal]);
       setNewGoal({ title: "", target: "" });
 
@@ -88,6 +108,15 @@ export default function Save() {
       });
 
       const updatedGoal = await res.json();
+
+      // If the backend returns a MongoDB Decimal128, it comes as an object {$numberDecimal: "500"}
+      // We must normalize it to a raw number so the front-end math works!
+      if (updatedGoal.savedAmount && typeof updatedGoal.savedAmount === "object" && updatedGoal.savedAmount.$numberDecimal) {
+        updatedGoal.savedAmount = Number(updatedGoal.savedAmount.$numberDecimal);
+      }
+      if (updatedGoal.targetAmount && typeof updatedGoal.targetAmount === "object" && updatedGoal.targetAmount.$numberDecimal) {
+        updatedGoal.targetAmount = Number(updatedGoal.targetAmount.$numberDecimal);
+      }
 
       setGoals(goals.map(g => g._id === id ? updatedGoal : g));
 
@@ -216,7 +245,7 @@ export default function Save() {
                 >
                   ✕
                 </button>
-                
+
                 <div className="goal-card-header">
                   <h2>{goal.title}</h2>
                   <p className="percentage-text">{percentage}% saved</p>
