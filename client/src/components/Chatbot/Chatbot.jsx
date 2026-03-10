@@ -25,7 +25,16 @@ export default function Chatbot() {
     ]);
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
     const [inputText, setInputText] = useState("");
+
+    const toggleMute = () => {
+        if (!isMuted) {
+            synthRef.current?.cancel();
+            setIsSpeaking(false);
+        }
+        setIsMuted(!isMuted);
+    };
 
     const getInitialLang = () => {
         const select = document.querySelector(".goog-te-combo");
@@ -112,7 +121,7 @@ export default function Chatbot() {
     };
 
     const speakText = (text) => {
-        if (!synthRef.current) return;
+        if (!synthRef.current || isMuted) return;
 
         synthRef.current.cancel();
 
@@ -212,7 +221,16 @@ export default function Chatbot() {
                                 ))}
                             </select>
                         </div>
-                        <button className="close-btn" onClick={() => setIsOpen(false)}>✖</button>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <button
+                                onClick={toggleMute}
+                                title={isMuted ? "Unmute Bot" : "Mute Bot"}
+                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem" }}
+                            >
+                                {isMuted ? "🔇" : "🔊"}
+                            </button>
+                            <button className="close-btn" onClick={() => setIsOpen(false)}>✖</button>
+                        </div>
                     </div>
 
                     <div className="chatbot-messages">
