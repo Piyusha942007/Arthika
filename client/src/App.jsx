@@ -13,8 +13,9 @@ import InvestLearn from "./pages/Invest/InvestLearn";
 
 import Learn from "./pages/Learn/Learn";
 import Lesson from "./pages/Learn/Lesson";
-
+import Community from "./pages/Community/Community";
 import Navbar from "./components/common/Navbar";
+import Chatbot from "./components/Chatbot/Chatbot";
 
 // Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
@@ -28,6 +29,7 @@ function Layout({ children }) {
     <>
       {shouldShowNavbar && <Navbar />}
       <main>{children}</main>
+      {shouldShowNavbar && <Chatbot />}
     </>
   );
 }
@@ -69,6 +71,11 @@ export default function App() {
           <Route path="/home" element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          } />
+          <Route path="/community" element={
+            <ProtectedRoute>
+              <Community />
             </ProtectedRoute>
           } />
 
