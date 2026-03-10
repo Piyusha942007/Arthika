@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Quiz = require('./models/Quiz');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 // Require our generated massive data files
 const level1_to_4 = require('./data/level1_to_4');

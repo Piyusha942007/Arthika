@@ -17,6 +17,7 @@ export default function Lesson() {
   const [userAnswers, setUserAnswers] = useState([]); // Array of selected option indexes
   const [quizError, setQuizError] = useState("");
   const [passed, setPassed] = useState(false); // Used to show "Next Stage Unlocked" button
+  const [quizReview, setQuizReview] = useState(null);
 
   // Progress states
   const [completedVideos, setCompletedVideos] = useState(0);
@@ -36,6 +37,7 @@ export default function Lesson() {
     setQuizQuestions([]);
     setUserAnswers([]);
     setQuizError("");
+    setQuizReview(null);
 
     if (!isLoaded || !user) return;
 
@@ -124,10 +126,12 @@ export default function Lesson() {
       if (response.ok) {
         setQuizError("");
         setPassed(true);
+        if (data.review) setQuizReview(data.review);
         // Refresh the progress bar to instantly reflect the new completed lesson
         setCompletedVideos(prev => prev + 1);
       } else {
         setQuizError(data.message); // e.g. "Quiz failed. Try again!"
+        if (data.review) setQuizReview(data.review);
       }
     } catch (error) {
       console.error("Failed to verify quiz", error);
@@ -181,14 +185,46 @@ export default function Lesson() {
             </video>
           ) : (
             <div className="quiz-box">
-              {passed ? (
-                <div style={{ textAlign: 'center' }}>
-                  <h2 style={{ fontSize: '32px', color: '#d81b60', marginBottom: '20px' }}>🎉 Quiz Passed! {stage === 3 ? "New Level Unlocked!" : "Stage Complete!"}</h2>
-                  <div
-                    className="quiz-btn"
-                    onClick={() => navigate(stage === 3 ? '/learn' : `/learn/lesson/${numericId + 1}`)}
-                  >
-                    {stage === 3 ? 'RETURN TO MAP ➔' : 'GO TO NEXT STAGE ➔'}
+              {quizReview ? (
+                <div className="review-container">
+                  <div style={{ textAlign: 'center' }}>
+                    {passed ? (
+                      <h2 style={{ fontSize: '32px', color: '#d81b60', marginBottom: '20px' }}>🎉 Quiz Passed! {stage === 3 ? "New Level Unlocked!" : "Stage Complete!"}</h2>
+                    ) : (
+                      <h2 style={{ fontSize: '32px', color: 'red', marginBottom: '20px' }}>❌ Quiz Failed</h2>
+                    )}
+                    {quizError && <p style={{ color: 'red', fontSize: '18px', marginBottom: '20px' }}>{quizError}</p>}
+                  </div>
+
+                  <div className="review-list" style={{ textAlign: 'left', marginBottom: '30px' }}>
+                    <h3 style={{ marginBottom: '20px', fontSize: '24px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>Answer Explanations:</h3>
+                    {quizReview.map((r, i) => (
+                      <div key={i} style={{ marginBottom: '25px', padding: '15px', borderRadius: '8px', backgroundColor: r.isCorrect ? '#e8f5e9' : '#ffebee', borderLeft: `5px solid ${r.isCorrect ? '#4caf50' : '#f44336'}` }}>
+                        <h4 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: 'bold' }}>Q{i + 1}) {r.questionText}</h4>
+                        <p style={{ margin: '5px 0', fontSize: '16px' }}><strong>Your Answer:</strong> <span style={{ color: r.isCorrect ? 'green' : 'red' }}>{r.userAnswer}</span> {r.isCorrect ? '✅' : '❌'}</p>
+                        {!r.isCorrect && (
+                          <p style={{ margin: '5px 0', fontSize: '16px' }}><strong>Correct Answer:</strong> <span style={{ color: 'green' }}>{r.correctAnswer}</span> ✅</p>
+                        )}
+                        <div style={{ marginTop: '10px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: '5px', fontSize: '16px' }}>
+                          <strong>Explanation:</strong> {r.explanation}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ textAlign: 'center' }}>
+                    {passed ? (
+                      <div className="quiz-btn" onClick={() => navigate(stage === 3 ? '/learn' : `/learn/lesson/${numericId + 1}`)}>
+                        {stage === 3 ? 'RETURN TO MAP ➔' : 'GO TO NEXT STAGE ➔'}
+                      </div>
+                    ) : (
+                      <div className="quiz-btn" onClick={() => {
+                        setQuizReview(null);
+                        setQuizError("");
+                      }} style={{ backgroundColor: '#ff9800' }}>
+                        TRY AGAIN ↻
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
