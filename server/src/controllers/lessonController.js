@@ -142,14 +142,23 @@ export const verifyQuizAndComplete = async (req, res) => {
         const quiz = await Quiz.findOne({ level, stage, language });
 
         let passed = true;
+        let review = [];
 
         if (quiz && userAnswers) {
             // Verify each answer
             for (let i = 0; i < quiz.questions.length; i++) {
-                if (userAnswers[i] !== quiz.questions[i].correctOptionIndex) {
+                const isCorrect = userAnswers[i] === quiz.questions[i].correctOptionIndex;
+                if (!isCorrect) {
                     passed = false;
-                    break;
                 }
+                const correctText = quiz.questions[i].options[quiz.questions[i].correctOptionIndex];
+                review.push({
+                    questionText: quiz.questions[i].questionText,
+                    userAnswer: userAnswers[i] !== null && userAnswers[i] !== undefined ? quiz.questions[i].options[userAnswers[i]] : 'None',
+                    correctAnswer: correctText,
+                    explanation: quiz.questions[i].explanation || `The correct answer is: ${correctText}`,
+                    isCorrect: isCorrect
+                });
             }
         } else if (quiz && (!userAnswers || userAnswers.length !== quiz.questions.length)) {
             passed = false;
@@ -161,7 +170,7 @@ export const verifyQuizAndComplete = async (req, res) => {
         }
 
         if (!passed) {
-            return res.status(400).json({ message: 'Quiz failed. Try again!', passed: false });
+            return res.status(400).json({ message: 'Quiz failed. Please check the explanations and try again!', passed: false, review });
         }
 
         // If passed, progress the user
@@ -172,6 +181,7 @@ export const verifyQuizAndComplete = async (req, res) => {
 
         // Only progress user if they are completing their *currently* highest allowed lesson
         // and haven't already surpassed it
+        let advanced = false;
         if (level === progress.highestUnlockedLevel && stage === progress.highestUnlockedStage) {
             if (stage < 3) {
                 progress.highestUnlockedStage += 1;
@@ -182,13 +192,15 @@ export const verifyQuizAndComplete = async (req, res) => {
                 }
             }
             await progress.save();
+            advanced = true;
         }
 
         res.status(200).json({
             message: 'Lesson and quiz completed successfully!',
             passed: true,
             highestUnlockedLevel: progress.highestUnlockedLevel,
-            highestUnlockedStage: progress.highestUnlockedStage
+            highestUnlockedStage: progress.highestUnlockedStage,
+            review
         });
     } catch (error) {
         console.error('Error completing lesson:', error);

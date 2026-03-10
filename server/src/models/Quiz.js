@@ -17,7 +17,8 @@ const quizSchema = new mongoose.Schema({
     questions: [{
         questionText: { type: String, required: true },
         options: [{ type: String }],
-        correctOptionIndex: { type: Number, required: true }
+        correctOptionIndex: { type: Number, required: true },
+        explanation: { type: String } // Adding explanation field
     }]
 }, { timestamps: true });
 

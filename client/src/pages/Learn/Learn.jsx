@@ -4,6 +4,8 @@ import treasureChest from "../../assets/images/treasure.png";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Learn() {
   const { user, isLoaded } = useUser();
@@ -13,14 +15,14 @@ export default function Learn() {
   const [completedVideos, setCompletedVideos] = useState(0);
   const [totalVideos, setTotalVideos] = useState(30);
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
 
   useEffect(() => {
     if (!isLoaded || !user) return;
 
     const fetchProgress = async () => {
       try {
-        const lang = localStorage.getItem("lang") || "en";
-        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${lang}&t=${Date.now()}`, {
+        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
           headers: { 'x-user-id': user.id },
           cache: 'no-store'
         });
@@ -36,7 +38,13 @@ export default function Learn() {
       }
     };
     fetchProgress();
-  }, [isLoaded, user]);
+  }, [isLoaded, user, language]);
+
+  const handleLanguageChange = (e) => {
+    const newLang = e.target.value;
+    setLanguage(newLang);
+    localStorage.setItem("lang", newLang);
+  };
 
   const stepOffsets = [
     60, -40, -120, -10, 120, 0, -100, 50, 80, -30 // 10 total levels
@@ -65,6 +73,17 @@ export default function Learn() {
 
   return (
     <div className="learn-page">
+      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
+        <select
+          value={language}
+          onChange={handleLanguageChange}
+          style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px' }}
+        >
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+          <option value="mr">मराठी</option>
+        </select>
+      </div>
 
       {/* Stage Selection Modal */}
       {selectedLevel && (
@@ -165,7 +184,21 @@ export default function Learn() {
               }}
               whileTap={{ scale: 0.95, x: step.offset }}
               viewport={{ once: true }}
-              onClick={["current", "completed"].includes(step.status) ? () => setSelectedLevel(i + 1) : undefined}
+              onClick={() => {
+                if (["current", "completed"].includes(step.status)) {
+                  setSelectedLevel(i + 1);
+                } else {
+                  toast.info("Please complete the previous levels to unlock this one!", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "light",
+                  });
+                }
+              }}
             >
               {step.status === "current" && (
                 <div className="current-indicator-wrapper">
@@ -192,6 +225,7 @@ export default function Learn() {
           </motion.div>
         </div>
       </section>
+      <ToastContainer />
     </div>
   );
 }
