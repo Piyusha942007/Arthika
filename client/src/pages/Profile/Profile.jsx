@@ -134,7 +134,7 @@ const Profile = () => {
                             ) : (
                                 <>
                                     <h3 className="profile-name">{user.fullName}</h3>
-                                    <p className="profile-phone">{userData?.phone || "Add Phone"}</p>
+                                    {/* <p className="profile-phone">{userData?.phone || "Add Phone"}</p> */}
                                     <p className="profile-email">email: {user.primaryEmailAddress.emailAddress}</p>
                                     <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
                                 </>
