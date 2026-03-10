@@ -2,21 +2,17 @@
   "name": "server",
   "version": "1.0.0",
   "main": "src/app.js",
-
   "type": "module",
-
   "scripts": {
     "start": "node src/app.js",
     "server": "node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "Backend for Arthika Finance Goal Tracker",
-
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
     "cloudinary": "^2.9.0",
@@ -27,7 +23,6 @@
     "mongoose": "^9.2.4",
     "svix": "^1.86.0"
   },
-
   "devDependencies": {
     "nodemon": "^3.1.0"
   }
