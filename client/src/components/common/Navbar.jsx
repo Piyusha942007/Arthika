@@ -67,7 +67,6 @@ export default function Navbar() {
                                         <p className="user-full-name">{user.fullName}</p>
                                         <p className="user-email">{user.primaryEmailAddress?.emailAddress}</p>
                                     </div>
-
                                     {/* Separated Body Section */}
                                     <div className="dropdown-body">
                                         <button className="dropdown-item" onClick={() => { nav("/profile"); setDropdownOpen(false); }}>

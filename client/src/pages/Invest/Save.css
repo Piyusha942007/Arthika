@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+.save-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F8EBCB;
+  opacity: 0.9;
+  font-family: 'Outfit', sans-serif;
+  padding: 20px 20px 60px;
+}
+
+/* HEADER */
+.save-header.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0 30px;
+}
+
+.title-wrapper { display: flex; align-items: center; gap: 15px; }
+
+.save-title {
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 900;
+  color: white;
+  margin: 0;
+  -webkit-text-stroke: 3px #F48FB1;
+  paint-order: stroke fill;
+}
+
+.dollar-badge {
+  width: 65px; height: 65px;
+  background-color: #F48FB1;
+  border: 4px solid #000;
+  border-radius: 50%;
+  display: flex; justify-content: center; align-items: center;
+}
+
+.coin-img { width: 70%; height: auto; mix-blend-mode: multiply; }
+
+/* LAYOUT */
+.save-content {
+  max-width: 850px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* INPUT CARD */
+.goal-input-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  border: 4px solid #000;
+  margin-bottom: 30px;
+  box-shadow: 8px 8px 0px #000;
+}
+
+.section-label { margin-bottom: 15px; font-weight: 800; }
+
+.input-row { display: flex; gap: 12px; }
+.input-row input {
+  flex: 1;
+  padding: 15px;
+  border-radius: 12px;
+  border: 3px solid #000;
+  font-family: 'Outfit';
+  font-weight: 600;
+}
+
+.primary-btn {
+  background: #000;
+  color: #fff;
+  padding: 0 30px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  box-shadow: 4px 4px 0px #F48FB1;
+  transition: transform 0.1s;
+}
+
+.primary-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #F48FB1; }
+
+/* SEARCH */
+.search-bar {
+  width: 100%;
+  padding: 15px 25px;
+  border-radius: 50px;
+  border: 3px solid #000;
+  margin-bottom: 30px;
+  font-family: 'Outfit';
+  font-weight: 600;
+}
+
+/* GOAL CARDS - COLORS FROM FIGMA */
+.goals-grid { display: flex; flex-direction: column; gap: 25px; }
+
+.goal-card {
+  position: relative;
+  border-radius: 45px;
+  padding: 30px;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0px #000;
+}
+
+.goal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goal-card h2 {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.percentage-text {
+  font-family: 'Outfit';
+  font-weight: 700;
+  font-size: 32px;
+  color: #000;
+}
+
+.amount-display {
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* Cycle 1: Pink Background, Pink Darker Track, Yellow Progress */
+.goal-card:nth-child(3n+1) { background-color: #F48FB1; color: white; }
+.goal-card:nth-child(3n+1) .progress-container { background: #DD6890; }
+.goal-card:nth-child(3n+1) .progress-bar { background-color: #FFCC4D; }
+.goal-card:nth-child(3n+1) .percentage-text { color: #000; }
+
+/* Cycle 2: Yellow Background, White Track, Pinkish Progress */
+.goal-card:nth-child(3n+2) { background-color: #FED05E; color: white; }
+.goal-card:nth-child(3n+2) .progress-container { background: #FEFEFE; }
+.goal-card:nth-child(3n+2) .progress-bar { background-color: #DF769A; }
+.goal-card:nth-child(3n+2) .percentage-text { color: #000; }
+
+/* Cycle 3: White Background, Pink Track, Yellow Progress */
+.goal-card:nth-child(3n+3) { background-color: #FDFDFD; color: #F4A2BE; }
+.goal-card:nth-child(3n+3) .progress-container { background: #DF769A; }
+.goal-card:nth-child(3n+3) .progress-bar { background-color: #FED05E; }
+.goal-card:nth-child(3n+3) .percentage-text { color: #000; }
+
+/* PROGRESS BAR */
+.progress-container {
+  width: 100%;
+  height: 25px;
+  border-radius: 64.5px;
+  border: 3px solid #000;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 64.5px;
+  transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* CONTROLS */
+.update-controls { display: flex; gap: 10px; }
+.update-controls input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 3px solid #000;
+  font-weight: 600;
+  color: #000;
+}
+
+.add-savings-btn {
+  background: #000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.delete-x {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #000;
+}
+
+/* SAVING TIP */
+.saving-tip {
+  background: #000;
+  color: #FED05E;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+/* WIN STATE */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.goal-completed {
+  animation: pulse 2s infinite ease-in-out;
+  border: 5px solid #000 !important;
+}
+/* ... keep your header and input card styles from before ... */
+
+.progress-container {
+  width: 100%;
+  height: 25px; /* Matches your Rectangle 2/3 height */
+  border-radius: 64.5px;
+  border: 3px solid #000;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative; /* Container for the bar */
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 64.5px;
+  /* Crucial for the "moving" feel */
+  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  min-width: 5px; /* Ensures you see it even at very low percentages */
+}
+
+/* Color Palette from your Figma Specs */
+.goal-card:nth-child(3n+1) { background-color: #F48FB1; color: white; }
+.goal-card:nth-child(3n+1) .progress-container { background: #DD6890; }
+.goal-card:nth-child(3n+1) .progress-bar { background-color: #FFCC4D; }
+
+.goal-card:nth-child(3n+2) { background-color: #FED05E; color: white; }
+.goal-card:nth-child(3n+2) .progress-container { background: #FEFEFE; }
+.goal-card:nth-child(3n+2) .progress-bar { background-color: #DF769A; }
+
+.goal-card:nth-child(3n+3) { background-color: #FDFDFD; color: #F4A2BE; }
+.goal-card:nth-child(3n+3) .progress-container { background: #DF769A; }
+.goal-card:nth-child(3n+3) .progress-bar { background-color: #FED05E; }
+
+/* ... keep the rest of your button/tip styles ... */
