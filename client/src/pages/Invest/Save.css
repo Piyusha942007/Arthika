@@ -159,11 +159,11 @@
   color: white;
 }
 
-.goal-card:nth-child(3n+1) .progress-container {
+.goal-card:nth-child(3n+1) .save-progress-container {
   background: #DD6890;
 }
 
-.goal-card:nth-child(3n+1) .progress-bar {
+.goal-card:nth-child(3n+1) .save-progress-bar {
   background-color: #FFCC4D;
 }
 
@@ -177,11 +177,11 @@
   color: white;
 }
 
-.goal-card:nth-child(3n+2) .progress-container {
+.goal-card:nth-child(3n+2) .save-progress-container {
   background: #FEFEFE;
 }
 
-.goal-card:nth-child(3n+2) .progress-bar {
+.goal-card:nth-child(3n+2) .save-progress-bar {
   background-color: #DF769A;
 }
 
@@ -195,11 +195,11 @@
   color: #F4A2BE;
 }
 
-.goal-card:nth-child(3n+3) .progress-container {
+.goal-card:nth-child(3n+3) .save-progress-container {
   background: #DF769A;
 }
 
-.goal-card:nth-child(3n+3) .progress-bar {
+.goal-card:nth-child(3n+3) .save-progress-bar {
   background-color: #FED05E;
 }
 
@@ -208,7 +208,7 @@
 }
 
 /* PROGRESS BAR */
-.progress-container {
+.save-progress-container {
   width: 100%;
   height: 25px;
   border-radius: 64.5px;
@@ -219,7 +219,7 @@
   /* default fallback */
 }
 
-.progress-bar {
+.save-progress-bar {
   height: 100%;
   border-radius: 64.5px;
   transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);

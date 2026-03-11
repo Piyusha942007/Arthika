@@ -229,10 +229,10 @@ export default function Save() {
 
                 {/* PROGRESS BAR */}
 
-                <div className="progress-container">
+                <div className="save-progress-container">
 
                   <div
-                    className="progress-bar notranslate"
+                    className="save-progress-bar notranslate"
                     style={{ width: `${percentage}%` }}
                   />
 
