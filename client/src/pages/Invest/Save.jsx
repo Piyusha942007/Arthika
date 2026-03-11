@@ -232,7 +232,7 @@ export default function Save() {
                 <div className="progress-container">
 
                   <div
-                    className="progress-bar"
+                    className="progress-bar notranslate"
                     style={{ width: `${percentage}%` }}
                   />
 
