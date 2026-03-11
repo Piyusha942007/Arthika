@@ -22,7 +22,7 @@ import Chatbot from "./components/Chatbot/Chatbot";
 function Layout({ children }) {
   const location = useLocation();
   // We hide the global Navbar on these specific pages
-  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback", "/profile"];
+  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (

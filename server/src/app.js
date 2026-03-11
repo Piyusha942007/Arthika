@@ -8,6 +8,7 @@ import lessonRoutes from "./routes/lessonRoutes.js";
 import shgRoutes from "./routes/shgRoutes.js";
 import businessRoutes from "./routes/businessRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/lessons", lessonRoutes);
 app.use("/api/shgs", shgRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.get("/", (req, res) => {
   res.send("Arthika API running 🚀");

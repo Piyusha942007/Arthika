@@ -46,7 +46,7 @@ export default function Home() {
                     <div className="hero-buttons">
                         {/* Updated Hero Button */}
                         <button className="primary" onClick={() => nav("/learn")}>Learn</button>
-                        <button className="secondary">Invest</button>
+                        <button className="secondary" onClick={() => nav("/invest")}>Invest</button>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@ export default function Home() {
                             <p>Explore bank-specific perks and government-backed programs.</p>
                         </div>
                     </div>
-                    <button className="outline-pink">Go to invest page</button>
+                    <button className="outline-pink" onClick={() => nav("/invest")}>Go to invest page</button>
                 </div>
 
                 {/* Community */}
@@ -99,7 +99,7 @@ export default function Home() {
                         <button className="yellow">Get Expert Help</button>
                         <button className="yellow">Grow with SHGs</button>
                     </div>
-                    <button className="outline-black">Join a community</button>
+                    <button className="outline-black" onClick={() => nav("/community")}>Join a community</button>
                 </div>
             </section>
 

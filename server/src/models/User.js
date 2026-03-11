@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: false }, // Optional since Profile branch uses Clerk auth
+  password: { type: String, required: false },
   phone: String,
   role: String,
   level: { type: Number, default: 1 },
@@ -11,4 +11,4 @@ const userSchema = new mongoose.Schema({
   streaks: [Number] // Array of days
 }, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);
