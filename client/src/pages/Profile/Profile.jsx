@@ -67,6 +67,10 @@ const Profile = () => {
     };
 
     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
+    
+    const currentLevel = userData?.level || 1; 
+    const totalLevels = 10;
+    const progressPercentage = (currentLevel / totalLevels) * 100;
 
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
     const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -116,22 +120,33 @@ const Profile = () => {
                 </div>
             </header> */}
 
-            <div className="hero-banner">
-                <div className="hero-left">
-                    
-                    {/* ✅ Greeting updated here */}
-                    <h1 className="hero-greet">{greeting}, {user.firstName || "Friend"}!</h1>
+<div className="hero-banner">
+    <div className="hero-left">
+        {/* Dynamic Greeting */}
+        <h1 className="hero-greet">{greeting}, {user.firstName || "Friend"}!</h1>
 
-                    <div className="hero-progress-row">
-                        <div className="hero-progress-track">
-                            <div className="hero-progress-fill" style={{ width: '50%' }}></div>
-                        </div>
-                        <span className="hero-level-text">level 1</span>
-                    </div>
-                </div>
-                <div className="hero-right"><div className="hero-big-num">1</div></div>
+        <div className="hero-progress-row">
+            <div className="hero-progress-track">
+                <div 
+                    className="hero-progress-fill" 
+                    style={{ 
+                        width: `${progressPercentage}%`,
+                        transition: "width 0.5s ease-in-out" 
+                    }}
+                ></div>
             </div>
-
+            {/* ✅ Updated to show currentLevel/totalLevels (e.g., 1/10) */}
+            <span className="hero-level-text">level {currentLevel}/{totalLevels}</span>
+        </div>
+    </div>
+    
+    <div className="hero-right">
+        {/* ✅ Updated big number to show currentLevel/totalLevels */}
+        <div className="hero-big-num" style={{ fontSize: '40px' }}>
+            {currentLevel}/{totalLevels}
+        </div>
+    </div>
+</div>
             <main className="profile-layout">
                 <section className="profile-main-card">
                     <h2 className="card-heading">my profile</h2>
