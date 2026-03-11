@@ -216,14 +216,14 @@ export default function Save() {
                 >
                   ✕
                 </button>
-                
+
                 <div className="goal-card-header">
                   <h2>{goal.title}</h2>
-                  <p className="percentage-text">{percentage}% saved</p>
+                  <p className="percentage-text"><span className="notranslate">{percentage}</span>% saved</p>
                 </div>
 
                 <p className="amount-display">
-                  ₹{saved.toLocaleString("en-IN")} / ₹{target.toLocaleString("en-IN")}
+                  <span className="notranslate">₹{saved.toLocaleString("en-IN")}</span> / <span className="notranslate">₹{target.toLocaleString("en-IN")}</span>
                 </p>
 
 
@@ -244,7 +244,7 @@ export default function Save() {
                 {!isCompleted && (
 
                   <p className="saving-tip">
-                    💡 Save ₹{monthlyTip.toLocaleString("en-IN")} monthly to reach your goal in 6 months
+                    💡 Save <span className="notranslate">₹{monthlyTip.toLocaleString("en-IN")}</span> monthly to reach your goal in 6 months
                   </p>
 
                 )}
