@@ -14,15 +14,15 @@ import InvestLearn from "./pages/Invest/InvestLearn";
 import Learn from "./pages/Learn/Learn";
 import Lesson from "./pages/Learn/Lesson";
 import Community from "./pages/Community/Community";
+import Profile from "./pages/Profile/Profile"; 
+
 import Navbar from "./components/common/Navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 
-// Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
   const location = useLocation();
-
-  // Define paths where the Navbar SHOULD NOT appear
-  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
+  // We hide the global Navbar on these specific pages
+  const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback", "/profile"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
@@ -36,14 +36,16 @@ function Layout({ children }) {
 
 /* Protect private pages */
 function ProtectedRoute({ children }) {
-  return (
-    <>
-      <SignedIn>{children}</SignedIn>
-      <SignedOut>
-        <Navigate to="/login" replace />
-      </SignedOut>
-    </>
-  );
+  const { isLoaded, isSignedIn } = useAuth();
+  
+  // Wait for Clerk to load before deciding to redirect
+  if (!isLoaded) return null; 
+
+  if (!isSignedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 /* Prevent logged-in users from auth pages */
@@ -109,7 +111,16 @@ export default function App() {
             </ProtectedRoute>
           } />
 
-          {/* fallback */}
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* FALLBACK */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>

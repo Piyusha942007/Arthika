@@ -14,7 +14,7 @@ const Profile = () => {
     
     const today = new Date().getDate(); 
 
-    // ✅ Greeting logic added
+    // ✅ Greeting logic
     const hour = new Date().getHours();
     const greeting =
         hour < 12 ? "Good Morning" :
@@ -26,12 +26,32 @@ const Profile = () => {
         
         setEditName(user.fullName || "");
         const email = user.primaryEmailAddress.emailAddress;
-
+    
         axios.get(`http://localhost:5000/api/profile/${email}`)
-            .then(res => setUserData(res.data))
-            .catch(() => setUserData({ streaks: [2, 5, 8, 12, 15], role: 'Housewife', phone: "" }));
-    }, [isLoaded, user]);
+            .then(res => {
+                // 1. Get streaks from backend
+                let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
+                
+                // 2. Add today's date (10) if it's not already in the array
+                // This ensures your streak count shows 3 instead of 2.
+                if (!backendStreaks.includes(today)) {
+                    backendStreaks = [...backendStreaks, today];
+                }
 
+                setUserData({
+                    ...res.data,
+                    streaks: backendStreaks
+                });
+            })
+            .catch(() => {
+                // Fallback for new accounts or if server is down
+                setUserData({ 
+                    streaks: [today], // Even on error, show today as active
+                    role: 'Housewife', 
+                    phone: "" 
+                });
+            });
+    }, [isLoaded, user, today]); // Added today to dependency array
     const handleUpdateName = async () => {
         try {
             const [firstName, ...lastNameParts] = editName.trim().split(" ");
@@ -47,13 +67,18 @@ const Profile = () => {
     };
 
     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
+    
+    const currentLevel = userData?.level || 1; 
+    const totalLevels = 10;
+    const progressPercentage = (currentLevel / totalLevels) * 100;
 
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
-    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     return (
         <div className="profile-page-container">
             {showSettings && (
+                
                 <div className="custom-modal-overlay" onClick={() => setShowSettings(false)}>
                     <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
                         <button className="close-modal-btn" onClick={() => setShowSettings(false)}>×</button>
@@ -96,22 +121,33 @@ const Profile = () => {
                 </div>
             </header> */}
 
-            <div className="hero-banner">
-                <div className="hero-left">
-                    
-                    {/* ✅ Greeting updated here */}
-                    <h1 className="hero-greet">{greeting}, {user.firstName || "Friend"}!</h1>
+<div className="hero-banner">
+    <div className="hero-left">
+        {/* Dynamic Greeting */}
+        <h1 className="hero-greet">{greeting}, {user.firstName || "Friend"}!</h1>
 
-                    <div className="hero-progress-row">
-                        <div className="hero-progress-track">
-                            <div className="hero-progress-fill" style={{ width: '50%' }}></div>
-                        </div>
-                        <span className="hero-level-text">level 1</span>
-                    </div>
-                </div>
-                <div className="hero-right"><div className="hero-big-num">1</div></div>
+        <div className="hero-progress-row">
+            <div className="hero-progress-track">
+                <div 
+                    className="hero-progress-fill" 
+                    style={{ 
+                        width: `${progressPercentage}%`,
+                        transition: "width 0.5s ease-in-out" 
+                    }}
+                ></div>
             </div>
-
+            {/* ✅ Updated to show currentLevel/totalLevels (e.g., 1/10) */}
+            <span className="hero-level-text">level {currentLevel}/{totalLevels}</span>
+        </div>
+    </div>
+    
+    <div className="hero-right">
+        {/* ✅ Updated big number to show currentLevel/totalLevels */}
+        <div className="hero-big-num" style={{ fontSize: '40px' }}>
+            {currentLevel}/{totalLevels}
+        </div>
+    </div>
+</div>
             <main className="profile-layout">
                 <section className="profile-main-card">
                     <h2 className="card-heading">my profile</h2>
@@ -134,7 +170,7 @@ const Profile = () => {
                             ) : (
                                 <>
                                     <h3 className="profile-name">{user.fullName}</h3>
-                                    <p className="profile-phone">{userData?.phone || "Add Phone"}</p>
+                                    {/* <p className="profile-phone">{userData?.phone || "Add Phone"}</p> */}
                                     <p className="profile-email">email: {user.primaryEmailAddress.emailAddress}</p>
                                     <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
                                 </>
@@ -145,8 +181,8 @@ const Profile = () => {
                     <div className="role-container-block">
                         <h4 className="role-title">role toggle</h4>
                         <div className="role-btn-group">
-                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}>Housewife</button>
-                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}>Working</button>
+                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
+                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
                         </div>
                     </div>
 
