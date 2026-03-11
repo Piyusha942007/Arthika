@@ -78,6 +78,7 @@ const Profile = () => {
     return (
         <div className="profile-page-container">
             {showSettings && (
+                
                 <div className="custom-modal-overlay" onClick={() => setShowSettings(false)}>
                     <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
                         <button className="close-modal-btn" onClick={() => setShowSettings(false)}>×</button>
@@ -180,8 +181,8 @@ const Profile = () => {
                     <div className="role-container-block">
                         <h4 className="role-title">role toggle</h4>
                         <div className="role-btn-group">
-                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}>Housewife</button>
-                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}>Working</button>
+                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
+                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
                         </div>
                     </div>
 

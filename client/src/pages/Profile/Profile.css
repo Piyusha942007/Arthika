@@ -395,9 +395,15 @@
 
 /* --- CLERK ROOT & LAYOUT --- */
 .cl-userProfile-root,
-.cl-scrollBox,
-.cl-pageScrollBox,
+.cl-rootBox,
 .cl-card {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #ffffff !important;
+}
+
+.cl-scrollBox,
+.cl-pageScrollBox {
     background-color: #ffffff !important;
 }
 
