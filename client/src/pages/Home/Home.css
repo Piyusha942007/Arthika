@@ -43,6 +43,27 @@ body {
   font-weight: 700;
   margin-left: 2rem;
   cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar nav span:hover {
+  color: var(--primary-pink);
+}
+
+.navbar nav span::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--primary-pink);
+  transition: width 0.3s ease;
+}
+
+.navbar nav span:hover::after {
+  width: 100%;
 }
 
 /* HERO SECTION */
@@ -91,11 +112,25 @@ body {
 .hero-buttons .primary {
   background: var(--primary-yellow);
   box-shadow: 0px 4px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-buttons .primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(255, 204, 77, 0.4);
 }
 
 .hero-buttons .secondary {
   background: transparent;
   border: 3.5px solid var(--primary-yellow);
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-buttons .secondary:hover {
+  background: var(--primary-yellow);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(255, 204, 77, 0.4);
 }
 
 .hero-image img {
@@ -177,6 +212,14 @@ body {
   /* Layout for the bullet point */
   display: flex;
   align-items: center; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.feature-content li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(250, 200, 103, 0.3);
+  background: #FAC867;
 }
 
 /* --- NEW: BULLET POINT STYLE --- */
@@ -185,10 +228,6 @@ body {
   margin-right: 15px;
   font-size: 2rem;
   color: #000;
-}
-
-.feature-content li.highlight {
-  background: #FAC867;
 }
 
 /* INVEST CARDS */
@@ -204,28 +243,39 @@ body {
 .card.yellow {
   flex: 1 1 320px;
   max-width: 480px;
+  min-height: 380px; /* Ensure uniform height for centering */
   background: var(--primary-yellow);
   border-radius: 40px;
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Center everything vertically */
+  text-align: center; /* Center text inside the card */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card.yellow:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(255, 204, 77, 0.4);
 }
 
 .card img {
-  width: 85px;
-  margin-bottom: 1.2rem;
+  width: 100px; /* Make the icons slightly bigger for better visual balance */
+  margin-bottom: 2.5rem; /* Larger gap below the icon */
 }
 
 .card h4 {
-  font-size: 1.8rem;
-  margin-bottom: 0.8rem;
+  font-size: 2rem; /* Make the heading slightly bigger */
+  margin-bottom: 1.5rem; /* Larger gap below the heading */
 }
 
 .card p {
-  font-size: 1.1rem;
+  font-size: 1.2rem; /* Slightly larger paragraph font */
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.5;
+  color: #111; /* Slightly darker to improve contrast */
 }
 
 /* BUTTONS */
@@ -237,11 +287,17 @@ body {
   padding: 1rem 3rem;
   cursor: pointer;
   border: 4px solid;
+  transition: all 0.3s ease;
 }
 
 .outline-yellow { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+.outline-yellow:hover { background: var(--accent-yellow); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(251, 192, 45, 0.3); }
+
 .outline-pink { border-color: var(--primary-pink); color: var(--primary-pink); }
+.outline-pink:hover { background: var(--primary-pink); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(244, 143, 177, 0.3); }
+
 .outline-black { border-color: #000; color: #000; }
+.outline-black:hover { background: #000; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
 
 /* COMMUNITY STYLES */
 .community-img {
@@ -267,6 +323,12 @@ body {
   font-weight: 500;
   border: none;
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.community-actions button.yellow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(255, 204, 77, 0.4);
 }
 
 /* FOOTER MAIN CONTAINER */

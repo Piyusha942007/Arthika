@@ -139,7 +139,7 @@ export default function Learn() {
       )}
 
       <section className="progress-section">
-        <h2>YOUR PROGRESS</h2>
+        <h2>Your Progress</h2>
         <div className="progress-bar">
           <motion.div
             className="progress-fill"
@@ -155,7 +155,7 @@ export default function Learn() {
 
       <section className="learn-content">
         <div className="info-text-top">
-          <h3>Earn Stars by completing a quiz everyday!</h3>
+          <h3>Earn Stars By Completing A Quiz Everyday!</h3>
         </div>
 
         <div className="path-container">

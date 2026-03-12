@@ -63,7 +63,14 @@ const Profile = () => {
     const handleToggle = (newRole) => {
         axios.put('http://localhost:5000/api/profile/update-role', { 
             email: user.primaryEmailAddress.emailAddress, role: newRole 
-        }).then(res => setUserData(res.data));
+        }).then(res => {
+            // Merge the updated role with the existing userData state 
+            // to ensure streaks and other frontend-calculated data aren't lost
+            setUserData(prevData => ({
+                ...prevData,
+                role: res.data.role || newRole
+            }));
+        }).catch(err => console.error("Failed to update role:", err));
     };
 
     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
@@ -74,6 +81,19 @@ const Profile = () => {
 
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
     const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    const allBadges = [
+        { level: 1, name: "The Identity Pioneer", icon: "🪪", color: "pink-ring", desc: "A digital fingerprint or a shining ID card icon." },
+        { level: 2, name: "Digital Explorer", icon: "🚀", color: "orange-ring", desc: "A smartphone with a soaring rocket or a lightning bolt." },
+        { level: 3, name: "Sisterhood Guardian", icon: "🪷", color: "pink-ring", desc: "Hands joined in a circle or a blooming lotus." },
+        { level: 4, name: "Credit Catalyst", icon: "🔑", color: "orange-ring", desc: "A golden key or an open gate representing bank access." },
+        { level: 5, name: "Budgeting Architect", icon: "🐷", color: "pink-ring", desc: "A well-organized piggy bank or a balanced scale." },
+        { level: 6, name: "Safety Shield", icon: "🛡️", color: "orange-ring", desc: "An umbrella over a house or a sturdy stone wall." },
+        { level: 7, name: "Wealth Weaver", icon: "🌱", color: "pink-ring", desc: "A small sprout turning into a golden tree." },
+        { level: 8, name: "Village Visionary", icon: "🏪", color: "orange-ring", desc: "A storefront with an 'Open' sign or a spinning gear." },
+        { level: 9, name: "Growth Strategist", icon: "🌉", color: "pink-ring", desc: "A bridge connecting a small town to a city skyline." },
+        { level: 10, name: "Financial Maharani", icon: "👑", color: "orange-ring", desc: "A crown made of light or a torch being passed to another hand." }
+    ];
 
     return (
         <div className="profile-page-container">
@@ -124,7 +144,7 @@ const Profile = () => {
 <div className="hero-banner">
     <div className="hero-left">
         {/* Dynamic Greeting */}
-        <h1 className="hero-greet">{greeting}, {user.firstName || "Friend"}!</h1>
+        <h1 className="hero-greet">{greeting}, <span className="exact-case">{user.firstName || "Friend"}</span>!</h1>
 
         <div className="hero-progress-row">
             <div className="hero-progress-track">
@@ -137,7 +157,7 @@ const Profile = () => {
                 ></div>
             </div>
             {/* ✅ Updated to show currentLevel/totalLevels (e.g., 1/10) */}
-            <span className="hero-level-text">level {currentLevel}/{totalLevels}</span>
+            <span className="hero-level-text">Level {currentLevel}/{totalLevels}</span>
         </div>
     </div>
     
@@ -150,7 +170,7 @@ const Profile = () => {
 </div>
             <main className="profile-layout">
                 <section className="profile-main-card">
-                    <h2 className="card-heading">my profile</h2>
+                    <h2 className="card-heading">My Profile</h2>
                     
                     <div className="profile-info-section">
                         <div className="profile-avatar-wrapper">
@@ -169,9 +189,9 @@ const Profile = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <h3 className="profile-name">{user.fullName}</h3>
+                                    <h3 className="profile-name exact-case">{user.fullName}</h3>
                                     {/* <p className="profile-phone">{userData?.phone || "Add Phone"}</p> */}
-                                    <p className="profile-email">email: {user.primaryEmailAddress.emailAddress}</p>
+                                    <p className="profile-email">Email: {user.primaryEmailAddress.emailAddress}</p>
                                     <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
                                 </>
                             )}
@@ -179,7 +199,7 @@ const Profile = () => {
                     </div>
 
                     <div className="role-container-block">
-                        <h4 className="role-title">role toggle</h4>
+                        <h4 className="role-title">Role Toggle</h4>
                         <div className="role-btn-group">
                             <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
                             <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
@@ -204,25 +224,19 @@ const Profile = () => {
 
                 <aside className="profile-sidebar">
                     <div className="side-white-card">
-                        <h2 className="side-title">my badges</h2>
+                        <h2 className="side-title">My Badges</h2>
                         <div className="badge-list">
-                            <div className="badge-row">
-                                <div className="badge-circle pink-ring">💰</div>
-                                <div className="badge-text-box"><p>Savings star</p></div>
-                            </div>
-                            <div className="badge-row">
-                                <div className="badge-circle orange-ring">📖</div>
-                                <div className="badge-text-box"><p>Edu Champ</p></div>
-                            </div>
-                            <div className="badge-row">
-                                <div className="badge-circle pink-ring">💳</div>
-                                <div className="badge-text-box"><p>Digital Dost</p></div>
-                            </div>
+                            {allBadges.filter(b => b.level <= currentLevel).map((badge) => (
+                                <div className="badge-row" key={badge.level}>
+                                    <div className={`badge-circle ${badge.color}`}>{badge.icon}</div>
+                                    <div className="badge-text-box"><p>{badge.name}</p></div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
                     <div className="side-white-card">
-                        <h2 className="side-title">support circle</h2>
+                        <h2 className="side-title">Support Circle</h2>
                         <div className="support-list">
                             <div className="support-item">
                                 <span className="user-icon">👤</span>

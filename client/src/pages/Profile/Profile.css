@@ -180,6 +180,10 @@
 .profile-phone { font-size: 26px; font-weight: 600; color: #333; margin: 0; }
 .profile-email { font-size: 20px; color: #666; margin: 0; }
 
+.exact-case {
+    text-transform: none !important;
+}
+
 .arthika-edit-link {
     background: none; 
     border: none; 
@@ -313,6 +317,13 @@
     font-weight: 800; 
     font-size: 18px; 
     color: #333; 
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.cal-date-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 204, 77, 0.4);
 }
 
 .streak-pink { 
@@ -345,11 +356,30 @@
 
 .side-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; }
 
-.badge-row, .support-item { 
+.support-item { 
     display: flex; 
     align-items: center; 
     gap: 20px; 
     margin-bottom: 25px; 
+}
+
+.badge-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    cursor: default;
+    background: transparent;
+    padding: 8px 12px;
+    margin-left: -12px;
+    border-radius: 12px;
+}
+
+.badge-row:hover {
+    transform: translateY(-3px);
+    background-color: #FFF9F0;
 }
 
 .badge-circle { 

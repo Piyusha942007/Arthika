@@ -45,7 +45,7 @@ export default function Home() {
 
                     <div className="hero-buttons">
                         {/* Updated Hero Button */}
-                        <button className="primary" onClick={() => nav("/learn")}>Learn</button>
+                        <button className="secondary" onClick={() => nav("/learn")}>Learn</button>
                         <button className="secondary" onClick={() => nav("/invest")}>Invest</button>
                     </div>
                 </div>
@@ -65,7 +65,7 @@ export default function Home() {
                         <img src={learnImg} alt="Learning" />
                         <ul>
                             <li>Interactive quizzes to test your knowledge</li>
-                            <li className="highlight">Watch lessons in your language</li>
+                            <li>Watch lessons in your language</li>
                             <li>Track daily progress</li>
                         </ul>
                     </div>
