@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
 const chatRoutes = require("./src/routes/chatRoutes");
+const investChatRoutes = require("./src/routes/investChatRoutes");
 const shgRoutes = require("./src/routes/shgRoutes");
 const businessRoutes = require("./src/routes/businessRoutes");
 const User = require('./src/models/User');
@@ -20,6 +21,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use("/api/chat", chatRoutes);
+app.use("/api/investAI", investChatRoutes);
 app.use("/api/shgs", shgRoutes);
 app.use("/api/business", businessRoutes);
 
@@ -38,7 +40,10 @@ app.get('/api/profile/:email', async (req, res) => {
                 role: "Housewife",
                 level: 1,
                 progress: 10,
-                streaks: []
+                streaks: [],
+                persona: "Housewife",
+                workType: "Entrepreneur",
+                workNature: ""
             });
             await user.save();
         }
@@ -46,6 +51,31 @@ app.get('/api/profile/:email', async (req, res) => {
         res.json(user);
     } catch (err) {
         console.error("Server Error:", err);
+        res.status(500).json(err);
+    }
+});
+
+// New Persona & Finance API
+app.get('/api/user/profile/:email', async (req, res) => {
+    try {
+        let user = await User.findOne({ email: req.params.email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+app.put('/api/user/profile', async (req, res) => {
+    const { email, persona, workType, workNature, banks, loans } = req.body;
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { email },
+            { $set: { persona, workType, workNature, banks, loans } },
+            { new: true, runValidators: true }
+        );
+        res.json(updatedUser);
+    } catch (err) {
         res.status(500).json(err);
     }
 });

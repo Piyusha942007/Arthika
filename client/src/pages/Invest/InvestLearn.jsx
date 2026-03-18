@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
+import axios from 'axios';
 import "./InvestLearn.css";
 
 // Importing your assets
@@ -9,67 +11,164 @@ import hdfc from "../../assets/images/hdfc.png";
 import sbi from "../../assets/images/sbi.png";
 import bank from "../../assets/images/bank.png";
 
+const ALL_SCHEMES = [
+  {
+    title: "NaMo Drone Didi",
+    category: "Small Livelihood", 
+    interest: "100% Subsidy",
+    description: "Empowering women SHGs with drones for agricultural uses.",
+    link: "https://www.india.gov.in/",
+    icon: beti
+  },
+  {
+    title: "Lakhpati Didi",
+    category: "Savings", 
+    interest: "Financial Independence",
+    description: "Aimed at helping rural women earn at least Rs 1 lakh annually.",
+    link: "https://www.india.gov.in/",
+    icon: rastriya
+  },
+  {
+    title: "Mudra Shishu",
+    category: "Small Livelihood", 
+    interest: "Up to ₹50,000",
+    description: "Micro-credit for starting very small businesses without collateral.",
+    link: "https://www.mudra.org.in/",
+    icon: pradhan
+  },
+  {
+    title: "Maji Ladki Bahin",
+    category: "Safety", 
+    interest: "Monthly Stipend",
+    description: "Financial assistance provided to eligible women in Maharashtra.",
+    link: "https://ladkibahin.maharashtra.gov.in/",
+    icon: beti
+  },
+  {
+    title: "Stand-Up India",
+    category: "Enterprise", 
+    interest: "₹10L - ₹1Cr Loans",
+    description: "Facilitating bank loans for greenfield enterprises.",
+    link: "https://www.standupmitra.in/",
+    icon: hdfc
+  },
+  {
+    title: "Mudra Tarun Plus",
+    category: "Expansion", 
+    interest: "₹5L - ₹10L Loans",
+    description: "Credit targeted specifically at expanding an existing business.",
+    link: "https://www.mudra.org.in/",
+    icon: sbi
+  },
+  {
+    title: "Stree Shakti",
+    category: "Enterprise", 
+    interest: "Lower Interest Rate",
+    description: "Supports women entrepreneurs who have majority ownership.",
+    link: "https://sbi.co.in/",
+    icon: sbi
+  },
+  {
+    title: "Mahila Samman Saving",
+    category: "Tax Saving", 
+    interest: "7.5% p.a.",
+    description: "A one-time small savings scheme for adult women/girls.",
+    link: "https://www.indiapost.gov.in/",
+    icon: bank
+  },
+  {
+    title: "Sukanya Samriddhi",
+    category: "Savings", 
+    interest: "8.2% p.a.",
+    description: "Deposit scheme for the girl child reflecting high interest and tax benefits.",
+    link: "https://www.indiapost.gov.in/",
+    icon: beti
+  }
+];
+
 export default function InvestLearn() {
+  const { user } = useUser();
+  const [persona, setPersona] = useState("Housewife");
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+
+  useEffect(() => {
+    if (!userEmail) return;
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/profile/${userEmail}`);
+        if (res.data) {
+          if (res.data.role) {
+             setPersona(res.data.role);
+          } else if (res.data.persona) {
+             setPersona(res.data.persona);
+          }
+        }
+      } catch (err) {
+        console.error("No profile found", err);
+      }
+    };
+    fetchProfile();
+  }, [userEmail]);
+
+  // Priority algorithm
+  const getSortedSchemes = () => {
+    const housewifeTags = ["Savings", "Safety", "Small Livelihood"];
+    const workingTags = ["Enterprise", "Expansion", "Tax Saving"];
+    
+    // Create copy to sort
+    let sorted = [...ALL_SCHEMES];
+    
+    sorted.sort((a, b) => {
+       const isAHousewife = housewifeTags.includes(a.category);
+       const isBHousewife = housewifeTags.includes(b.category);
+       
+       const isAWorking = workingTags.includes(a.category);
+       const isBWorking = workingTags.includes(b.category);
+       
+       if (persona === 'Housewife') {
+           if (isAHousewife && !isBHousewife) return -1;
+           if (!isAHousewife && isBHousewife) return 1;
+       } else { // Working
+           if (isAWorking && !isBWorking) return -1;
+           if (!isAWorking && isBWorking) return 1;
+       }
+       return 0;
+    });
+
+    return sorted;
+  };
+
+  const displayedSchemes = getSortedSchemes();
+
   return (
     <div className="learn-page-container">
-      {/* MAIN CONTENT */}
       <main className="learn-content-wrapper">
-        <h1 className="main-headline">
-          Discover Government Schemes & Bank Benefits
-        </h1>
-
-        {/* TOP ROW: GOVT SCHEMES */}
-        <div className="schemes-row">
-          <a href="https://www.pmindia.gov.in/hi/government_tr_rec/%E0%A4%AC%E0%A5%87%E0%A4%9F%E0%A5%80-%E0%A4%AC%E0%A4%9A%E0%A4%BE%E0%A4%93-%E0%A4%AC%E0%A5%87%E0%A4%9F%E0%A5%80-%E0%A4%AA%E0%A4%A2%E0%A4%BC%E0%A4%BE%E0%A4%93-%E0%A4%AC%E0%A4%BE%E0%A4%B2/" target="_blank" rel="noreferrer" className="scheme-box">
-            <img src={beti} alt="Beti Bachao" className="scheme-img" />
-          </a>
-
-          <a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=1742800&reg=3&lang=2" target="_blank" rel="noreferrer" className="scheme-box">
-            <img src={rastriya} alt="Rastriya Mahila" className="scheme-img" />
-          </a>
-
-          <a href="https://wcd.delhi.gov.in/wcd/pradhan-mantri-matru-vandana-yojana-pmmvy" target="_blank" rel="noreferrer" className="scheme-box">
-            <img src={pradhan} alt="Pradhan Mantri" className="scheme-img" />
-          </a>
+        <div style={{textAlign: 'center', marginBottom: '40px'}}>
+           <h1 className="main-headline" style={{marginBottom: '10px'}}>
+             Discover Government Schemes
+           </h1>
+           <p style={{fontSize: '1.2rem', color: '#555', fontWeight: '500'}}>
+             Curated specifically for your profile: <strong style={{color: '#D81B60', padding: '4px 10px', background: '#FFF0F5', borderRadius: '15px'}}>{persona}</strong>
+           </p>
         </div>
 
-        {/* BANK SECTIONS */}
-        <div className="bank-sections-list">
-          
-          {/* HDFC SECTION */}
-          <a href="https://www.hdfc.bank.in/savings-account/women-savings-account" target="_blank" rel="noreferrer" className="bank-card-long">
-            <ul className="benefit-bullets">
-              <li>Cash allowance for every day of hospitalization due to an accident.</li>
-              <li>Lower interest rates on two-wheeler and auto loans.</li>
-            </ul>
-            <div className="bank-logo-container">
-              <img src={hdfc} alt="HDFC Bank" className="bank-brand-img" />
-            </div>
-          </a>
-
-          {/* SBI SECTION (REVERSED LAYOUT) */}
-          <a href="https://sbi.bank.in/web/business/sme/sme-loans/sme-loan-to-women-entrepreneur-sbi-asmita" target="_blank" rel="noreferrer" className="bank-card-long reversed">
-            <div className="bank-logo-container">
-              <img src={sbi} alt="SBI" className="bank-brand-img" />
-            </div>
-            <ul className="benefit-bullets">
-              <li>Lowered interest rates (0.5% concession) for businesses where women own more than 50%.</li>
-              <li>No security/collateral required for loans up to ₹5 Lakh</li>
-            </ul>
-          </a>
-
-          {/* BANK OF BARODA SECTION */}
-          <a href="https://bankofbaroda.bank.in/accounts/saving-accounts/bob-mahila-shakti-saving-account" target="_blank" rel="noreferrer" className="bank-card-long">
-            <ul className="benefit-bullets">
-              <li>Collateral-free loans up to ₹5 Lakh for women entrepreneurs.</li>
-              <li>No processing fees for loans up to ₹6 Lakh for Self-Help Groups (SHGs)</li>
-            </ul>
-            <div className="bank-logo-container">
-              <img src={bank} alt="Bank of Baroda" className="bank-brand-img" />
-            </div>
-          </a>
-
+        <div className="schemes-grid">
+          {displayedSchemes.map((scheme, idx) => (
+             <div className="scheme-card-new" key={idx}>
+                <div className="scheme-card-header">
+                   <img src={scheme.icon} alt={scheme.title} className="scheme-card-icon" />
+                   <span className="scheme-badge">{scheme.interest}</span>
+                </div>
+                <h3 className="scheme-card-title">{scheme.title}</h3>
+                <span className="scheme-category-tag">{scheme.category}</span>
+                <p className="scheme-card-desc">{scheme.description}</p>
+                <a href={scheme.link} target="_blank" rel="noreferrer" className="scheme-apply-btn">
+                   Read More & Apply
+                </a>
+             </div>
+          ))}
         </div>
+        
       </main>
     </div>
   );
