@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const INVEST_AI_URL = 'http://localhost:5000/api/investAI';
 
-export const getSmartSuggestions = async (persona) => {
+export const getSuggestions = async (persona, businessInfo) => {
   try {
-    const res = await axios.post(`${INVEST_AI_URL}/suggest`, { persona });
+    const res = await axios.post(`${INVEST_AI_URL}/suggest`, { persona, businessInfo });
     return res.data.reply || "💡 Keep track of daily expenses to save more effectively! It's okay to start small.";
   } catch (err) {
     console.error("Backend Gemini Error (Suggest):", err);
@@ -12,9 +12,9 @@ export const getSmartSuggestions = async (persona) => {
   }
 };
 
-export const askArthika = async (persona, question, language = "en-IN") => {
+export const askArthika = async (persona, question, language = "en-IN", businessInfo) => {
   try {
-    const res = await axios.post(`${INVEST_AI_URL}/ask`, { persona, question, language });
+    const res = await axios.post(`${INVEST_AI_URL}/ask`, { persona, question, language, businessInfo });
     return res.data.reply || "I'm having trouble connecting right now, but remember that saving even a little bit today is a win!";
   } catch (err) {
     console.error("Backend Gemini Chat Error:", err);

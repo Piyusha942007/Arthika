@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const { handleSuggest, handleAsk } = require("../controllers/investChatController.js");
+import { getSuggestions, askArthika } from "../controllers/investChatController.js";
 
-router.post("/suggest", handleSuggest);
-router.post("/ask", handleAsk);
+router.post("/suggest", getSuggestions);
+router.post("/ask", askArthika);
 
-module.exports = router;
+export default router;
