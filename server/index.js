@@ -11,7 +11,7 @@ const User = require('./src/models/User');
 
 const app = express();
 app.use(cors({
-    origin: "http://localhost:5173", 
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT"],
     credentials: true
 }));
@@ -47,7 +47,7 @@ app.get('/api/profile/:email', async (req, res) => {
             });
             await user.save();
         }
-        
+
         res.json(user);
     } catch (err) {
         console.error("Server Error:", err);
@@ -84,8 +84,8 @@ app.put('/api/profile/update-role', async (req, res) => {
     const { email, role } = req.body;
     try {
         const updatedUser = await User.findOneAndUpdate(
-            { email }, 
-            { role }, 
+            { email },
+            { role },
             { new: true }
         );
         res.json(updatedUser);
@@ -116,7 +116,7 @@ app.post('/api/profile/toggle-streak', async (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB if URI is provided, but don't crash if it's missing (allows Gemini chat to stay up)
 const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || "mongodb+srv://Arthika1:Arthika1234@cluster0.vxefxyc.mongodb.net/arthika?retryWrites=true&w=majority";
@@ -128,7 +128,11 @@ if (MONGO_URI) {
 } else {
     console.warn("⚠️ MONGODB_URI not found in .env. Community Page DB features will disabled.");
 }
-
+// This will log every request that fails to find a route
+app.use((req, res) => {
+    console.log(`404 attempted on: ${req.method} ${req.url}`);
+    res.status(404).send("Route not found on server");
+});
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -3,7 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase } from "lucide-react";
 import "./Save.css";
 import dollarIcon from "../../assets/images/dollar-icon.png";
-import { getSmartSuggestions, askArthika } from "../../services/GeminiService";
+import { getSuggestions, askArthika } from "../../services/GeminiService";
 import axios from 'axios';
 
 export default function Save() {
@@ -17,6 +17,7 @@ export default function Save() {
 
   // Persona State
   const [persona, setPersona] = useState("");
+  const [businessInfo, setBusinessInfo] = useState("");
 
   // Loan Tracker State
   const [loanDetails, setLoanDetails] = useState({ bank: "", amount: "", interest: "", duration: "" });
@@ -92,6 +93,11 @@ export default function Save() {
       try {
         const res = await axios.get(`${USER_API}/${userEmail}`);
         if (res.data) {
+          if (res.data.workNature) {
+            setBusinessInfo(res.data.workNature);
+          } else if (res.data.workType) {
+            setBusinessInfo(res.data.workType);
+          }
           // Setting the strict profile persona that the user configures in their specific Profile Page
           if (res.data.role) {
             setPersona(res.data.role);
@@ -128,20 +134,20 @@ export default function Save() {
 
     const fetchSuggestions = async () => {
       setIsLoadingSuggestions(true);
-      const tips = await getSmartSuggestions(persona);
+      const tips = await getSuggestions(persona, businessInfo);
       setAiSuggestions(tips);
       setIsLoadingSuggestions(false);
     };
 
     fetchSuggestions();
-  }, [persona]);
+  }, [persona, businessInfo]);
 
 
   /* ASK ARTHIKA */
   const handleAskArthika = async () => {
     if (!chatQuestion.trim()) return;
     setIsChatLoading(true);
-    const res = await askArthika(persona, chatQuestion, audioLang);
+    const res = await askArthika(persona, chatQuestion, audioLang, businessInfo);
     setChatResponse(res);
     setIsChatLoading(false);
     setChatQuestion("");
