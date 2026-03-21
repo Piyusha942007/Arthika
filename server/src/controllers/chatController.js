@@ -15,8 +15,8 @@ export const handleChat = async (req, res) => {
         // Initialize Gemini SDK with the key from .env inside the request handle
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-        // We use gemini-2.5-flash as it is supported by the new API keys
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Using gemini-1.5-flash as it is the stable free tier model
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }, { apiVersion: 'v1beta' });
 
         const systemPrompt = `You are "Arthika", a highly empathetic, helpful, and knowledgeable financial advisor and guide for a web app named Arthika. 
 Your target audience is rural Indian women and self-help group members. 
@@ -38,6 +38,7 @@ The user is speaking to you in: ${language || 'English'}. You MUST reply in this
         return res.status(200).json({ reply: responseText });
     } catch (error) {
         console.error("Gemini Error:", error);
-        return res.status(500).json({ error: "Failed to process chat" });
+        const errorMsg = error?.message || "Failed to process chat";
+        return res.status(500).json({ error: errorMsg });
     }
 };
