@@ -7,51 +7,16 @@
   padding-bottom: 100px;
 }
 
-/* NAVBAR */
-.learn-navbar {
-  height: 80px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8%;
-  border-bottom: 2px solid #eee;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo {
-  font-size: 30px;
-  font-weight: 900;
-  color: #ffcc4d;
-}
-
-.nav-links span {
-  margin-left: 25px;
-  font-size: 16px;
-  font-weight: 800;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.nav-links .active {
-  color: #f48fb1;
-  border-bottom: 4px solid #f48fb1;
-  padding-bottom: 5px;
-}
-
 /* PROGRESS */
 .progress-section {
   background: #f48fb1;
-  margin: 30px auto;
-  padding: 25px;
-  border-radius: 40px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 30px;
   text-align: center;
   color: white;
   max-width: 600px;
-  box-shadow: 0 15px 30px rgba(244, 143, 177, 0.3);
+  box-shadow: 0 10px 20px rgba(244, 143, 177, 0.2);
 }
 
 .progress-bar {
@@ -86,25 +51,29 @@
 
 .path-container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 120px;
   width: 100%;
-  max-width: 100%;
+  max-width: 600px;
+  height: 2100px;
   margin: 0 auto;
 }
 
 .path-svg {
   position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 600px;
-  height: 2000px;
+  height: 100%;
   z-index: 1;
   pointer-events: none;
+}
+
+.step-wrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* STEP BUTTONS */
@@ -119,16 +88,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 2;
   cursor: pointer;
   box-shadow: 0 10px 0 #d81b60;
   transition: box-shadow 0.2s, background 0.2s, filter 0.2s;
 }
 
-/* SYMMETRICAL ZIG-ZAG REMOVED FOR CUSTOM PATH */
-
-/* HOVER STATES */
 .step:hover {
   filter: brightness(1.1);
   box-shadow: 0 14px 0 #d81b60, 0 10px 20px rgba(0, 0, 0, 0.15);
@@ -139,7 +103,6 @@
   filter: brightness(0.9);
 }
 
-/* CURRENT LEVEL UI */
 .step.current {
   border: 8px solid #fcd56e;
   box-shadow: 0 10px 0 #d81b60, 0 0 20px rgba(252, 213, 110, 0.5);
@@ -150,7 +113,7 @@
   box-shadow: 0 10px 0 #e6bb45;
 }
 
-/* START NOW BUBBLE (LEFT SIDE) */
+/* START NOW BUBBLE */
 .current-indicator-wrapper {
   position: absolute;
   top: 0;
@@ -188,7 +151,7 @@
 
 .start-now-text {
   position: absolute;
-  right: 110px;
+  right: 100px;
   top: 50%;
   transform: translateY(-50%);
   color: #f48fb1;
@@ -201,9 +164,38 @@
   gap: 8px;
 }
 
+@media (max-width: 600px) {
+  .progress-section {
+    padding: 15px;
+    margin: 15px auto;
+    border-radius: 20px;
+    width: 95%;
+  }
+
+  .progress-section h2 {
+    font-size: 1.2rem;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+  }
+
+  .start-now-text {
+    right: 80px;
+    font-size: 13px;
+    letter-spacing: -0.5px;
+  }
+  
+  .level-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    top: -30px;
+  }
+}
+
 /* REWARD SECTION */
 .reward-container {
-  margin-top: 40px;
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -227,13 +219,6 @@
 }
 
 @keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-15px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 }

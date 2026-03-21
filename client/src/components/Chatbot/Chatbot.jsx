@@ -30,6 +30,7 @@ export default function Chatbot() {
     const isMutedRef = useRef(false);
     const lastBotMessageRef = useRef("Hello! I am Arthika. How can I help you with your finances today? You can speak to me in your own language.");
     const [inputText, setInputText] = useState("");
+    const [micError, setMicError] = useState(null); // 'not-allowed', 'network', or null
 
     const toggleMute = () => {
         const newMuted = !isMuted;
@@ -127,9 +128,9 @@ export default function Chatbot() {
                     console.error("Speech recognition error:", event.error);
                     setIsListening(false);
                     if (event.error === 'not-allowed') {
-                        alert("Microphone access blocked. Please enable it in your browser settings.");
+                        setMicError('not-allowed');
                     } else if (event.error === 'network') {
-                        alert("Network error. Speech recognition requires an internet connection.");
+                        setMicError('network');
                     }
                 };
 
@@ -277,13 +278,24 @@ export default function Chatbot() {
                     <div className="chatbot-input">
                         <div className="voice-controls">
                             <button
-                                className={`mic-btn \${isListening ? 'listening' : ''}`}
-                                onClick={toggleListen}
+                                className={`mic-btn ${isListening ? 'listening' : ''} ${micError ? 'error' : ''}`}
+                                onClick={() => {
+                                    setMicError(null);
+                                    toggleListen();
+                                }}
                                 title={isListening ? "Stop Listening" : "Start Speaking"}
                             >
-                                🎤
+                                {micError === 'not-allowed' ? "🚫" : (isListening ? "⏹️" : "🎤")}
                             </button>
-                            <p className="mic-hint">{isListening ? "Listening..." : "Tap mic to speak"}</p>
+                            <p className="mic-hint">
+                                {micError === 'not-allowed' ? (
+                                    <span style={{ color: '#d32f2f', textAlign: 'center' }}>
+                                        Mic blocked. <button onClick={() => alert("To enable: \n1. Tap the lock icon or 'Aa' in the URL bar.\n2. Tap 'Site Settings'.\n3. Set Microphone to 'Allow'.")} style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', cursor: 'pointer', padding: 0 }}>How to unblock?</button>
+                                    </span>
+                                ) : (
+                                    isListening ? "Listening..." : "Tap mic to speak"
+                                )}
+                            </p>
                         </div>
 
                         <form className="text-input-form" onSubmit={handleTextSubmit}>

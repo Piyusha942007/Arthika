@@ -17,18 +17,6 @@ export default function Learn() {
   const [totalVideos, setTotalVideos] = useState(30);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = Math.min(window.innerWidth, 600);
-      setScale(width / 600);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   useEffect(() => {
     if (!isLoaded || !user) return;
 
@@ -59,7 +47,7 @@ export default function Learn() {
   };
 
   const stepOffsets = [
-    60, -40, -120, -10, 120, 0, -100, 50, 80, -30 // 10 total levels
+    60, -40, -120, -10, 120, 0, -100, 50, 80, -30
   ];
 
   const steps = stepOffsets.map((offset, i) => {
@@ -68,19 +56,17 @@ export default function Learn() {
     if (level < highestUnlockedLevel) status = "completed"; 
     else if (level === highestUnlockedLevel) status = "current";
 
-    // SCALE the offset based on container width
-    const responsiveOffset = offset * scale;
-
-    return { status, label: `LEVEL ${level}`, offset: responsiveOffset };
+    return { status, label: `LEVEL ${level}`, offset };
   });
 
   const calculatePath = () => {
-    let d = `M ${300 + steps[0].offset} 0`;
+    // Start at center of first circle (top: 40)
+    let d = `M ${300 + steps[0].offset} 40`;
     for (let i = 1; i < steps.length; i++) {
       const prevX = 300 + steps[i - 1].offset;
-      const prevY = (i - 1) * 200;
+      const prevY = (i - 1) * 200 + 40;
       const currX = 300 + steps[i].offset;
-      const currY = i * 200;
+      const currY = i * 200 + 40;
       d += ` C ${prevX} ${prevY + 100}, ${currX} ${currY - 100}, ${currX} ${currY}`;
     }
     return d;
@@ -174,11 +160,11 @@ export default function Learn() {
         </div>
 
         <div className="path-container">
-          <svg className="path-svg" viewBox="0 0 600 2000">
+          <svg className="path-svg" viewBox="0 0 600 2100" preserveAspectRatio="none">
             <motion.path
               d={calculatePath()}
               stroke="#222"
-              strokeWidth="2"
+              strokeWidth="3"
               fill="transparent"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
@@ -187,54 +173,65 @@ export default function Learn() {
           </svg>
 
           {steps.map((step, i) => (
-            <motion.div
+            <div
               key={i}
-              className={`step ${step.status}`}
-              initial={{ opacity: 0, scale: 0.5, x: step.offset }}
-              whileInView={{ opacity: 1, scale: 1, x: step.offset }}
-              whileHover={{
-                scale: 1.15,
-                x: step.offset,
-                transition: { type: "spring", stiffness: 400, damping: 10 }
-              }}
-              whileTap={{ scale: 0.95, x: step.offset }}
-              viewport={{ once: true }}
-              style={{ x: step.offset }}
-              onClick={() => {
-                if (["current", "completed"].includes(step.status)) {
-                  setSelectedLevel(i + 1);
-                } else {
-                  toast.info("Please complete the previous levels to unlock this one!", {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    theme: "light",
-                  });
-                }
+              className="step-wrapper"
+              style={{ 
+                top: i * 200 + 40,
+                left: `${((300 + step.offset) / 600) * 100}%`
               }}
             >
-              {step.status === "current" && (
-                <div className="current-indicator-wrapper">
-                  <span className="level-tag">{step.label}</span>
-                  <motion.div
-                    className="start-now-text"
-                    animate={{ x: [0, -8, 0] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                  >
-                    Start now ➔
-                  </motion.div>
-                </div>
-              )}
-              <span className="step-number">✓</span>
-            </motion.div>
+              <motion.div
+                className={`step ${step.status}`}
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                whileHover={{
+                  scale: 1.15,
+                  transition: { type: "spring", stiffness: 400, damping: 10 }
+                }}
+                whileTap={{ scale: 0.95 }}
+                viewport={{ once: true }}
+                onClick={() => {
+                  if (["current", "completed"].includes(step.status)) {
+                    setSelectedLevel(i + 1);
+                  } else {
+                    toast.info("Please complete the previous levels to unlock this one!", {
+                      position: "top-center",
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      theme: "light",
+                    });
+                  }
+                }}
+              >
+                {step.status === "current" && (
+                  <div className="current-indicator-wrapper">
+                    <span className="level-tag">{step.label}</span>
+                    <motion.div
+                      className="start-now-text"
+                      animate={{ x: [0, -8, 0] }}
+                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                    >
+                      Start now ➔
+                    </motion.div>
+                  </div>
+                )}
+                <span className="step-number">✓</span>
+              </motion.div>
+            </div>
           ))}
 
           <motion.div
             className="reward-container"
             whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+            style={{ 
+              top: steps.length * 200,
+              left: '50%',
+              transform: 'translateX(-50%)'
+            }}
           >
             <img src={treasureChest} alt="Reward" className="treasure-chest" />
             <p className="reward-text">Unlock Chest!</p>

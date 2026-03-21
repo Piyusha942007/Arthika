@@ -211,6 +211,11 @@
     border-color: #F48FB1;
 }
 
+.mic-btn.error {
+    border-color: #d32f2f;
+    background: #ffebee;
+}
+
 .mic-hint {
     margin: 10px 0 0 0;
     font-size: 0.9rem;
