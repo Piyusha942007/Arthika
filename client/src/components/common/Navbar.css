@@ -35,11 +35,28 @@
 
 /* ================= BRAND ================= */
 .brand-text {
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--brand-yellow);
-    cursor: pointer;
-    letter-spacing: -1.5px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo-icon {
+    mix-blend-mode: multiply;
+    /* Ye white background ko gayab kar deta hai */
+    filter: contrast(110%);
+    width: 80px;
+    /* Text hatne ke baad thoda bada size better lagega */
+    height: 78px;
+    border-radius: 15px;
+    /* Consistent with your theme */
+    object-fit: cover;
+    border: 2px solid var(--brand-yellow);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.nav-logo-icon:hover {
+    transform: scale(1.05);
+    /* Logo par hover karne se halka sa zoom hoga */
 }
 
 /* ================= NAV LINKS ================= */
@@ -250,37 +267,21 @@
 .mobile-toggle {
     display: none;
     cursor: pointer;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 25px;
-    height: 18px;
 }
 
 .bar {
     display: block;
-    width: 100%;
+    width: 25px;
     height: 3px;
+    margin: 5px 0;
     background-color: var(--text-main);
-    transition: 0.3s;
-    transform-origin: center;
-}
-
-/* Animate bars when menu is open */
-.bar.animate:nth-child(1) {
-    transform: translateY(7.5px) rotate(45deg);
-}
-.bar.animate:nth-child(2) {
-    opacity: 0;
-}
-.bar.animate:nth-child(3) {
-    transform: translateY(-7.5px) rotate(-45deg);
 }
 
 @media (max-width: 768px) {
     .nav-menu {
         display: none;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         position: absolute;
         top: 85px;
         left: 0;
@@ -288,9 +289,6 @@
         background: white;
         padding: 2rem;
         gap: 1.5rem;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        z-index: 1000;
-        border-bottom: 2px solid var(--brand-yellow);
     }
 
     .nav-menu.mobile-open {
@@ -298,7 +296,7 @@
     }
 
     .mobile-toggle {
-        display: flex;
+        display: block;
     }
 
     .nav-username {

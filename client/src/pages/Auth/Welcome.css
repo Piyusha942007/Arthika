@@ -1,130 +1,181 @@
 .welcome-container {
-  width: 100%;
-  min-height: 100vh;
-  background: #F8EAC6;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #FFF9E3 0%, #FFF3C7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+.welcome-content-wrapper {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  align-items: center;
+  gap: 50px;
+}
+
+/* --- LEFT PANEL: BRANDING --- */
+.left-panel {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 30px 20px;
-  font-family: 'Noto Sans', sans-serif;
+  text-align: center;
+  border-right: 2px solid rgba(0, 0, 0, 0.05);
+  /* Optional: Separation line */
+  padding-right: 40px;
+}
+
+.side-logo {
+  width: 280px;
+  /* Bada logo jaisa aapne pucha */
+  height: auto;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.1));
+}
+
+.brand-name-center {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #FBC02D;
+  margin: -10px 0 0 0;
+}
+
+.side-tagline {
+  font-size: 1.3rem;
+  color: #880E4F;
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* --- RIGHT PANEL: LANGUAGES --- */
+.right-panel {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Vertically centers the whole group */
+  align-items: center;
+  /* Horizontally centers every child element */
+  height: 100%;
+  padding: 0 40px;
+  /* Side padding for breathing room */
   text-align: center;
 }
 
-/* Logo */
-.logo {
-  margin-top: 10px;
-  font-size: clamp(40px, 8vw, 100px);
-  font-weight: 700;
-  color: #FBC02D;
-  font-family: 'Poppins';
+.side-heading {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1F2937;
+  margin-bottom: 5px;
 }
 
-/* Welcome text */
-.title {
-  font-size: clamp(18px, 4vw, 42px);
-  color: #333;
-}
+.side-subtitle {
 
-/* Subtitle */
-.subtitle {
-  font-size: clamp(16px, 3.5vw, 38px);
+  font-size: 1.2rem;
   color: #FF72A1;
   margin-bottom: 30px;
+  font-weight: 600;
+  width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Language Grid */
-.grid {
-  width: 100%;
-  max-width: 900px;
+.side-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  gap: 15px;
+  width: 100%;
+
 }
 
-/* Buttons */
-.lang-btn {
-  height: 64px;
-  border-radius: 30px;
-  border: 1px solid rgba(244,143,177,0.8);
-  background: #FFF9F1;
-  font-size: clamp(18px, 2vw, 30px);
+.side-lang-btn {
+  padding: 15px;
+  background: white;
+  border: 1.5px solid #eee;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.3s;
 }
 
-.lang-btn:hover {
-  background: #ffe4ef;
-  transform: scale(1.05);
+.side-lang-btn:hover {
+  border-color: #FBC02D;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Proceed Button */
-.proceed {
-  margin-top: 50px;
-  padding: 15px 45px;
-  border-radius: 30px;
-  border: none;
+.side-proceed {
+  margin-top: 40px;
+  padding: 15px 80px;
   background: #FBC02D;
-  font-size: 22px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: 0.2s;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 8px 20px rgba(251, 192, 45, 0.4);
 }
 
-.proceed:hover {
-  transform: scale(1.05);
-}
-
-/* ---------- RESPONSIVE BREAKPOINTS ---------- */
-
-/* Tablet */
+/* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+  .welcome-content-wrapper {
+    flex-direction: column;
+    padding: 20px;
+    gap: 30px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .left-panel {
+    border-right: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    padding-right: 0;
+    padding-bottom: 20px;
+  }
+
+  .side-logo {
+    width: 150px;
+  }
+
+  .brand-name-center {
+    font-size: 2.5rem;
+  }
+  
+  .right-panel {
+    padding: 0;
+    justify-content: flex-start;
+  }
+
+  .side-heading {
+    font-size: 2rem;
   }
 }
 
-/* Mobile */
 @media (max-width: 500px) {
   .welcome-container {
-    padding: 15px 10px;
+    align-items: flex-start;
   }
-
-  .logo {
-    font-size: 28px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-
-  .title {
-    font-size: 20px;
-    margin-bottom: 5px;
-  }
-
-  .subtitle {
-    font-size: 14px;
-    margin-bottom: 15px;
-  }
-
-  .grid {
+  
+  .side-grid {
     grid-template-columns: 1fr;
-    gap: 10px;
   }
 
-  .lang-btn {
-    height: 48px;
-    font-size: 16px;
-    border-radius: 20px;
+  .side-lang-btn {
+    padding: 10px;
   }
 
-  .proceed {
-    width: 100%;
-    max-width: 240px;
-    margin-top: 20px;
-    padding: 10px 25px;
-    font-size: 16px;
+  .side-proceed {
+    margin-top: 25px;
+    padding: 12px 60px;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
   }
-}
-
-.lang-btn:active {
-  transform: scale(0.95);
 }

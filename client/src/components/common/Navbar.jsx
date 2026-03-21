@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import logoImg from "../../assets/images/arthikalogo.jpeg";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -34,9 +35,10 @@ export default function Navbar() {
     return (
         <nav className="main-navbar">
             <div className="nav-content">
-                {/* Logo Section */}
+                {/* { Logo Section} */}
                 <div className="nav-brand" onClick={() => nav("/home")} style={{ cursor: 'pointer' }}>
-                    <span className="brand-text">Arthika</span>
+
+                    <img src={logoImg} alt="Arthika Logo" className="nav-logo-icon" />
                 </div>
 
                 {/* Navigation Links */}
@@ -59,13 +61,17 @@ export default function Navbar() {
 
                             {dropdownOpen && (
                                 <div className="profile-dropdown-menu">
+                                    {/* The connecting arrow pointer */}
                                     <div className="dropdown-arrow"></div>
+
+                                    {/* Separated Header Section */}
                                     <div className="dropdown-header">
                                         <p className="user-full-name">{user.fullName}</p>
                                         <p className="user-email">{user.primaryEmailAddress?.emailAddress}</p>
                                     </div>
+                                    {/* Separated Body Section */}
                                     <div className="dropdown-body">
-                                        <button className="dropdown-item" onClick={() => { nav("/profile"); setDropdownOpen(false); setIsMobileMenuOpen(false); }}>
+                                        <button className="dropdown-item" onClick={() => { nav("/profile"); setDropdownOpen(false); }}>
                                             My Profile
                                         </button>
                                         <div className="dropdown-divider"></div>
