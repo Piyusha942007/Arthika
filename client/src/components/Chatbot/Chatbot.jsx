@@ -1,22 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
 
-const supportedLanguages = [
-    { code: "en-IN", name: "English", googCode: "en" },
-    { code: "hi-IN", name: "हिंदी (Hindi)", googCode: "hi" },
-    { code: "mr-IN", name: "मराठी (Marathi)", googCode: "mr" },
-    { code: "gu-IN", name: "ગુજરાતી (Gujarati)", googCode: "gu" },
-    { code: "bn-IN", name: "বাংলা (Bengali)", googCode: "bn" },
-    { code: "te-IN", name: "తెలుగు (Telugu)", googCode: "te" },
-    { code: "ta-IN", name: "தமிழ் (Tamil)", googCode: "ta" },
-    { code: "ur-IN", name: "اردو (Urdu)", googCode: "ur" },
-    { code: "ml-IN", name: "മലയാളം (Malayalam)", googCode: "ml" }
-];
+import { supportedLanguages, getCodeFromGoog, getInitialLang, getLanguageName } from "../../utils/languageUtils";
 
-const getCodeFromGoog = (shortCode) => {
-    const match = supportedLanguages.find(l => l.googCode === shortCode);
-    return match ? match.code : "en-IN";
-};
 
 export default function Chatbot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -46,19 +32,8 @@ export default function Chatbot() {
         }
     };
 
-    const getInitialLang = () => {
-        const select = document.querySelector(".goog-te-combo");
-        if (select && select.value) {
-            return getCodeFromGoog(select.value);
-        }
-        const match = document.cookie.match(/googtrans=\/en\/(.*?)(;|$)/);
-        if (match && match[1]) {
-            return getCodeFromGoog(match[1]);
-        }
-        return "en-IN"; // Default
-    };
-
     const [selectedLang, setSelectedLang] = useState(getInitialLang());
+
 
     const recognitionRef = useRef(null);
     const synthRef = useRef(window.speechSynthesis);
@@ -135,39 +110,67 @@ export default function Chatbot() {
 
         synthRef.current.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = selectedLang;
+        // Small delay for engine stability
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = selectedLang;
 
-        const voices = synthRef.current.getVoices();
-        const langVoices = voices.filter(voice => voice.lang.includes(selectedLang) || voice.lang.includes(selectedLang.split('-')[0]));
+            const voices = synthRef.current.getVoices();
+            const langVoices = voices.filter(voice => voice.lang.includes(selectedLang) || voice.lang.includes(selectedLang.split('-')[0]));
 
-        // Priority system to find a comforting rural female voice depending on Browser Engine
-        let bestVoice = null;
-        if (langVoices.length > 0) {
-            bestVoice = langVoices.find(v =>
-                v.name.toLowerCase().includes('female') ||
-                v.name.toLowerCase().includes('woman') ||
-                v.name.toLowerCase().includes('google') || // Google Chrome default female
-                v.name.toLowerCase().includes('swara') ||  // Edge default Hindi Female
-                v.name.toLowerCase().includes('neerja') || // Windows OS default Hindi Female
-                v.name.toLowerCase().includes('aditi') ||  // macOS default Hindi Female
-                v.name.toLowerCase().includes('madhur')    // Edge default Marathi Female
-            );
+            // Priority system to find a comforting rural female voice depending on Browser Engine
+            let bestVoice = null;
+            if (langVoices.length > 0) {
+                // 1. Try to find local female voices
+                bestVoice = langVoices.find(v =>
+                    !v.name.toLowerCase().includes('online') &&
+                    !v.name.toLowerCase().includes('natural') &&
+                    (v.name.toLowerCase().includes('female') ||
+                        v.name.toLowerCase().includes('woman') ||
+                        v.name.toLowerCase().includes('google') || // Google Chrome default female
+                        v.name.toLowerCase().includes('swara') ||  // Edge default Hindi Female
+                        v.name.toLowerCase().includes('neerja') || // Windows OS default Hindi Female
+                        v.name.toLowerCase().includes('aditi') ||  // macOS default Hindi Female
+                        v.name.toLowerCase().includes('madhur'))   // Edge default Marathi Female
+                );
 
-            // If still no explicitly female-named voice, fall back to the first available language voice
-            if (!bestVoice) bestVoice = langVoices[0];
-        }
+                // 2. Try to find any local voice to avoid Online failures
+                if (!bestVoice) {
+                    bestVoice = langVoices.find(v =>
+                        !v.name.toLowerCase().includes('online') &&
+                        !v.name.toLowerCase().includes('natural')
+                    );
+                }
 
-        if (bestVoice) {
-            utterance.voice = bestVoice;
-        }
+                // 3. Fallback
+                if (!bestVoice) bestVoice = langVoices[0];
+            }
 
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
+            if (bestVoice) {
+                utterance.voice = bestVoice;
+            }
 
-        synthRef.current.speak(utterance);
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = (e) => {
+                setIsSpeaking(false);
+                console.error("Speech error:", e);
+                // Retry with any local voice if online failed
+                if (e.error === 'synthesis-failed' && bestVoice?.name.toLowerCase().includes('online')) {
+                    const fallbackVoice = voices.find(v => !v.name.toLowerCase().includes('online'));
+                    if (fallbackVoice) {
+                        const retryUtterance = new SpeechSynthesisUtterance(text);
+                        retryUtterance.voice = fallbackVoice;
+                        retryUtterance.lang = fallbackVoice.lang;
+                        synthRef.current.speak(retryUtterance);
+                    }
+                }
+            };
+
+            synthRef.current.speak(utterance);
+        }, 100);
     };
+
 
     const handleUserMessage = async (text) => {
         if (!text.trim()) return;
@@ -176,13 +179,12 @@ export default function Chatbot() {
         setMessages(newMessages);
 
         try {
-            const langObj = supportedLanguages.find(l => l.code === selectedLang) || supportedLanguages[0];
-
             const response = await fetch("http://localhost:5000/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text, language: langObj.name })
+                body: JSON.stringify({ message: text, language: getLanguageName(selectedLang) })
             });
+
 
             const textData = await response.text();
             let data = {};
@@ -226,8 +228,13 @@ export default function Chatbot() {
                             <select
                                 className="lang-selector"
                                 value={selectedLang}
-                                onChange={(e) => setSelectedLang(e.target.value)}
+                                onChange={(e) => {
+                                    const newLang = e.target.value;
+                                    setSelectedLang(newLang);
+                                    localStorage.setItem("lang", newLang);
+                                }}
                             >
+
                                 {supportedLanguages.map(lang => (
                                     <option key={lang.code} value={lang.code}>{lang.name}</option>
                                 ))}
@@ -247,11 +254,12 @@ export default function Chatbot() {
 
                     <div className="chatbot-messages">
                         {messages.map((msg, idx) => (
-                            <div key={idx} className={`message \${msg.role}`}>
+                            <div key={idx} className={`message ${msg.role}`}>
                                 {msg.role === "bot" && <div className="avatar">🤖</div>}
                                 <div className="bubble">{msg.text}</div>
                             </div>
                         ))}
+
                     </div>
 
                     <div className="chatbot-input">

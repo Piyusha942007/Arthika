@@ -6,6 +6,8 @@ import dollarIcon from "../../assets/images/dollar-icon.png";
 import { getSuggestions, askArthika } from "../../services/GeminiService";
 import axios from 'axios';
 
+import { getInitialLang, getCodeFromGoog } from "../../utils/languageUtils";
+
 export default function Save() {
 
   const { user } = useUser();
@@ -33,8 +35,22 @@ export default function Save() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(localStorage.getItem("isMuted") === "true");
 
-  const initialLang = localStorage.getItem("lang") ? `${localStorage.getItem("lang")}-IN` : "en-IN";
-  const [audioLang, setAudioLang] = useState(initialLang);
+  const [audioLang, setAudioLang] = useState(getInitialLang());
+
+  useEffect(() => {
+    const checkLang = () => {
+      const lang = getInitialLang();
+      setAudioLang(lang);
+    };
+
+    const observer = new MutationObserver(checkLang);
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
 
   // Constants
   const API = "http://localhost:5000/api/goals";
@@ -120,62 +136,82 @@ export default function Save() {
 
     synthRef.current.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = audioLang;
+    // Small delay to let the engine clear properly before starting new speech
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = audioLang;
 
-    console.log(`Attempting to speak in ${audioLang}: "${text.substring(0, 30)}..."`);
-    
-    const voices = synthRef.current.getVoices();
-    if (voices.length === 0) {
-      console.warn("No TTS voices available yet.");
-    }
-
-    const langVoices = voices.filter(voice =>
-      voice.lang.includes(audioLang) || voice.lang.includes(audioLang.split('-')[0])
-    );
-    console.log(`Found ${langVoices.length} voices for ${audioLang}`);
-
-    let bestVoice = null;
-    if (langVoices.length > 0) {
-      // ONLY use LOCAL voices (avoid 'Online' or 'Natural' as they are slow and often fail)
-      bestVoice = langVoices.find(v =>
-        !v.name.toLowerCase().includes('online') && 
-        !v.name.toLowerCase().includes('natural') &&
-        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || 
-         v.name.toLowerCase().includes('aditi') || v.name.toLowerCase().includes('neerja') || 
-         v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('heera'))
-      );
+      console.log(`Attempting to speak in ${audioLang}: "${text.substring(0, 30)}..."`);
       
-      if (!bestVoice) {
-        // Fallback to any local voice for that language
-        bestVoice = langVoices.find(v => !v.name.toLowerCase().includes('online'));
+      const voices = synthRef.current.getVoices();
+      if (voices.length === 0) {
+        console.warn("No TTS voices available yet.");
       }
-      
-      if (!bestVoice) bestVoice = langVoices[0];
-    }
 
-    if (bestVoice) {
-      console.log("Selecting voice:", bestVoice.name);
-      utterance.voice = bestVoice;
-    } else {
-      console.warn("No suitable voice found for language:", audioLang);
-    }
+      const langVoices = voices.filter(voice =>
+        voice.lang.includes(audioLang) || voice.lang.includes(audioLang.split('-')[0])
+      );
+      console.log(`Found ${langVoices.length} voices for ${audioLang}`);
 
-    utterance.onstart = () => {
-      console.log("Speech started");
-      setIsSpeaking(true);
-    };
-    utterance.onend = () => {
-      console.log("Speech ended");
-      setIsSpeaking(false);
-    };
-    utterance.onerror = (e) => {
-      console.error("Speech error:", e);
-      setIsSpeaking(false);
-    };
+      let bestVoice = null;
+      if (langVoices.length > 0) {
+        // 1. Try to find a LOCAL Female voice (highest quality local)
+        bestVoice = langVoices.find(v =>
+          !v.name.toLowerCase().includes('online') && 
+          !v.name.toLowerCase().includes('natural') &&
+          (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || 
+           v.name.toLowerCase().includes('aditi') || v.name.toLowerCase().includes('neerja') || 
+           v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('heera'))
+        );
+        
+        // 2. Fallback to ANY local voice (even male) to avoid "Online" failures
+        if (!bestVoice) {
+          bestVoice = langVoices.find(v => 
+            !v.name.toLowerCase().includes('online') && 
+            !v.name.toLowerCase().includes('natural')
+          );
+        }
+        
+        // 3. Last resort: use the first available (could be Online)
+        if (!bestVoice) bestVoice = langVoices[0];
+      }
 
-    synthRef.current.speak(utterance);
+      if (bestVoice) {
+        console.log("Selecting voice:", bestVoice.name);
+        utterance.voice = bestVoice;
+      } else {
+        console.warn("No suitable voice found for language:", audioLang);
+      }
+
+      utterance.onstart = () => {
+        console.log("Speech started");
+        setIsSpeaking(true);
+      };
+      utterance.onend = () => {
+        console.log("Speech ended");
+        setIsSpeaking(false);
+      };
+      utterance.onerror = (e) => {
+        console.error("Speech error:", e);
+        setIsSpeaking(false);
+        // If it failed specifically with an "online" voice, try one more time 
+        // with the absolute first local voice in the general list as a hard fallback
+        if (e.error === 'synthesis-failed' && bestVoice?.name.toLowerCase().includes('online')) {
+            console.log("Online synthesis failed. Retrying with any available local voice...");
+            const fallbackVoice = voices.find(v => !v.name.toLowerCase().includes('online'));
+            if (fallbackVoice) {
+                const retryUtterance = new SpeechSynthesisUtterance(text);
+                retryUtterance.voice = fallbackVoice;
+                retryUtterance.lang = fallbackVoice.lang;
+                synthRef.current.speak(retryUtterance);
+            }
+        }
+      };
+
+      synthRef.current.speak(utterance);
+    }, 100); // 100ms delay helps stability
   };
+
 
   /* FETCH GOALS & PROFILE */
   useEffect(() => {
@@ -696,21 +732,44 @@ export default function Save() {
             )}
           </div>
 
-          <div className="chat-input-row" style={{ flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              placeholder="Ask about saving, loans, or business..."
-              value={chatQuestion}
-              onChange={(e) => setChatQuestion(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAskArthika()}
-              style={{ minWidth: '200px' }}
-            />
+          <div className="chat-input-row" style={{ flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '200px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="text"
+                placeholder="Ask about saving, loans, or business..."
+                value={chatQuestion}
+                onChange={(e) => setChatQuestion(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAskArthika()}
+                style={{ flex: 1 }}
+              />
+              <button
+                className={`mic-btn-circle ${isListening ? 'is-listening' : ''}`}
+                onClick={toggleListen}
+                title={isListening ? "Stop Listening" : "Speak your question"}
+                style={{
+                  background: isListening ? '#ff4081' : '#f0f0f0',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '45px',
+                  height: '45px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: isListening ? '0 0 15px rgba(255, 64, 129, 0.5)' : 'none'
+                }}
+              >
+                {isListening ? <Loader2 className="spinner" size={20} color="#fff" /> : <Mic size={20} color={isListening ? "#fff" : "#555"} />}
+              </button>
+            </div>
 
 
-            <button className="primary-btn" onClick={handleAskArthika} style={{ padding: '10px 30px' }}>
+            <button className="primary-btn" onClick={handleAskArthika} style={{ padding: '10px 40px' }}>
               Send
             </button>
           </div>
+
         </section>
 
       </main>

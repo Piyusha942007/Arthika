@@ -53,10 +53,13 @@
   transition: 0.25s ease;
 }
 
-.lang-btn:hover {
+.lang-btn:hover, .lang-btn.selected {
   background: #ffe4ef;
+  border-color: #FF72A1;
   transform: scale(1.05);
+  font-weight: bold;
 }
+
 
 /* Proceed Button */
 .proceed {
