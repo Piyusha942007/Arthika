@@ -138,6 +138,42 @@
     border: 3px solid #FAB819;
 }
 
+.detailed-pills {
+    width: 110%; /* Slightly wider to accommodate text */
+}
+
+.counselor-row {
+    flex-direction: column !important;
+    padding: 15px 20px !important;
+    min-height: auto !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 380px !important;
+}
+
+.org-name {
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.org-links {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.org-links a {
+    color: inherit;
+    text-decoration: underline;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.org-links a:hover {
+    opacity: 1;
+}
+
 .large-pill {
     min-height: 90px;
 }

@@ -82,10 +82,10 @@ export default function Community() {
                         <div className="help-card pink-card">
                             <h2 className="card-title">Number of<br />Counsellors</h2>
                             <div className="pill-list">
-                                <div className="pill yellow-pill">9371897988</div>
-                                <div className="pill white-pill border-pink">9371897988</div>
-                                <div className="pill yellow-pill">9371897988</div>
-                                <div className="pill white-pill border-pink">9371897988</div>
+                                <a href="https://mavimindia.org" target="_blank" rel="noopener noreferrer" className="pill yellow-pill" style={{ textDecoration: 'none' }}>MAVIM: 020-24330104</a>
+                                <a href="https://mced.co.in" target="_blank" rel="noopener noreferrer" className="pill white-pill border-pink" style={{ textDecoration: 'none' }}>MCED: 020-25656551</a>
+                                <a href="https://samparc.org" target="_blank" rel="noopener noreferrer" className="pill yellow-pill" style={{ textDecoration: 'none' }}>SAMPARC: 9766343464</a>
+                                <a href="https://swayamshikshanprayog.org/" target="_blank" rel="noopener noreferrer" className="pill white-pill border-pink" style={{ textDecoration: 'none' }}>SSP: 7387057974</a>
                             </div>
                         </div>
 
