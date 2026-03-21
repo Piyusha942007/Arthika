@@ -1,6 +1,6 @@
-import axios from 'axios';
+import API_BASE_URL from "../config/apiConfig";
 
-const INVEST_AI_URL = 'http://localhost:5000/api/investAI';
+const INVEST_AI_URL = `${API_BASE_URL}/api/investAI`;
 
 export const getSuggestions = async (persona, businessInfo) => {
   try {

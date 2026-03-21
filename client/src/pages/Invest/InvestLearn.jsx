@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from 'axios';
+import API_BASE_URL from "../../config/apiConfig";
 import "./InvestLearn.css";
 
 // Importing your assets
@@ -95,7 +96,7 @@ export default function InvestLearn() {
     if (!userEmail) return;
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/profile/${userEmail}`);
+        const res = await axios.get(`${API_BASE_URL}/api/profile/${userEmail}`);
         if (res.data) {
           if (res.data.role) {
              setPersona(res.data.role);

@@ -1,5 +1,6 @@
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
+import API_BASE_URL from "../../config/apiConfig";
 // import { useUser, SignOutButton, useClerk, UserProfile } from "@clerk/clerk-react"; 
 // import './Profile.css';
 
@@ -75,7 +76,7 @@
 //     };
 
 //     const handleToggle = (newRole) => {
-//         axios.put('http://localhost:5000/api/profile/update-role', { 
+//         axios.put(`${API_BASE_URL}/api/profile/update-role`, { 
 //             email: user.primaryEmailAddress.emailAddress, role: newRole 
 //         }).then(res => {
 //             // Merge the updated role with the existing userData state 
@@ -297,7 +298,7 @@ const Profile = () => {
         setEditName(user.fullName || "");
         const email = user.primaryEmailAddress.emailAddress;
 
-        axios.get(`http://localhost:5000/api/profile/${email}`)
+        axios.get(`${API_BASE_URL}/api/profile/${email}`)
             .then(res => {
                 let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
 
@@ -310,7 +311,7 @@ const Profile = () => {
                     streaks: backendStreaks
                 }));
 
-                return axios.get(`http://localhost:5000/api/lessons/progress?t=${Date.now()}`, {
+                return axios.get(`${API_BASE_URL}/api/lessons/progress?t=${Date.now()}`, {
                     headers: { 'x-user-id': user.id }
                 });
             })
@@ -340,7 +341,7 @@ const Profile = () => {
     };
 
     const handleToggle = (newRole) => {
-        axios.put('http://localhost:5000/api/profile/update-role', {
+        axios.put(`${API_BASE_URL}/api/profile/update-role`, {
             email: user.primaryEmailAddress.emailAddress, role: newRole
         }).then(res => {
             setUserData(prevData => ({

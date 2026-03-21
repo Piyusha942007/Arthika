@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { ToastContainer, toast } from 'react-toastify';
+import API_BASE_URL from "../../config/apiConfig";
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Learn() {
@@ -22,7 +23,7 @@ export default function Learn() {
 
     const fetchProgress = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
+        const response = await fetch(`${API_BASE_URL}/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
           headers: { 'x-user-id': user.id },
           cache: 'no-store'
         });

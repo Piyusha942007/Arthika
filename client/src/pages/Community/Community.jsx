@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import API_BASE_URL from "../../config/apiConfig";
 import './Community.css';
 
 export default function Community() {
@@ -29,7 +30,7 @@ export default function Community() {
 
         try {
             // 1. Search for SHGs by Location
-            const shgRes = await fetch(`http://localhost:5000/api/shgs?location=${location}`);
+            const shgRes = await fetch(`${API_BASE_URL}/api/shgs?location=${location}`);
             const shgData = await shgRes.json();
 
             if (shgData.success) {
@@ -55,7 +56,7 @@ export default function Community() {
                 formData.append('location', location);
                 photos.forEach(photo => formData.append('photos', photo));
 
-                await fetch('http://localhost:5000/api/business', {
+                await fetch(`${API_BASE_URL}/api/business`, {
                     method: 'POST',
                     body: formData,
                 });
