@@ -91,7 +91,8 @@
   align-items: center;
   gap: 120px;
   width: 100%;
-  max-width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .path-svg {
@@ -99,7 +100,8 @@
   top: 40px;
   left: 50%;
   transform: translateX(-50%);
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   height: 2000px;
   z-index: 1;
   pointer-events: none;

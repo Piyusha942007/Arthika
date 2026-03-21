@@ -87,26 +87,9 @@ export default function Chatbot() {
     }, []);
 
     useEffect(() => {
+        // We still need to check for API support on load
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-
-            recognitionRef.current.onresult = async (event) => {
-                const transcript = event.results[0][0].transcript;
-                handleUserMessage(transcript);
-            };
-
-            recognitionRef.current.onerror = (event) => {
-                console.error("Speech recognition error", event.error);
-                setIsListening(false);
-            };
-
-            recognitionRef.current.onend = () => {
-                setIsListening(false);
-            };
-        } else {
+        if (!SpeechRecognition) {
             console.warn("Speech Recognition API not supported in this browser.");
         }
     }, []);
@@ -116,17 +99,53 @@ export default function Chatbot() {
             recognitionRef.current?.stop();
             setIsListening(false);
         } else {
-            synthRef.current.cancel();
+            // 1. Resume SpeechSynthesis on user gesture for mobile
+            if (synthRef.current?.paused) {
+                synthRef.current.resume();
+            }
+            synthRef.current?.cancel();
             setIsSpeaking(false);
 
+            // 2. Initialize SpeechRecognition INSIDE the click handler for Safari/Mobile
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Please try Chrome or Safari.");
+                return;
+            }
+
+            if (!recognitionRef.current) {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = false;
+                recognitionRef.current.interimResults = false;
+
+                recognitionRef.current.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    handleUserMessage(transcript);
+                };
+
+                recognitionRef.current.onerror = (event) => {
+                    console.error("Speech recognition error:", event.error);
+                    setIsListening(false);
+                    if (event.error === 'not-allowed') {
+                        alert("Microphone access blocked. Please enable it in your browser settings.");
+                    } else if (event.error === 'network') {
+                        alert("Network error. Speech recognition requires an internet connection.");
+                    }
+                };
+
+                recognitionRef.current.onend = () => {
+                    setIsListening(false);
+                };
+            }
+
             try {
-                if (recognitionRef.current) {
-                    recognitionRef.current.lang = selectedLang;
-                }
-                recognitionRef.current?.start();
+                recognitionRef.current.lang = selectedLang;
+                recognitionRef.current.start();
                 setIsListening(true);
             } catch (e) {
-                console.error(e);
+                console.error("Start error:", e);
+                recognitionRef.current?.stop();
+                setIsListening(false);
             }
         }
     };

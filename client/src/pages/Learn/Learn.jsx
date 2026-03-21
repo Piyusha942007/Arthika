@@ -17,6 +17,17 @@ export default function Learn() {
   const [totalVideos, setTotalVideos] = useState(30);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = Math.min(window.innerWidth, 600);
+      setScale(width / 600);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -54,10 +65,13 @@ export default function Learn() {
   const steps = stepOffsets.map((offset, i) => {
     const level = i + 1;
     let status = "pending";
-    if (level < highestUnlockedLevel) status = "completed"; // Reverts to default pink CSS
+    if (level < highestUnlockedLevel) status = "completed"; 
     else if (level === highestUnlockedLevel) status = "current";
 
-    return { status, label: `LEVEL ${level}`, offset };
+    // SCALE the offset based on container width
+    const responsiveOffset = offset * scale;
+
+    return { status, label: `LEVEL ${level}`, offset: responsiveOffset };
   });
 
   const calculatePath = () => {
@@ -185,6 +199,7 @@ export default function Learn() {
               }}
               whileTap={{ scale: 0.95, x: step.offset }}
               viewport={{ once: true }}
+              style={{ x: step.offset }}
               onClick={() => {
                 if (["current", "completed"].includes(step.status)) {
                   setSelectedLevel(i + 1);

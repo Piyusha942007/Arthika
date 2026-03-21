@@ -137,6 +137,7 @@ body {
   width: 100%;
   max-width: 400px;
   height: auto;
+  object-fit: contain;
 }
 
 /* --- UPDATED: SECTION TITLE --- */
@@ -435,12 +436,24 @@ body {
 /* MOBILE RESPONSIVENESS */
 @media (max-width: 768px) {
   .navbar nav { display: none; }
-  .hero { padding: 1.5rem; border-radius: 30px; }
+  .hero { 
+    padding: 2.5rem 1.5rem; 
+    border-radius: 30px; 
+    margin: 1.5rem auto;
+    width: 95%;
+    flex-direction: column;
+    text-align: center;
+  }
   .feature-content { 
       flex-direction: column; 
       align-items: center; 
       gap: 2rem;
   }
-  .card.yellow { width: 100%; max-width: 100%; }
+  .card.yellow { 
+    width: 100%; 
+    max-width: 100%; 
+    min-height: auto;
+    padding: 2rem 1.5rem;
+  }
   .section-title { margin: 40px 0 10px 0; }
 }
