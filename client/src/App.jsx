@@ -18,11 +18,15 @@ function Layout({ children }) {
   const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
+  // Define paths where the Chatbot SHOULD NOT appear
+  const hideChatbotPaths = ["/community"];
+  const shouldShowChatbot = shouldShowNavbar && !hideChatbotPaths.includes(location.pathname);
+
   return (
     <>
       {shouldShowNavbar && <Navbar />}
       <main>{children}</main>
-      {shouldShowNavbar && <Chatbot />}
+      {shouldShowChatbot && <Chatbot />}
     </>
   );
 }

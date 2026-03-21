@@ -14,7 +14,6 @@ const shgSchema = new mongoose.Schema({
     },
     focusArea: {
         type: String,
-        required: true,
         trim: true
     },
     membersCount: {
@@ -22,6 +21,14 @@ const shgSchema = new mongoose.Schema({
         default: 1
     },
     contactPhone: {
+        type: String,
+        trim: true
+    },
+    email: {
+        type: String,
+        trim: true
+    },
+    website: {
         type: String,
         trim: true
     }

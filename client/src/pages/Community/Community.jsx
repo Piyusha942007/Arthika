@@ -29,7 +29,7 @@ export default function Community() {
 
         try {
             // 1. Search for SHGs by Location
-            const shgRes = await fetch(`http://localhost:8000/api/shgs?location=${location}`);
+            const shgRes = await fetch(`http://localhost:5000/api/shgs?location=${location}`);
             const shgData = await shgRes.json();
 
             if (shgData.success) {
@@ -55,7 +55,7 @@ export default function Community() {
                 formData.append('location', location);
                 photos.forEach(photo => formData.append('photos', photo));
 
-                await fetch('http://localhost:8000/api/business', {
+                await fetch('http://localhost:5000/api/business', {
                     method: 'POST',
                     body: formData,
                 });
@@ -175,12 +175,17 @@ export default function Community() {
                     )}
 
                     {shgs.length > 0 && (
-                        <div className="shg-results" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+                        <div className="shg-results">
                             {shgs.map((shg, idx) => (
-                                <div key={idx} style={{ background: 'white', padding: '15px', borderRadius: '20px', width: '100%', maxWidth: '500px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                                    <h3 style={{ margin: '0 0 5px 0' }}>{shg.name}</h3>
-                                    <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Focus: {shg.focusArea}</p>
-                                    <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Contact: {shg.contactPhone}</p>
+                                <div key={idx} className="shg-result-card">
+                                    <h3>{shg.name}</h3>
+                                    <p><strong>Contact:</strong> {shg.contactPhone || 'N/A'}</p>
+                                    {shg.email && (
+                                        <p><strong>Email:</strong> <a href={`mailto:${shg.email}`} style={{ color: '#000', textDecoration: 'none' }}>{shg.email}</a></p>
+                                    )}
+                                    {shg.website && (
+                                        <a href={shg.website.startsWith('http') ? shg.website : `https://${shg.website}`} target="_blank" rel="noopener noreferrer" className="website-button">Visit Website</a>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -188,8 +193,6 @@ export default function Community() {
                 </div>
 
             </div>
-            {/* Bottom Graphic element */}
-            <div className="bottom-gradient-bar"></div>
         </div>
     );
 }
