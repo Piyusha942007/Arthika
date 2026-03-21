@@ -13,8 +13,19 @@ import investChatRoutes from "./routes/investChatRoutes.js";
 
 const app = express();
 
+console.log("CORS: ALLOWED FRONTEND URL:", process.env.FRONTEND_URL);
+
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, "http://localhost:5173"].filter(Boolean),
+  origin: (origin, callback) => {
+    const allowed = [process.env.FRONTEND_URL, "http://localhost:5173"].filter(Boolean);
+    console.log("CORS: REQUEST FROM ORIGIN:", origin);
+    if (!origin || allowed.includes(origin) || allowed.includes(origin + "/")) {
+      callback(null, true);
+    } else {
+      console.warn("CORS: BLOCKED ORIGIN:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
