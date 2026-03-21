@@ -38,6 +38,14 @@ The user is speaking to you in: ${language || 'English'}. You MUST reply in this
         return res.status(200).json({ reply: responseText });
     } catch (error) {
         console.error("Gemini Error:", error);
+        
+        // Handle 429 Rate Limit error specifically
+        if (error.message && error.message.includes("429")) {
+            return res.status(200).json({ 
+                reply: "I'm receiving a lot of questions right now! Please wait a moment and then try asking me again. I'll be ready for you! ✨" 
+            });
+        }
+
         const errorMsg = error?.message || "Failed to process chat";
         return res.status(500).json({ error: errorMsg });
     }
