@@ -511,3 +511,171 @@
     padding: 3px 10px !important;
     font-weight: 700 !important;
 }
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+@media (max-width: 900px) {
+    .profile-layout {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .profile-main-card {
+        padding: 30px;
+        border-radius: 40px;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+        max-width: 700px;
+    }
+
+    .side-white-card {
+        width: 100%;
+        padding: 30px;
+        border-radius: 40px;
+        box-sizing: border-box;
+    }
+
+    .hero-banner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 30px;
+        gap: 20px;
+    }
+    
+    .hero-progress-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-info-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-width: 4px;
+    }
+
+    .profile-name {
+        font-size: 28px;
+    }
+    
+    .profile-email {
+        font-size: 14px;
+        word-break: break-all;
+    }
+
+    .hero-greet {
+        font-size: 32px;
+    }
+
+    .role-container-block {
+        padding: 20px;
+        border-radius: 25px;
+        margin: 25px 0;
+    }
+
+    .role-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .role-btn-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .role-btn {
+        width: 100%;
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    /* Streak Calendar Responsive */
+    .cal-grid-body {
+        gap: 8px;
+    }
+    
+    .cal-grid-header {
+        font-size: 12px;
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .cal-date-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+        border-width: 2px;
+    }
+
+    .cal-month {
+        font-size: 20px;
+    }
+
+    .cal-streak-label {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .streak-calendar-box {
+        margin-top: 25px;
+    }
+    
+    .hero-big-num {
+        font-size: 60px !important;
+    }
+
+    .side-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .badge-row {
+        gap: 15px;
+        padding: 8px;
+        margin-left: 0;
+    }
+
+    .badge-circle {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        border-width: 3px;
+    }
+
+    .badge-text-box p, .sup-name {
+        font-size: 16px;
+    }
+    
+    .badge-status, .badge-status-locked {
+        font-size: 11px;
+    }
+    
+    .sup-phone {
+        font-size: 14px;
+    }
+    
+    .arthika-input {
+        font-size: 16px;
+        padding: 10px 15px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .custom-modal-content {
+        width: 95%;
+        border-width: 3px;
+    }
+}
