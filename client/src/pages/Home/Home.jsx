@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
-import heroImg from "../../assets/images/hero.png";
+import heroImg from "../../assets/images/arthikalogo.jpeg";
 import learnImg from "../../assets/images/learn.png";
 import communityImg from "../../assets/images/community.png";
 import goalIcon from "../../assets/images/goalIcon.png";

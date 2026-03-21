@@ -14,8 +14,12 @@ iframe[class*="goog-te"] {
 body {
   top: 0px !important;
   position: static !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 
+button, input, textarea, select {
+  font-family: inherit !important;
+}
 /* Remove translate icon */
 .goog-te-gadget-icon {
   display: none !important;
