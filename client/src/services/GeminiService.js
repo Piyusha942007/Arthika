@@ -8,16 +8,21 @@ export const getSuggestions = async (persona, businessInfo) => {
     return res.data.reply || "💡 Keep track of daily expenses to save more effectively! It's okay to start small.";
   } catch (err) {
     console.error("Backend Gemini Error (Suggest):", err);
-    return "💡 Tip 1: Keep track of daily expenses to save more effectively! It's okay to start small.\n💡 Tip 2: Consistency is key.";
+    // Return a friendly default if the API fails
+    return "💡 Tip: Save a small portion of your daily earnings to build a big safety net for your business!";
   }
 };
 
 export const askArthika = async (persona, question, language = "en-IN", businessInfo) => {
   try {
     const res = await axios.post(`${INVEST_AI_URL}/ask`, { persona, question, language, businessInfo });
-    return res.data.reply || "I'm having trouble connecting right now, but remember that saving even a little bit today is a win!";
+    return res.data.reply || "I'm here to help! Could you please try rephrasing your question?";
   } catch (err) {
     console.error("Backend Gemini Chat Error:", err);
-    return "I'm experiencing intermittent connection issues. Please try again soon!";
+    const backendDetail = err.response?.data?.details;
+    // If there's a specific API error, show it briefly, otherwise show fallback
+    return backendDetail
+      ? `Arthika is resting briefly: ${backendDetail}`
+      : "I'm having a little trouble connecting. Please try asking again in a moment!";
   }
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
-import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase } from "lucide-react";
+import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase, Volume2, VolumeX } from "lucide-react";
 import "./Save.css";
 import dollarIcon from "../../assets/images/dollar-icon.png";
 import { getSuggestions, askArthika } from "../../services/GeminiService";
@@ -30,6 +30,8 @@ export default function Save() {
   const [chatResponse, setChatResponse] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isMuted, setIsMuted] = useState(localStorage.getItem("isMuted") === "true");
 
   const initialLang = localStorage.getItem("lang") ? `${localStorage.getItem("lang")}-IN` : "en-IN";
   const [audioLang, setAudioLang] = useState(initialLang);
@@ -39,8 +41,21 @@ export default function Save() {
   const USER_API = "http://localhost:5000/api/profile"; // Original endpoint for fetching User details 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
 
-  // Speech Recognition
+  // Speech Recognition & Synthesis
   const recognitionRef = useRef(null);
+  const synthRef = useRef(window.speechSynthesis);
+
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const voices = window.speechSynthesis.getVoices();
+      console.log("TTS Voices loaded:", voices.length);
+    };
+    window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+    handleVoicesChanged(); // Initial call
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
 
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -75,14 +90,91 @@ export default function Save() {
     }
   }, [audioLang]);
 
+  const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    localStorage.setItem("isMuted", nextMuted);
+    if (nextMuted) {
+      synthRef.current?.cancel();
+      setIsSpeaking(false);
+    } else if (chatResponse) {
+      // Proactive: If unmuting and there is a message, speak it
+      speakText(chatResponse);
+    }
+  };
+
   const toggleListen = () => {
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
+      synthRef.current?.cancel();
+      setIsSpeaking(false);
       setChatQuestion("");
       recognitionRef.current?.start();
       setIsListening(true);
     }
+  };
+
+  const speakText = (text) => {
+    if (!synthRef.current || isMuted) return;
+
+    synthRef.current.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = audioLang;
+
+    console.log(`Attempting to speak in ${audioLang}: "${text.substring(0, 30)}..."`);
+    
+    const voices = synthRef.current.getVoices();
+    if (voices.length === 0) {
+      console.warn("No TTS voices available yet.");
+    }
+
+    const langVoices = voices.filter(voice =>
+      voice.lang.includes(audioLang) || voice.lang.includes(audioLang.split('-')[0])
+    );
+    console.log(`Found ${langVoices.length} voices for ${audioLang}`);
+
+    let bestVoice = null;
+    if (langVoices.length > 0) {
+      // ONLY use LOCAL voices (avoid 'Online' or 'Natural' as they are slow and often fail)
+      bestVoice = langVoices.find(v =>
+        !v.name.toLowerCase().includes('online') && 
+        !v.name.toLowerCase().includes('natural') &&
+        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || 
+         v.name.toLowerCase().includes('aditi') || v.name.toLowerCase().includes('neerja') || 
+         v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('heera'))
+      );
+      
+      if (!bestVoice) {
+        // Fallback to any local voice for that language
+        bestVoice = langVoices.find(v => !v.name.toLowerCase().includes('online'));
+      }
+      
+      if (!bestVoice) bestVoice = langVoices[0];
+    }
+
+    if (bestVoice) {
+      console.log("Selecting voice:", bestVoice.name);
+      utterance.voice = bestVoice;
+    } else {
+      console.warn("No suitable voice found for language:", audioLang);
+    }
+
+    utterance.onstart = () => {
+      console.log("Speech started");
+      setIsSpeaking(true);
+    };
+    utterance.onend = () => {
+      console.log("Speech ended");
+      setIsSpeaking(false);
+    };
+    utterance.onerror = (e) => {
+      console.error("Speech error:", e);
+      setIsSpeaking(false);
+    };
+
+    synthRef.current.speak(utterance);
   };
 
   /* FETCH GOALS & PROFILE */
@@ -151,6 +243,7 @@ export default function Save() {
     setChatResponse(res);
     setIsChatLoading(false);
     setChatQuestion("");
+    speakText(res);
   };
 
 
@@ -286,7 +379,7 @@ export default function Save() {
           <div className="persona-header">
             <h3>Arthika Dashboard</h3>
             <span className="persona-badge" style={{ padding: '8px 15px', background: '#F48FB1', color: '#fff', borderRadius: '20px', fontWeight: 'bold' }}>
-              Hello, {persona || 'User'}!
+              Hello, {user?.firstName || 'User'}! ({persona || 'Housewife'})
             </span>
           </div>
           <p style={{ marginTop: '5px', fontSize: '0.9rem', color: '#555', fontWeight: '500' }}>
@@ -301,7 +394,52 @@ export default function Save() {
                 {isLoadingSuggestions ? (
                   <p className="loading-text"><Loader2 className="spinner" size={16} /> Arthika is thinking...</p>
                 ) : (
-                  <div style={{ whiteSpace: 'pre-line' }}>{aiSuggestions}</div>
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ whiteSpace: 'pre-line' }}>{aiSuggestions}</div>
+                    {aiSuggestions && (
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <button
+                          className="speak-suggestions-btn"
+                          onClick={() => {
+                            if (isMuted) toggleMute(); // Unmute if they click specifically to listen
+                            speakText(aiSuggestions);
+                          }}
+                          style={{
+                            background: '#000',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '8px 15px',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          <Volume2 size={18} /> {isSpeaking ? 'Speaking...' : 'Listen to Tips'}
+                        </button>
+                        {isSpeaking && (
+                          <button
+                            onClick={() => { synthRef.current?.cancel(); setIsSpeaking(false); }}
+                            style={{
+                              background: '#eee',
+                              border: 'none',
+                              padding: '8px 15px',
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                              color: '#000',
+                              fontWeight: 'bold',
+                              fontSize: '0.85rem'
+                            }}
+                          >
+                            Stop
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -497,16 +635,64 @@ export default function Save() {
 
         {/* ASK ARTHIKA CHAT COMPONENT */}
         <section className="ask-arthika-card glassmorphism">
-          <div className="chat-header">
-            <h3><MessageSquare size={24} /> Ask Arthika</h3>
-            <p>Your Finanical Assistant to help you save and invest!</p>
-          </div>
+            <div className="chat-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3><MessageSquare size={24} /> Ask Arthika</h3>
+                <p>Your Finanical Assistant to help you save and invest!</p>
+              </div>
+              {chatResponse && (
+                <button 
+                  className="listen-arthika-header-btn" 
+                  onClick={() => {
+                    if (isMuted) setIsMuted(false);
+                    speakText(chatResponse);
+                  }} 
+                  style={{ 
+                    background: '#F48FB1', 
+                    color: '#fff', 
+                    border: 'none', 
+                    padding: '8px 15px', 
+                    borderRadius: '15px', 
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Volume2 size={18} /> Listen Arthika
+                </button>
+              )}
+            </div>
 
           <div className="chat-response-area">
             {isChatLoading ? (
               <div className="loading-chat"><Loader2 className="spinner" size={24} /> Thinking...</div>
             ) : (
-              chatResponse && <div className="chat-bubble">{chatResponse}</div>
+              chatResponse && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <div className="chat-bubble">{chatResponse}</div>
+                  
+                  {/* Show Stop button only while speaking */}
+                  {isSpeaking && (
+                    <button
+                      onClick={() => { synthRef.current?.cancel(); setIsSpeaking(false); }}
+                      style={{
+                        marginTop: '5px',
+                        marginLeft: '10px',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#FF4081',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Stop
+                    </button>
+                  )}
+                </div>
+              )
             )}
           </div>
 
@@ -520,35 +706,8 @@ export default function Save() {
               style={{ minWidth: '200px' }}
             />
 
-            <select
-              value={audioLang}
-              onChange={(e) => setAudioLang(e.target.value)}
-              className="language-dropdown"
-              style={{
-                padding: '10px 15px',
-                borderRadius: '15px',
-                border: '3px solid #000',
-                fontWeight: 'bold',
-                outline: 'none',
-                width: 'max-content'
-              }}
-            >
-              <option value="en-IN">English</option>
-              <option value="hi-IN">Hindi</option>
-              <option value="mr-IN">Marathi</option>
-              <option value="gu-IN">Gujarati</option>
-              <option value="bn-IN">Bengali</option>
-              <option value="te-IN">Telugu</option>
-              <option value="ta-IN">Tamil</option>
-              <option value="ur-IN">Urdu</option>
-              <option value="ml-IN">Malayalam</option>
-            </select>
 
-            <button className={`mic-btn ${isListening ? 'listening' : ''}`} onClick={toggleListen} title="Speak with Arthika">
-              <Mic size={24} />
-            </button>
-
-            <button className="primary-btn shrink-btn" onClick={handleAskArthika}>
+            <button className="primary-btn" onClick={handleAskArthika} style={{ padding: '10px 30px' }}>
               Send
             </button>
           </div>
