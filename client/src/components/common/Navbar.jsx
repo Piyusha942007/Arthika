@@ -51,7 +51,7 @@ export default function Navbar() {
                 <div className="nav-actions">
                     {isLoaded && user ? (
                         <div className="profile-container" ref={dropdownRef}>
-                            <div className="profile-pill" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                            <div className="profile-pill" id="navbar-profile-pill" onClick={() => setDropdownOpen(!dropdownOpen)}>
                                 <img src={user.imageUrl} alt="avatar" className="nav-avatar" />
                                 <span className="nav-username">{user.firstName || "User"}</span>
                                 <span className={`chevron ${dropdownOpen ? "rotate" : ""}`}>▼</span>

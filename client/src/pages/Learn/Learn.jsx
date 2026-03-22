@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./Learn.css";
 import treasureChest from "../../assets/images/treasure.png";
+import treasureClosed from "../../assets/images/treasure_closed.png";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { allBadges } from "../../constants/badges";
 
 export default function Learn() {
   const { user, isLoaded } = useUser();
@@ -16,6 +18,13 @@ export default function Learn() {
   const [totalVideos, setTotalVideos] = useState(30);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+  const [showBadge, setShowBadge] = useState(null);
+  const [isChestOpen, setIsChestOpen] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [targetPos, setTargetPos] = useState({ x: 0, y: 0 });
+  const [badgeQueue, setBadgeQueue] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const chestRef = useRef(null);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -39,6 +48,81 @@ export default function Learn() {
     };
     fetchProgress();
   }, [isLoaded, user, language]);
+
+  // Badge Animation Logic: Detect new badges and add to queue
+  useEffect(() => {
+    if (highestUnlockedLevel > 1) {
+      const lastSeen = parseInt(localStorage.getItem("lastSeenLevel") || "1");
+      const currentHighest = highestUnlockedLevel;
+
+      if (lastSeen < currentHighest) {
+        // Find all levels completed but not yet seen
+        const newEarnedBadges = [];
+        for (let l = lastSeen; l < currentHighest; l++) {
+          const b = allBadges.find((badge) => badge.level === l);
+          if (b) newEarnedBadges.push(b);
+        }
+
+        if (newEarnedBadges.length > 0) {
+          setBadgeQueue(prev => [...prev, ...newEarnedBadges]);
+          // Sync localStorage immediately to avoid duplicate queueing on re-render
+          localStorage.setItem("lastSeenLevel", currentHighest.toString());
+        }
+      }
+    } else if (highestUnlockedLevel === 1) {
+      localStorage.setItem("lastSeenLevel", "1");
+    }
+  }, [highestUnlockedLevel]);
+
+  // Process the queue one by one
+  useEffect(() => {
+    if (badgeQueue.length > 0 && !isAnimating) {
+      handleNextBadgeAnimation();
+    }
+  }, [badgeQueue, isAnimating]);
+
+  const handleNextBadgeAnimation = () => {
+    const nextBadge = badgeQueue[0];
+    if (!nextBadge) return;
+
+    setIsAnimating(true);
+    
+    // 1. Calculate and set positions
+    const chestElement = chestRef.current;
+    const profilePill = document.getElementById("navbar-profile-pill");
+    
+    if (chestElement && profilePill) {
+      const chestRect = chestElement.getBoundingClientRect();
+      const profileRect = profilePill.getBoundingClientRect();
+      
+      setStartPos({ 
+        x: chestRect.left + chestRect.width / 2 - 40, 
+        y: chestRect.top + 30 
+      });
+      setTargetPos({ 
+        x: profileRect.left + profileRect.width / 2 - 40, 
+        y: profileRect.top + profileRect.height / 2 - 40 
+      });
+    }
+
+    // 2. Start Animation Sequence
+    setIsChestOpen(true);
+    
+    setTimeout(() => {
+      setShowBadge(nextBadge);
+    }, 800);
+
+    setTimeout(() => {
+      setShowBadge(null);
+      setIsChestOpen(false);
+      
+      // Cleanup and move to next in queue
+      setTimeout(() => {
+        setBadgeQueue(prev => prev.slice(1));
+        setIsAnimating(false);
+      }, 500); // Small gap between multiple badges
+    }, 5500); 
+  };
 
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
@@ -217,15 +301,72 @@ export default function Learn() {
           ))}
 
           <motion.div
+            ref={chestRef}
             className="reward-container"
             whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
           >
-            <img src={treasureChest} alt="Reward" className="treasure-chest" />
-            <p className="reward-text">Unlock Chest!</p>
+            <AnimatePresence>
+              {showBadge && (
+                <motion.div
+                  className="flying-badge"
+                  initial={{ 
+                    left: startPos.x, 
+                    top: startPos.y, 
+                    opacity: 0, 
+                    scale: 0.5 
+                  }}
+                  animate={{ 
+                    left: [startPos.x, startPos.x, targetPos.x],
+                    top: [startPos.y, startPos.y - 120, targetPos.y],
+                    opacity: [0, 1, 1, 0],
+                    scale: [0.5, 1.5, 1.5, 0.4] 
+                  }}
+                  exit={{ opacity: 0 }}
+                  transition={{ 
+                    duration: 4, 
+                    times: [0, 0.2, 0.9, 1],
+                    ease: "easeInOut" 
+                  }}
+                >
+                  <div className={`badge-popout-circle ${showBadge.color}`}>
+                    {showBadge.icon}
+                  </div>
+                  <motion.div 
+                    className="badge-popout-name"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 1, 0] }}
+                    transition={{ duration: 4, times: [0, 0.2, 0.8, 1] }}
+                  >
+                    {showBadge.name} Unlocked!
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <motion.img 
+              src={isChestOpen ? treasureChest : treasureClosed} 
+              alt="Reward" 
+              className="treasure-chest" 
+              initial={false}
+              animate={{ 
+                scale: isChestOpen ? [1, 1.2, 1] : 1,
+                rotate: isChestOpen ? [0, -5, 5, 0] : 0
+              }}
+            />
+            <p className="reward-text">{showBadge ? "New Badge Earned!" : "Unlock Chest!"}</p>
           </motion.div>
         </div>
       </section>
       <ToastContainer />
+      <button 
+        onClick={() => {
+          localStorage.setItem("lastSeenLevel", "1");
+          setHighestUnlockedLevel(1); 
+          setTimeout(() => setHighestUnlockedLevel(4), 100); 
+        }} 
+        style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999, padding: '10px', background: 'red', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+      >
+        Test Multiple Badge Sequence
+      </button>
     </div>
   );
 }

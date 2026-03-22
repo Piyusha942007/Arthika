@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
+<<<<<<< HEAD
 import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase, Play, Pause, RefreshCw } from "lucide-react";
+=======
+import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase, Volume2, VolumeX } from "lucide-react";
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
 import "./Save.css";
 import dollarIcon from "../../assets/images/dollar-icon.png";
 import { getSuggestions, askArthika } from "../../services/GeminiService";
 import axios from 'axios';
+
+import { getInitialLang, getCodeFromGoog } from "../../utils/languageUtils";
 
 export default function Save() {
 
@@ -43,15 +49,32 @@ export default function Save() {
   const [chatResponse, setChatResponse] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isMuted, setIsMuted] = useState(localStorage.getItem("isMuted") === "true");
 
-  const initialLang = localStorage.getItem("lang") ? `${localStorage.getItem("lang")}-IN` : "en-IN";
-  const [audioLang, setAudioLang] = useState(initialLang);
+  const [audioLang, setAudioLang] = useState(getInitialLang());
+
+  useEffect(() => {
+    const checkLang = () => {
+      const lang = getInitialLang();
+      setAudioLang(lang);
+    };
+
+    const observer = new MutationObserver(checkLang);
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
 
   // Constants
   const API = "http://localhost:5000/api/goals";
   const USER_API = "http://localhost:5000/api/profile"; // Original endpoint for fetching User details 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
 
+<<<<<<< HEAD
   const loanData = {
     SBI: [
       { name: "Lakhpati Didi Digital Loan", interest: 8.5, tenure: 6 },
@@ -99,7 +122,23 @@ export default function Save() {
   };
 
   // Speech Recognition
+=======
+  // Speech Recognition & Synthesis
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
   const recognitionRef = useRef(null);
+  const synthRef = useRef(window.speechSynthesis);
+
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const voices = window.speechSynthesis.getVoices();
+      console.log("TTS Voices loaded:", voices.length);
+    };
+    window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+    handleVoicesChanged(); // Initial call
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
 
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -134,15 +173,112 @@ export default function Save() {
     }
   }, [audioLang]);
 
+  const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    localStorage.setItem("isMuted", nextMuted);
+    if (nextMuted) {
+      synthRef.current?.cancel();
+      setIsSpeaking(false);
+    } else if (chatResponse) {
+      // Proactive: If unmuting and there is a message, speak it
+      speakText(chatResponse);
+    }
+  };
+
   const toggleListen = () => {
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
+      synthRef.current?.cancel();
+      setIsSpeaking(false);
       setChatQuestion("");
       recognitionRef.current?.start();
       setIsListening(true);
     }
   };
+
+  const speakText = (text) => {
+    if (!synthRef.current || isMuted) return;
+
+    synthRef.current.cancel();
+
+    // Small delay to let the engine clear properly before starting new speech
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = audioLang;
+
+      console.log(`Attempting to speak in ${audioLang}: "${text.substring(0, 30)}..."`);
+      
+      const voices = synthRef.current.getVoices();
+      if (voices.length === 0) {
+        console.warn("No TTS voices available yet.");
+      }
+
+      const langVoices = voices.filter(voice =>
+        voice.lang.includes(audioLang) || voice.lang.includes(audioLang.split('-')[0])
+      );
+      console.log(`Found ${langVoices.length} voices for ${audioLang}`);
+
+      let bestVoice = null;
+      if (langVoices.length > 0) {
+        // 1. Try to find a LOCAL Female voice (highest quality local)
+        bestVoice = langVoices.find(v =>
+          !v.name.toLowerCase().includes('online') && 
+          !v.name.toLowerCase().includes('natural') &&
+          (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || 
+           v.name.toLowerCase().includes('aditi') || v.name.toLowerCase().includes('neerja') || 
+           v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('heera'))
+        );
+        
+        // 2. Fallback to ANY local voice (even male) to avoid "Online" failures
+        if (!bestVoice) {
+          bestVoice = langVoices.find(v => 
+            !v.name.toLowerCase().includes('online') && 
+            !v.name.toLowerCase().includes('natural')
+          );
+        }
+        
+        // 3. Last resort: use the first available (could be Online)
+        if (!bestVoice) bestVoice = langVoices[0];
+      }
+
+      if (bestVoice) {
+        console.log("Selecting voice:", bestVoice.name);
+        utterance.voice = bestVoice;
+      } else {
+        console.warn("No suitable voice found for language:", audioLang);
+      }
+
+      utterance.onstart = () => {
+        console.log("Speech started");
+        setIsSpeaking(true);
+      };
+      utterance.onend = () => {
+        console.log("Speech ended");
+        setIsSpeaking(false);
+      };
+      utterance.onerror = (e) => {
+        console.error("Speech error:", e);
+        setIsSpeaking(false);
+        // If it failed specifically with an "online" voice, try one more time 
+        // with the absolute first local voice in the general list as a hard fallback
+        if (e.error === 'synthesis-failed' && bestVoice?.name.toLowerCase().includes('online')) {
+            console.log("Online synthesis failed. Retrying with any available local voice...");
+            const fallbackVoice = voices.find(v => !v.name.toLowerCase().includes('online'));
+            if (fallbackVoice) {
+                const retryUtterance = new SpeechSynthesisUtterance(text);
+                retryUtterance.voice = fallbackVoice;
+                retryUtterance.lang = fallbackVoice.lang;
+                synthRef.current.speak(retryUtterance);
+            }
+        }
+      };
+
+      synthRef.current.speak(utterance);
+    }, 100); // 100ms delay helps stability
+  };
+
 
   /* FETCH GOALS & PROFILE */
   useEffect(() => {
@@ -261,7 +397,11 @@ export default function Save() {
     setChatResponse(res);
     setIsChatLoading(false);
     setChatQuestion("");
+<<<<<<< HEAD
     speak(res);
+=======
+    speakText(res);
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
   };
 
   /* ADD GOAL */
@@ -396,7 +536,11 @@ export default function Save() {
           <div className="persona-header">
             <h3>Arthika Dashboard</h3>
             <span className="persona-badge" style={{ padding: '8px 15px', background: '#F48FB1', color: '#fff', borderRadius: '20px', fontWeight: 'bold' }}>
+<<<<<<< HEAD
               Hello {userName} ({persona})
+=======
+              Hello, {user?.firstName || 'User'}! ({persona || 'Housewife'})
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
             </span>
           </div>
           <p style={{ marginTop: '5px', fontSize: '0.9rem', color: '#555', fontWeight: '500' }}>
@@ -424,7 +568,52 @@ export default function Save() {
                 {isLoadingSuggestions ? (
                   <p className="loading-text"><Loader2 className="spinner" size={16} /> Arthika is thinking...</p>
                 ) : (
-                  <div style={{ whiteSpace: 'pre-line' }}>{aiSuggestions}</div>
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ whiteSpace: 'pre-line' }}>{aiSuggestions}</div>
+                    {aiSuggestions && (
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <button
+                          className="speak-suggestions-btn"
+                          onClick={() => {
+                            if (isMuted) toggleMute(); // Unmute if they click specifically to listen
+                            speakText(aiSuggestions);
+                          }}
+                          style={{
+                            background: '#000',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '8px 15px',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          <Volume2 size={18} /> {isSpeaking ? 'Speaking...' : 'Listen to Tips'}
+                        </button>
+                        {isSpeaking && (
+                          <button
+                            onClick={() => { synthRef.current?.cancel(); setIsSpeaking(false); }}
+                            style={{
+                              background: '#eee',
+                              border: 'none',
+                              padding: '8px 15px',
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                              color: '#000',
+                              fontWeight: 'bold',
+                              fontSize: '0.85rem'
+                            }}
+                          >
+                            Stop
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -644,16 +833,42 @@ export default function Save() {
 
         {/* ASK ARTHIKA CHAT COMPONENT */}
         <section className="ask-arthika-card glassmorphism">
-          <div className="chat-header">
-            <h3><MessageSquare size={24} /> Ask Arthika</h3>
-            <p>Your Finanical Assistant to help you save and invest!</p>
-          </div>
+            <div className="chat-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3><MessageSquare size={24} /> Ask Arthika</h3>
+                <p>Your Finanical Assistant to help you save and invest!</p>
+              </div>
+              {chatResponse && (
+                <button 
+                  className="listen-arthika-header-btn" 
+                  onClick={() => {
+                    if (isMuted) setIsMuted(false);
+                    speakText(chatResponse);
+                  }} 
+                  style={{ 
+                    background: '#F48FB1', 
+                    color: '#fff', 
+                    border: 'none', 
+                    padding: '8px 15px', 
+                    borderRadius: '15px', 
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Volume2 size={18} /> Listen Arthika
+                </button>
+              )}
+            </div>
 
           <div className="chat-response-area">
             {isChatLoading ? (
               <div className="loading-chat"><Loader2 className="spinner" size={24} /> Thinking...</div>
             ) : (
               chatResponse && (
+<<<<<<< HEAD
                 <div className="chat-response-container">
                   <div className="chat-bubble">{chatResponse}</div>
                   <div className="tts-controls" style={{ display: 'flex', gap: '10px', marginTop: '10px', justifyContent: 'flex-end' }}>
@@ -661,21 +876,67 @@ export default function Save() {
                     <button className="icon-btn" onClick={pauseSpeech} title="Pause" style={{ background: '#f5f5f5', border: '1px solid #ddd', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Pause size={18} color="#555" /></button>
                     <button className="icon-btn" onClick={replaySpeech} title="Replay" style={{ background: '#f5f5f5', border: '1px solid #ddd', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RefreshCw size={18} color="#555" /></button>
                   </div>
+=======
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <div className="chat-bubble">{chatResponse}</div>
+                  
+                  {/* Show Stop button only while speaking */}
+                  {isSpeaking && (
+                    <button
+                      onClick={() => { synthRef.current?.cancel(); setIsSpeaking(false); }}
+                      style={{
+                        marginTop: '5px',
+                        marginLeft: '10px',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#FF4081',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Stop
+                    </button>
+                  )}
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
                 </div>
               )
             )}
           </div>
 
-          <div className="chat-input-row" style={{ flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              placeholder="Ask about saving, loans, or business..."
-              value={chatQuestion}
-              onChange={(e) => setChatQuestion(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAskArthika()}
-              style={{ minWidth: '200px' }}
-            />
+          <div className="chat-input-row" style={{ flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '200px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="text"
+                placeholder="Ask about saving, loans, or business..."
+                value={chatQuestion}
+                onChange={(e) => setChatQuestion(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAskArthika()}
+                style={{ flex: 1 }}
+              />
+              <button
+                className={`mic-btn-circle ${isListening ? 'is-listening' : ''}`}
+                onClick={toggleListen}
+                title={isListening ? "Stop Listening" : "Speak your question"}
+                style={{
+                  background: isListening ? '#ff4081' : '#f0f0f0',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '45px',
+                  height: '45px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: isListening ? '0 0 15px rgba(255, 64, 129, 0.5)' : 'none'
+                }}
+              >
+                {isListening ? <Loader2 className="spinner" size={20} color="#fff" /> : <Mic size={20} color={isListening ? "#fff" : "#555"} />}
+              </button>
+            </div>
 
+<<<<<<< HEAD
             <select
               value={audioLang}
               onChange={(e) => setAudioLang(e.target.value)}
@@ -693,15 +954,14 @@ export default function Save() {
                  <option key={lang.code} value={lang.code}>{lang.name}</option>
               ))}
             </select>
+=======
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
 
-            <button className={`mic-btn ${isListening ? 'listening' : ''}`} onClick={toggleListen} title="Speak with Arthika">
-              <Mic size={24} />
-            </button>
-
-            <button className="primary-btn shrink-btn" onClick={handleAskArthika}>
+            <button className="primary-btn" onClick={handleAskArthika} style={{ padding: '10px 40px' }}>
               Send
             </button>
           </div>
+
         </section>
 
       </main>

@@ -1,4 +1,6 @@
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+
 import "./Welcome.css"
 
 const languages = [
@@ -15,8 +17,10 @@ const languages = [
 
 export default function Welcome() {
   const navigate = useNavigate()
+  const [selectedLang, setSelectedLang] = useState(localStorage.getItem("lang") || "en")
 
   const changeLanguage = (lang) => {
+    setSelectedLang(lang)
     localStorage.setItem("lang", lang)
     let retries = 0
     const interval = setInterval(() => {
@@ -25,11 +29,11 @@ export default function Welcome() {
         select.value = lang
         select.dispatchEvent(new Event("change"))
         clearInterval(interval)
-      } else if (retries > 10) {
+      } else if (retries > 20) {
         clearInterval(interval)
       }
       retries++
-    }, 500)
+    }, 400)
   }
 
   return (
@@ -42,7 +46,7 @@ export default function Welcome() {
         {languages.map((lang) => (
           <button
             key={lang.code}
-            className="lang-btn"
+            className={`lang-btn ${selectedLang === lang.code ? 'selected' : ''}`}
             onClick={() => changeLanguage(lang.code)}
           >
             {lang.label}
@@ -50,9 +54,9 @@ export default function Welcome() {
         ))}
       </div>
 
-      <button className="proceed" onClick={() => navigate("/login")}>
+      <button className="proceed" onClick={() => navigate("/login")} style={{ boxShadow: "0 4px 15px rgba(251,192,45,0.4)" }}>
         Proceed →
       </button>
     </div>
   )
-}
+}
