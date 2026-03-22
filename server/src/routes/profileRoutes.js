@@ -40,6 +40,20 @@ router.put('/update-role', async (req, res) => {
     }
 });
 
+router.put('/update-work', async (req, res) => {
+    const { email, workNature } = req.body;
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { email }, 
+            { workNature }, 
+            { new: true }
+        );
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
 router.post('/toggle-streak', async (req, res) => {
     const { email, date } = req.body;
     try {

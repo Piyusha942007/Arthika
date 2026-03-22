@@ -15,10 +15,10 @@ export default function Save() {
   const [newGoal, setNewGoal] = useState({ title: "", target: "" });
   const [savingsInput, setSavingsInput] = useState({});
 
-  // Persona State
   const [persona, setPersona] = useState("");
   const [userName, setUserName] = useState(user?.fullName || "User");
   const [businessInfo, setBusinessInfo] = useState("");
+  const [isEditingBusiness, setIsEditingBusiness] = useState(false);
 
   const supportedLanguages = [
       { code: "en-IN", name: "English", googCode: "en" },
@@ -349,7 +349,7 @@ export default function Save() {
     try {
       const goalToSave = {
         clerkId: user.id,
-        title: `Loan: ${loanDetails.bank || 'Bank'}`,
+        title: `${loanDetails.scheme || 'Loan'} from ${loanDetails.bank || 'Bank'}`,
         targetAmount: Number(Math.round(payoffTimeline.totalPayment))
       };
 
@@ -404,15 +404,53 @@ export default function Save() {
           </p>
 
           {persona === "Working Woman" && (
-            <div className="business-input-container" style={{ marginTop: "15px" }}>
-              <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#333' }}>Tell me about your business/work (Ask Arthika will give personalized ideas!):</label>
-              <textarea
-                value={businessInfo}
-                onChange={(e) => setBusinessInfo(e.target.value)}
-                placeholder="E.g., I run a tailoring shop and want to expand..."
-                rows={2}
-                style={{ width: "100%", padding: "10px", borderRadius: "8px", marginTop: "5px", border: "1px solid #ddd" }}
-              />
+            <div className="business-input-container" style={{ marginTop: "15px", background: "#fdfdfd", padding: "15px", borderRadius: "10px", border: "1px solid #eee" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#333' }}>
+                  Tell me about your business/work (Ask Arthika will give personalized ideas!):
+                </label>
+                {!isEditingBusiness && businessInfo && (
+                  <button 
+                    onClick={() => setIsEditingBusiness(true)}
+                    style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "16px" }}
+                    title="Edit Business Info"
+                  >
+                    ✏️
+                  </button>
+                )}
+              </div>
+              
+              {isEditingBusiness || !businessInfo ? (
+                <div>
+                  <textarea
+                    value={businessInfo}
+                    onChange={(e) => setBusinessInfo(e.target.value)}
+                    placeholder="E.g., I run a tailoring shop and want to expand..."
+                    rows={2}
+                    style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #ddd", marginBottom: "10px" }}
+                  />
+                  <button 
+                    onClick={async () => {
+                      setIsEditingBusiness(false);
+                      try {
+                        await axios.put("http://localhost:5000/api/profile/update-work", {
+                          email: userEmail,
+                          workNature: businessInfo
+                        });
+                      } catch (err) {
+                        console.error("Failed to update work nature", err);
+                      }
+                    }}
+                    style={{ background: "#000", color: "#fff", padding: "6px 15px", borderRadius: "12px", border: "none", fontWeight: "bold", cursor: "pointer" }}
+                  >
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <p style={{ margin: 0, padding: "10px", background: "#fff", borderRadius: "8px", border: "1px solid #e0e0e0", fontStyle: "italic", color: "#555" }}>
+                  {businessInfo}
+                </p>
+              )}
             </div>
           )}
 
