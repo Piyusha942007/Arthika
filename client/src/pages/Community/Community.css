@@ -1,483 +1,297 @@
+/* Global Page Style */
 .community-page {
-    background: #F8EBCB;
+    background: #FFF0CB;
     min-height: 100vh;
-    padding: 60px 20px;
+    width: 100%;
+    padding: 0;
     font-family: 'Outfit', sans-serif;
     position: relative;
     overflow-x: hidden;
-    padding-bottom: 120px;
 }
 
 .community-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-    /* Separates top and bottom cards visibly */
+    width: 95%;
+    max-width: 980px;
+    margin: 5px auto;
     position: relative;
-    z-index: 1;
+    z-index: 10;
+    padding-bottom: 80px;
 }
 
-/* SECTION 1: Help is Available (Restyled) */
+/* BIG HUB STYLES (First Page) */
+.hub-container.big-hub {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+    flex-wrap: wrap;
+}
+
+.hub-card.big-card {
+    background: #FFFFFF;
+    border-radius: 50px;
+    width: 300px;
+    padding: 50px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 5px solid #000;
+}
+
+.hub-card.big-card:hover { 
+    transform: translateY(-12px) scale(1.03); 
+    box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+}
+
+.hub-title-large {
+    font-size: 32px;
+    font-weight: 950;
+    margin-bottom: 35px;
+    color: #F43F5E;
+    text-align: center;
+}
+
+.hub-icon-box.large-box {
+    width: 170px;
+    height: 170px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    border: 4px solid #000;
+    background: #fff;
+    overflow: hidden;
+}
+
+.hub-pill-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 70px;
+    border: 4px solid #000;
+    font-size: 22px;
+    font-weight: 950;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.connect-pill { background: #F499B8; color: #000; }
+.earn-pill { background: #000; color: #fff; }
+
+.hub-pill-btn:hover { transform: scale(1.06); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+/* CONNECT VIEW */
 .help-section-card {
-    background: linear-gradient(180deg, #FEF9F1 0%, #FFF5E6 100%);
-    border: 5px solid #FFFFFF;
-    border-radius: 80px;
-    padding: 60px 30px;
-    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.04);
+    background: #fff;
+    border-radius: 70px;
+    padding: 70px 40px;
 }
 
 .section-title {
-    font-weight: 800;
-    font-size: clamp(32px, 5vw, 56px);
+    font-size: 38px;
+    font-weight: 950;
+    margin-bottom: 60px;
     text-align: center;
     color: #000;
-    margin-bottom: 50px;
-    margin-top: 0;
-    letter-spacing: -0.02em;
+    text-transform: uppercase;
 }
 
 .help-cards-container {
     display: flex;
+    gap: 40px;
+    margin-bottom: 100px;
     justify-content: center;
-    gap: 30px;
     flex-wrap: wrap;
+    align-items: stretch;
 }
 
-.pink-card {
-    background: linear-gradient(135deg, #F499B8 0%, #F07FB2 100%);
-    border: 8px solid #FFFFFF;
-    padding: 45px 35px;
+.help-card.pill-box-shape {
+    flex: 1;
+    min-width: 300px;
+    max-width: 420px; 
+    padding: 60px 35px;
+    text-align: center;
+    border: none;
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: 440px;
-    box-shadow: 0 10px 30px rgba(244, 153, 184, 0.3);
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.pink-card:hover {
-    transform: translateY(-15px) rotate(1deg);
+.shape-right { border-radius: 110px 20px 110px 20px; }
+.shape-left { border-radius: 20px 110px 20px 110px; }
+
+.pink-card { 
+    background: #F499B8; 
+    box-shadow: 0 25px 90px rgba(244, 153, 184, 0.35);
 }
 
-.help-cards-container>.pink-card:nth-child(even) {
-    border-radius: 80px 20px 80px 20px;
-}
-
-.help-cards-container>.pink-card:nth-child(odd) {
-    border-radius: 20px 80px 20px 80px;
+.interactive-box:hover {
+    transform: translateY(-12px) translateX(10px) scale(1.02);
 }
 
 .card-title {
-    font-weight: 700;
-    font-size: 26px;
-    line-height: 1.2;
+    font-size: 28px;
+    font-weight: 950;
+    margin-bottom: 40px;
     text-align: center;
-    color: #000000;
-    margin-top: 0;
-    margin-bottom: 25px;
+    color: #000;
 }
 
-.pill-list {
+.pill-list-refined {
+    margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
+    gap: 20px;
     align-items: center;
+    width: 100%;
 }
 
-/* New Animations for Helplines */
-@keyframes card-glow {
-    0% { box-shadow: 0 0 5px rgba(244, 144, 184, 0.2); }
-    50% { box-shadow: 0 0 20px rgba(244, 144, 184, 0.5); }
-    100% { box-shadow: 0 0 5px rgba(244, 144, 184, 0.2); }
-}
-
-.help-card.pink-card:last-child {
-    animation: card-glow 4s infinite ease-in-out;
-}
-
-.pill {
-    font-weight: 700;
-    font-size: 18px;
+.data-pill {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 80px;
     text-align: center;
-    color: #000000;
-    padding: 12px 16px;
-    border-radius: 60px;
-    width: 90%;
-    max-width: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-}
-
-.pill:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.yellow-pill {
-    background: #FAB819;
-}
-
-.white-pill {
-    background: #FFFFFF;
-}
-
-.border-pink {
-    border: 5px solid #F48FB1;
-}
-
-.border-yellow {
-    background: #FFCC4D;
-    border: 3px solid #FAB819;
-}
-
-.detailed-pills {
-    width: 110%; /* Slightly wider to accommodate text */
-}
-
-.counselor-row {
-    flex-direction: column !important;
-    padding: 15px 20px !important;
-    min-height: auto !important;
-    gap: 8px !important;
-    width: 100% !important;
-    max-width: 380px !important;
-}
-
-.org-name {
-    font-weight: 800;
+    font-weight: 600;
     font-size: 16px;
-    line-height: 1.2;
-}
-
-.org-links {
-    display: flex;
-    gap: 10px;
-    font-size: 14px;
-}
-
-.org-links a {
-    color: inherit;
-    text-decoration: underline;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
-
-.org-links a:hover {
-    opacity: 1;
-}
-
-.large-pill {
-    min-height: 90px;
-}
-
-
-/* SECTION 2: Want to grow your business? (Highly squished vertically!) */
-.business-section-card {
-    background: #FDF9F1;
-    border-radius: 60px;
-    padding: 30px 40px 30px 40px;
-    /* Added slight lateral padding to breathe */
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
-    max-width: 800px;
-    /* Force it tighter around the content */
-    margin: 0 auto;
-}
-
-.business-section-card .section-title {
-    margin-bottom: 20px;
-    /* Squeezed heading margin */
-    font-size: clamp(28px, 4vw, 40px);
-}
-
-.location-search-wrapper {
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
-    /* Reduced gap between location and business details */
+    align-items: center;
+    gap: 6px;
 }
 
-.location-input-container {
-    background: #FCF9F1;
-    border: 5px solid #FFFFFF;
-    border-radius: 100px;
-    /* More rounded */
-    padding: 12px 25px;
+.data-pill strong { 
+    font-weight: 950; 
+    font-size: 18px; 
+    transition: color 0.3s ease;
+}
+
+.data-pill:hover strong {
+    color: #F43F5E;
+    transform: scale(1.08);
+}
+
+.yellow-pill { background: #FED05E; color: #000; }
+.white-pill { background: #fff; color: #000; }
+
+.multi-line-pill {
+    flex-direction: column;
+    padding: 12px 20px;
+    white-space: normal;
+    text-align: center;
+}
+
+/* Search Section */
+.find-nearest-section { margin-top: 120px; text-align: center; }
+.section-subtitle { font-size: 32px; font-weight: 950; margin-bottom: 40px; color: #000; }
+
+.location-input-container.x-large {
+    background: #FEF9EF;
+    border-radius: 80px;
+    padding: 25px 60px;
+    max-width: 700px;
+    border: 5px solid #000;
+    margin: 0 auto 35px auto;
     display: flex;
     align-items: center;
-    gap: 15px;
-    width: 100%;
-    max-width: 650px;
-    box-sizing: border-box;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    gap: 25px;
+    width: 90%;
 }
 
-.location-input {
+.location-input.search-text {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
     flex: 1;
     border: none;
+    outline: none;
     background: transparent;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 20px;
-    color: #000;
-    outline: none;
-    line-height: normal;
-    padding: 0;
-    margin: 0;
 }
 
-.location-input::placeholder {
-    color: rgba(0, 0, 0, 0.3);
-}
-
-.icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.8;
-    color: #000;
-}
-
-.icon svg {
-    display: block;
-}
-
-.business-details-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    /* Squeezed gap to search button */
-}
-
-.business-details-card {
-    background: #D9D9D9;
-    border-radius: 40px;
-    padding: 20px 30px;
-    /* Removed 50px top/bottom paddings entirely */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 650px;
-    box-sizing: border-box;
-}
-
-.business-card-title {
-    font-weight: 700;
-    font-size: clamp(20px, 3vw, 28px);
-    text-align: center;
-    color: #000000;
-    margin-top: 0;
-    margin-bottom: 15px;
-    /* Shrunk title gap */
-}
-
-.business-name-input {
-    background: #FCF9F1;
-    border: 5px solid #FFFFFF;
-    border-radius: 60px;
-    width: 100%;
-    max-width: 550px;
-    padding: 8px 20px;
-    /* Halving the height */
-    font-family: inherit;
-    font-weight: 700;
-    font-size: clamp(14px, 2.5vw, 18px);
-    text-align: center;
-    color: rgba(0, 0, 0, 0.5);
-    outline: none;
-    margin-bottom: 15px;
-    /* Tighter gap to upload zone */
-    box-sizing: border-box;
-}
-
-.business-name-input::placeholder {
-    color: rgba(0, 0, 0, 0.5);
-}
-
-.upload-area {
-    background: #FBF9F1;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 450px;
-    padding: 10px 15px;
-    /* Crushed the massive 40px padding */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    box-sizing: border-box;
-}
-
-.upload-icon {
-    margin-bottom: 0px;
-}
-
-.upload-icon svg {
-    width: 24px;
-    height: 24px;
-}
-
-.upload-text {
-    font-weight: 300;
-    font-size: clamp(12px, 2vw, 16px);
-    text-align: center;
-    color: #000000;
-    margin: 0;
-}
-
-.choose-files-btn {
-    background: #FED05E;
-    border-radius: 14.5px;
-    border: none;
-    padding: 6px 12px;
-    font-family: inherit;
-    font-weight: 300;
-    font-size: 14px;
+.search-shgs-pill-btn.smaller-btn {
+    padding: 20px 80px;
+    border-radius: 80px;
+    font-size: 22px;
+    font-weight: 950;
+    border: 5px solid #000;
+    background: #E0E0E0;
     cursor: pointer;
-    transition: transform 0.2s;
 }
 
-.choose-files-btn:hover {
-    transform: scale(1.05);
-}
+.search-shgs-pill-btn:hover { background: #000; color: #fff; transform: scale(1.05); }
 
-.search-btn-wrapper {
-    display: flex;
-    justify-content: center;
-}
+/* NGO List */
+.ngo-list-container { margin-top: 120px; width: 100%; }
+.ngo-intro { font-size: 32px; font-weight: 950; text-align: center; margin-bottom: 60px; }
 
-.search-shg-btn {
-    background: #D9D9D9;
-    border-radius: 60px;
-    border: none;
-    padding: 10px 20px;
-    /* Slightly compacted button */
-    font-family: inherit;
-    font-weight: 700;
-    font-size: clamp(16px, 2.5vw, 24px);
-    text-align: center;
-    color: #000000;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+.ngo-card.ultra-compact {
+    background: #fff;
+    border-radius: 70px;
+    padding: 40px 60px;
+    border: 5px solid #E0E0E0;
+    margin: 0 auto 40px auto;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     width: 100%;
-    max-width: 450px;
+    max-width: 950px;
 }
 
-.search-shg-btn:hover {
-    transform: scale(1.02);
-    background: #C0C0C0;
+.ngo-card.hover-light-pink:hover {
+    background: #FFF0F5 !important; 
+    border-color: #F499B8 !important; 
+    transform: scale(1.02) translateY(-12px);
+    box-shadow: 0 35px 80px rgba(244, 153, 184, 0.3);
 }
 
-/* Graphic Element */
-.bottom-gradient-bar {
-    position: absolute;
-    bottom: 20px;
-    left: -5%;
-    width: 110%;
-    height: 60px;
-    background: linear-gradient(90deg, #F48FB1 0%, #FFCC4D 100%);
-    border-radius: 32px;
-    z-index: 0;
-}
+.ngo-info h3 { font-size: 28px; font-weight: 950; margin-bottom: 15px; }
+.ngo-info p { font-size: 16px; margin: 10px 0; }
 
-
-/* SHG Results Styling - Reverted to Simple */
-.shg-results {
+/* Visit Website Button - Exact Hover Request */
+.visit-btn.smaller-btn {
     margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-    width: 100%;
-}
-
-.shg-result-card {
-    background: #FFFFFF;
-    padding: 20px;
-    border-radius: 25px;
-    width: 100%;
-    max-width: 550px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 2px solid transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: default;
-    position: relative;
-    overflow: hidden;
-}
-
-.shg-result-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
-    border-color: #F48FB1;
-    background: #FFF9FC;
-}
-
-.shg-result-card h3 {
-    margin: 0 0 8px 0;
-    color: #000;
+    border: 5px solid #FED05E; /* Yellow border */
+    background: transparent;
+    color: #FED05E; /* Yellow text */
+    padding: 15px 70px;
+    border-radius: 80px;
     font-size: 20px;
+    font-weight: 950;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.shg-result-card p {
-    margin: 4px 0;
-    font-size: 15px;
-    color: #555;
-    line-height: 1.4;
+.visit-btn.smaller-btn:hover { 
+    background: #FED05E !important; /* Turns Yellow on hover as requested */
+    color: #000 !important; /* Dark text for contrast */
+    transform: scale(1.06); 
+    box-shadow: 0 10px 30px rgba(254, 208, 94, 0.4);
 }
 
-.shg-result-card a {
-    color: #F48FB1;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s;
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 750px) {
+    .community-content { width: 100%; padding: 0 15px; }
+    .hub-container.big-hub { flex-direction: column; align-items: center; padding: 40px 0; gap: 30px; }
+    .help-card.pill-box-shape { width: 100%; max-width: 100%; border-radius: 80px 20px; padding: 50px 25px; }
+    .section-title { font-size: 32px; }
 }
 
-.shg-result-card a:hover {
-    color: #FAB819;
-    text-decoration: underline;
+.bottom-bar-gradient {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(90deg, #FDE2EA 0%, #FFF0CB 50%, #FEF3C7 100%);
+    z-index: 100;
 }
 
-.website-button {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #FFFDF5;
-    border: 2px solid #FAB819;
-    border-radius: 50px;
-    color: #FAB819 !important;
-    text-decoration: none !important;
-    font-weight: 700;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    text-align: center;
-}
-
-.website-button:hover {
-    background: #FAB819;
-    color: #FFFFFF !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(250, 184, 25, 0.2);
-}
-
-/* Responsiveness adjustments */
-@media (max-width: 900px) {
-
-    .help-section-card,
-    .business-section-card {
-        border-radius: 60px;
-        padding: 30px 15px;
-    }
-
-    .pink-card {
-        border-radius: 60px !important;
-    }
-}
+.animate-in { animation: fadeIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
