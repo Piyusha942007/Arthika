@@ -1,10 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { registerBusiness, upload } = require('../controllers/businessController');
+const { registerBusiness, getBusinesses, deleteBusiness, addComment, deleteComment, upload } = require('../controllers/businessController');
 
-// Route: POST /api/business
-// Middleware: upload.array('photos', 5) allows up to 5 files under the 'photos' field
+// Route: GET and POST /api/business
 router.route('/')
-    .post(upload.array('photos', 5), registerBusiness);
+    .get(getBusinesses)
+    .post(upload.single('photo'), registerBusiness); // Using single()
+
+router.route('/:id')
+    .delete(deleteBusiness);
+
+router.route('/:id/comments')
+    .post(addComment);
+
+router.route('/:id/comments/:commentId')
+    .delete(deleteComment);
 
 module.exports = router;

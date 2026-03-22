@@ -1,78 +1,145 @@
 const Business = require('../models/Business');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../../../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// Set up Multer Storage Engine locally
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename(req, file, cb) {
-        // Format: businessName-timestamp.ext
-        const ext = path.extname(file.originalname);
-        const businessName = req.body.businessName ? req.body.businessName.replace(/\\s+/g, '-').toLowerCase() : 'business';
-        cb(null, `${businessName}-${Date.now()}${ext}`);
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'arthika_community',
+        allowed_formats: ['jpeg', 'jpg', 'png']
     }
 });
 
-// Configure file upload filters
-const upload = multer({
+const upload = multer({ 
     storage,
-    limits: { fileSize: 5000000 }, // 5MB limit
-    fileFilter(req, file, cb) {
-        const filetypes = /jpeg|jpg|png/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = filetypes.test(file.mimetype);
-
-        if (extname && mimetype) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Images only (jpeg, jpg, png)!'));
-        }
-    }
+    limits: { fileSize: 5000000 }
 });
 
-
-// @desc    Register a new business with uploaded photos
+// @desc    Register a new business with single uploaded photo
 // @route   POST /api/business
-// @access  Public (for demo purposes)
 const registerBusiness = async (req, res) => {
     try {
-        const { businessName, location } = req.body;
+        const { businessName, ownerName, clerkId, contact, location, category, description } = req.body;
 
-        if (!businessName || !location) {
-            return res.status(400).json({ success: false, message: 'Please provide all required fields' });
+        if (!businessName || !clerkId || !contact) {
+            return res.status(400).json({ success: false, message: 'Missing required fields (businessName, clerkId, contact)' });
         }
 
-        // Get file paths
-        const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+        const imageUrl = req.file ? req.file.path : '';
 
-        // Save to Database
         const newBusiness = await Business.create({
             businessName,
+            ownerName,
+            clerkId,
+            contact,
             location,
-            photos: photoPaths
-            // user: req.user._id // if relying on auth middleware later
+            category,
+            description,
+            imageUrl
         });
 
-        res.status(201).json({
-            success: true,
-            data: newBusiness
-        });
+        res.status(201).json({ success: true, data: newBusiness });
     } catch (error) {
         console.error("Error registering business:", error);
         res.status(500).json({ success: false, message: 'Server Error registering business' });
     }
 };
 
+// @desc    Get all businesses
+// @route   GET /api/business
+const getBusinesses = async (req, res) => {
+    try {
+        const businesses = await Business.find().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, count: businesses.length, data: businesses });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error fetching businesses' });
+    }
+};
+
+// @desc    Delete a business explicitly mapped to logged-in user
+// @route   DELETE /api/business/:id
+const deleteBusiness = async (req, res) => {
+    try {
+        const { clerkId } = req.body;
+        const business = await Business.findById(req.params.id);
+
+        if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
+        
+        // Ensure user owns the post
+        if (business.clerkId !== clerkId) {
+            return res.status(403).json({ success: false, message: 'Not authorized to delete this post' });
+        }
+
+        await Business.findByIdAndDelete(req.params.id);
+        res.status(200).json({ success: true, message: 'Business removed' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error deleting business' });
+    }
+};
+
+// @desc    Add a sub-document comment
+// @route   POST /api/business/:id/comments
+const addComment = async (req, res) => {
+    try {
+        const { clerkId, userName, userImage, text } = req.body;
+        if (!text) return res.status(400).json({ success: false, message: 'Comment text required' });
+
+        const business = await Business.findByIdAndUpdate(
+            req.params.id,
+            {
+                $push: { comments: { clerkId, userName, userImage, text } }
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
+
+        res.status(201).json({ success: true, data: business });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error adding comment' });
+    }
+};
+
+// @desc    Delete a sub-document comment
+// @route   DELETE /api/business/:id/comments/:commentId
+const deleteComment = async (req, res) => {
+    try {
+        const { clerkId } = req.body;
+        const business = await Business.findById(req.params.id);
+
+        if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
+
+        const comment = business.comments.find(c => c._id.toString() === req.params.commentId);
+        if (!comment) return res.status(404).json({ success: false, message: 'Comment not found' });
+
+        // Ensure user owns the comment
+        if (comment.clerkId !== clerkId) {
+            return res.status(403).json({ success: false, message: 'Not authorized to delete this comment' });
+        }
+
+        // Pull comment
+        business.comments = business.comments.filter(c => c._id.toString() !== req.params.commentId);
+        await business.save();
+
+        res.status(200).json({ success: true, data: business });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error deleting comment' });
+    }
+};
+
 module.exports = {
     registerBusiness,
+    getBusinesses,
+    deleteBusiness,
+    addComment,
+    deleteComment,
     upload
 };
