@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const shgSchema = new mongoose.Schema({
     name: {
@@ -14,7 +14,6 @@ const shgSchema = new mongoose.Schema({
     },
     focusArea: {
         type: String,
-        required: true,
         trim: true
     },
     membersCount: {
@@ -24,7 +23,15 @@ const shgSchema = new mongoose.Schema({
     contactPhone: {
         type: String,
         trim: true
+    },
+    email: {
+        type: String,
+        trim: true
+    },
+    website: {
+        type: String,
+        trim: true
     }
 }, { timestamps: true });
 
-export default mongoose.model('SHG', shgSchema);
+module.exports = mongoose.model('SHG', shgSchema);
