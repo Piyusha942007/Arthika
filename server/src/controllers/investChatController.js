@@ -10,10 +10,10 @@ const handleSuggest = async (req, res) => {
         // Replace your initialization lines with these:
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-        // Use the explicit versioning in the model options
+        // Use the currently available model
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
-        }, { apiVersion: 'v1beta' });
+        });
         let personaContext = "";
         const lowerPersona = persona?.toLowerCase() || "";
 
@@ -61,10 +61,8 @@ const handleAsk = async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        // UPDATED: Using gemini-1.5-flash-latest
-        // Inside handleSuggest and handleAsk:
-        // Change the model string to "gemini-1.5-flash" exactly
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }, { apiVersion: 'v1beta' });
+        // Using the currently available model
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `You are Arthika, a friendly financial assistant for Indian women. 
         Strictly answer questions related to Saving Goals, Loans, Government Schemes, Business Ideas, and Financial tracking.

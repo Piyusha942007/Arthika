@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const shgSchema = new mongoose.Schema({
     name: {
@@ -34,4 +34,4 @@ const shgSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('SHG', shgSchema);
+export default mongoose.model('SHG', shgSchema);

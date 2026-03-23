@@ -3,9 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
-const chatRoutes = require("./src/routes/chatRoutes");
-const shgRoutes = require("./src/routes/shgRoutes");
-const businessRoutes = require("./src/routes/businessRoutes");
+const chatRoutes = require("./src/routes/chatRoutes").default || require("./src/routes/chatRoutes");
+const shgRoutes = require("./src/routes/shgRoutes").default || require("./src/routes/shgRoutes");
+const businessRoutes = require("./src/routes/businessRoutes").default || require("./src/routes/businessRoutes");
 
 const app = express();
 app.use(cors());

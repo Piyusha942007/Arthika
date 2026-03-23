@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { registerBusiness, getBusinesses, deleteBusiness, addComment, deleteComment, upload } = require('../controllers/businessController');
+import { registerBusiness, getBusinesses, deleteBusiness, addComment, deleteComment, upload } from '../controllers/businessController.js';
 
 // Route: GET and POST /api/business
 router.route('/')
@@ -16,4 +16,4 @@ router.route('/:id/comments')
 router.route('/:id/comments/:commentId')
     .delete(deleteComment);
 
-module.exports = router;
+export default router;

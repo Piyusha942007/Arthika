@@ -10,6 +10,15 @@ import Community from "./pages/Community/Community";
 import Navbar from "./components/common/Navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 
+import Learn from "./pages/Learn/Learn";
+import Lesson from "./pages/Learn/Lesson";
+import Invest from "./pages/Invest/Invest";
+import InvestLearn from "./pages/Invest/InvestLearn";
+import Save from "./pages/Invest/Save";
+import Profile from "./pages/Profile/Profile";
+import Quiz from "./pages/Quiz/Quiz";
+import Dashboard from "./pages/Dashboard/Dashboard";
+
 // Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
   const location = useLocation();
@@ -78,6 +87,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
+          <Route path="/learn/lesson/:id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
+          <Route path="/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
+          <Route path="/invest/learn" element={<ProtectedRoute><InvestLearn /></ProtectedRoute>} />
+          <Route path="/invest/save" element={<ProtectedRoute><Save /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

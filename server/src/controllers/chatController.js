@@ -15,8 +15,8 @@ export const handleChat = async (req, res) => {
         // Initialize Gemini SDK with the key from .env inside the request handle
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-        // Using gemini-1.5-flash as it is the stable free tier model
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }, { apiVersion: 'v1beta' });
+        // Using gemini-2.5-flash - the currently available model
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const systemPrompt = `You are "Arthika", a highly empathetic, helpful, and knowledgeable financial advisor and guide for a web app named Arthika. 
 Your target audience is rural Indian women and self-help group members. 
