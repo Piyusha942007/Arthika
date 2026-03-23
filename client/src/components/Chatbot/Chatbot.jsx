@@ -32,6 +32,13 @@ export default function Chatbot() {
     const [inputText, setInputText] = useState("");
     const [micError, setMicError] = useState(null); // 'not-allowed', 'network', or null
 
+    const prefilledQuestions = [
+        "How can I save money?",
+        "Schemes for women",
+        "How to start a business?",
+        "What is an SHG?"
+    ];
+
     const toggleMute = () => {
         const newMuted = !isMuted;
         setIsMuted(newMuted);
@@ -268,11 +275,47 @@ export default function Chatbot() {
 
                     <div className="chatbot-messages">
                         {messages.map((msg, idx) => (
-                            <div key={idx} className={`message \${msg.role}`}>
+                            <div key={idx} className={`message ${msg.role}`}>
                                 {msg.role === "bot" && <div className="avatar">🤖</div>}
                                 <div className="bubble">{msg.text}</div>
                             </div>
                         ))}
+
+                        {messages.length === 1 && (
+                            <div className="prefilled-container" style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '8px', 
+                                marginTop: '10px',
+                                paddingLeft: '34px' // Align with bot bubble (avatar 24px + gap 10px)
+                            }}>
+                                <p style={{ margin: '0 0 5px 0', fontSize: '0.8rem', color: '#888', fontWeight: 'bold' }}>Quick Questions:</p>
+                                {prefilledQuestions.map((q, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => handleUserMessage(q)}
+                                        style={{ 
+                                            textAlign: 'left',
+                                            padding: '10px 15px', 
+                                            borderRadius: '12px', 
+                                            border: '1px solid #F8EBCB', 
+                                            background: '#fff', 
+                                            fontSize: '0.9rem', 
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                                            color: '#333',
+                                            width: 'fit-content',
+                                            maxWidth: '100%'
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.background = '#FFCC4D'; e.currentTarget.style.color = '#fff'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#333'; }}
+                                    >
+                                        {q}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="chatbot-input">

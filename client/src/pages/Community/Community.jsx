@@ -48,6 +48,27 @@ export default function Community() {
         }
     };
 
+    const setViewWithHistory = (newView) => {
+        if (newView !== view) {
+            window.history.pushState({ view: newView }, "");
+            setView(newView);
+        }
+    };
+
+    useEffect(() => {
+        const handlePopState = (event) => {
+            if (event.state && event.state.view) {
+                setView(event.state.view);
+            } else {
+                setView('hub');
+            }
+        };
+
+        window.history.replaceState({ view: 'hub' }, "");
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
     useEffect(() => {
         if (view === 'earn') {
             fetchBusinesses();
@@ -247,7 +268,7 @@ export default function Community() {
 
     const renderHub = () => (
         <div className="hub-container big-hub animate-in">
-            <div className="hub-card connect-hub big-card" onClick={() => setView('connect')}>
+            <div className="hub-card connect-hub big-card" onClick={() => setViewWithHistory('connect')}>
                 <div className="hub-card-content" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <h2 className="hub-title-large">Connect</h2>
                     <div className="hub-icon-box large-box">
@@ -261,7 +282,7 @@ export default function Community() {
                 </div>
             </div>
 
-            <div className="hub-card earn-hub big-card" onClick={() => setView('earn')}>
+            <div className="hub-card earn-hub big-card" onClick={() => setViewWithHistory('earn')}>
                 <div className="hub-card-content" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <h2 className="hub-title-large">Expand</h2>
                     <div className="hub-icon-box large-box">
@@ -279,6 +300,12 @@ export default function Community() {
 
     const renderConnect = () => (
         <div className="view-content animate-in">
+            <button 
+                onClick={() => window.history.back()} 
+                style={{ marginBottom: '20px', background: '#000', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}
+            >
+                ← Back to Community Hub
+            </button>
             <div className="help-section-card small-scale">
                 <h1 className="section-title">Help is Available</h1>
 
@@ -401,6 +428,12 @@ export default function Community() {
 
         return (
         <div className="view-content animate-in earn-view-container" style={{ paddingBottom: '100px' }}>
+            <button 
+                onClick={() => window.history.back()} 
+                style={{ marginBottom: '20px', background: '#000', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}
+            >
+                ← Back to Community Hub
+            </button>
             <h1 className="section-title text-center" style={{ marginBottom: '20px', fontSize: '36px' }}>Want to grow your business?</h1>
             
             <div className="glassmorphism-card">
@@ -563,7 +596,6 @@ export default function Community() {
                 {view === 'connect' && renderConnect()}
                 {view === 'earn' && renderEarn()}
             </div>
-            <div className="bottom-bar-gradient"></div>
         </div>
     );
 }

@@ -28,7 +28,7 @@ function Layout({ children }) {
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   // Define paths where the Chatbot SHOULD NOT appear
-  const hideChatbotPaths = ["/community"];
+  const hideChatbotPaths = [];
   const shouldShowChatbot = shouldShowNavbar && !hideChatbotPaths.includes(location.pathname);
 
   return (
