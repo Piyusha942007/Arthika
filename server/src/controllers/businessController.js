@@ -1,6 +1,7 @@
 import Business from '../models/Business.js';
 import multer from 'multer';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import pkg from 'multer-storage-cloudinary';
+const { CloudinaryStorage } = pkg;
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
@@ -17,7 +18,7 @@ const storage = new CloudinaryStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage,
     limits: { fileSize: 5000000 }
 });
@@ -71,7 +72,7 @@ const deleteBusiness = async (req, res) => {
         const business = await Business.findById(req.params.id);
 
         if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
-        
+
         // Ensure user owns the post
         if (business.clerkId !== clerkId) {
             return res.status(403).json({ success: false, message: 'Not authorized to delete this post' });

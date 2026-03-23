@@ -31,6 +31,12 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(233, 30, 99, 0.3);
 }
 
 .hero-banner::before {
@@ -42,6 +48,11 @@
     height: 200px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
+    transition: transform 0.6s ease;
+}
+
+.hero-banner:hover::before {
+    transform: scale(1.2) translate(-20px, 20px);
 }
 
 .hero-banner::after {
@@ -53,6 +64,11 @@
     height: 100px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
+    transition: transform 0.6s ease;
+}
+
+.hero-banner:hover::after {
+    transform: scale(1.3) translate(20px, -20px);
 }
 
 .hero-greet { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
@@ -78,6 +94,7 @@
     background: #FFCC4D; 
     border-radius: 20px; 
     box-shadow: 0 0 15px rgba(255, 204, 77, 0.5);
+    transition: width 1s ease-out;
 }
 
 .hero-level-badge {
@@ -92,6 +109,13 @@
     justify-content: center;
     border: 6px solid white;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.hero-level-badge:hover {
+    transform: rotate(10deg) scale(1.1);
+    box-shadow: 0 12px 25px rgba(255, 204, 77, 0.4);
 }
 
 .level-label { font-size: 14px; font-weight: 800; letter-spacing: 2px; }
@@ -105,6 +129,13 @@
     box-shadow: 0 5px 20px rgba(0,0,0,0.03);
     margin-bottom: 20px;
     border-left: 5px solid #F48FB1;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    border-left-width: 8px;
 }
 
 .section-title {
@@ -112,6 +143,11 @@
     font-weight: 800;
     color: #333;
     margin: 0 0 20px 0;
+    transition: color 0.3s ease;
+}
+
+.dashboard-card:hover .section-title {
+    color: #E91E63;
 }
 
 /* --- PROFILE DETAILS --- */
@@ -128,6 +164,11 @@
     position: relative;
     width: 100px;
     height: 100px;
+    transition: transform 0.3s ease;
+}
+
+.p-avatar-box:hover {
+    transform: scale(1.05);
 }
 
 .p-avatar-box img {
@@ -136,6 +177,11 @@
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid #F48FB1;
+    transition: border-color 0.3s ease;
+}
+
+.p-avatar-box:hover img {
+    border-color: #FFCC4D;
 }
 
 .p-edit-btn {
@@ -152,6 +198,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.p-edit-btn:hover {
+    transform: rotate(90deg) scale(1.2);
+    background: #F48FB1;
 }
 
 .p-fullname { font-size: 28px; font-weight: 800; color: #333; margin: 0; }
@@ -165,6 +217,14 @@
     font-weight: 700;
     cursor: pointer;
     color: #856404;
+    transition: all 0.3s ease;
+}
+
+.p-name-edit:hover {
+    background: #FFCC4D;
+    color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 204, 77, 0.3);
 }
 
 .p-edit-field {
@@ -184,6 +244,12 @@
     font-family: 'Outfit', sans-serif;
     outline: none;
     box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+
+.p-edit-field input:focus {
+    border-color: #F48FB1;
+    box-shadow: 0 4px 15px rgba(244, 143, 177, 0.2);
 }
 
 .p-edit-btns {
@@ -199,6 +265,13 @@
     border-radius: 10px;
     font-weight: 800;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.p-save:hover {
+    background: #E91E63;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
 }
 
 .p-cancel {
@@ -209,6 +282,12 @@
     border-radius: 10px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.p-cancel:hover {
+    background: #e0e0e0;
+    color: #333;
 }
 
 .p-role-row {
@@ -231,8 +310,18 @@
     transition: 0.3s;
 }
 
+.p-role-opt:hover {
+    border-color: #FFCC4D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
 .p-role-opt.active.hw { background: #F48FB1; color: white; border-color: #F48FB1; }
 .p-role-opt.active.wk { background: #FFCC4D; color: #333; border-color: #FFCC4D; }
+
+.p-role-opt.active:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
 
 /* --- STREAK SECTION --- */
 .section-header {
@@ -250,6 +339,14 @@
     font-weight: 800;
     font-size: 16px;
     box-shadow: 0 5px 15px rgba(244, 143, 177, 0.1);
+    transition: all 0.3s ease;
+}
+
+.streak-section:hover .streak-count-glow {
+    transform: scale(1.1);
+    background: #F48FB1;
+    color: white;
+    box-shadow: 0 8px 20px rgba(244, 143, 177, 0.3);
 }
 
 .calendar-month-text {
@@ -283,13 +380,15 @@
     font-weight: 800;
     color: #333;
     font-size: 14px;
-    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: default;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
 }
 
 .cal-cell:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(255, 204, 77, 0.4);
+    transform: scale(1.25) rotate(5deg);
+    background: #FFF9F0;
+    box-shadow: 0 6px 15px rgba(255, 204, 77, 0.4);
+    z-index: 2;
 }
 
 .cal-cell.active-streak {
@@ -302,6 +401,11 @@
 .cal-cell.current-day {
     border: 3px solid #333; /* Darker border for today as seen in previous designs */
     transform: scale(1.1);
+}
+
+.cal-cell.active-streak:hover {
+    background: #E91E63 !important;
+    box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
 }
 
 /* --- BADGE GRID --- */
@@ -317,6 +421,12 @@
     align-items: center;
     text-align: center;
     gap: 8px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.badge-item-mini:hover {
+    transform: translateY(-5px);
 }
 
 .badge-icon-disk {
@@ -328,6 +438,11 @@
     align-items: center;
     justify-content: center;
     font-size: 28px;
+    transition: all 0.3s ease;
+}
+
+.badge-item-mini:hover .badge-icon-disk {
+    transform: scale(1.1);
 }
 
 .badge-item-mini.unlocked .badge-icon-disk {
@@ -335,7 +450,15 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.badge-mini-name { font-size: 13px; font-weight: 700; color: #555; }
+.badge-item-mini.unlocked:hover .badge-icon-disk {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.badge-mini-name { font-size: 13px; font-weight: 700; color: #555; transition: color 0.3s ease; }
+
+.badge-item-mini:hover .badge-mini-name {
+    color: #333;
+}
 
 /* --- SUPPORT SECTION --- */
 .support-network { border-left-color: #FFCC4D; }
@@ -348,6 +471,15 @@
     padding: 15px;
     border-radius: 15px;
     margin-bottom: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.support-card-mini:hover {
+    transform: translateX(5px);
+    background: #ffffff;
+    border-color: #FFCC4D;
+    box-shadow: 0 5px 15px rgba(255, 204, 77, 0.15);
 }
 
 .mavim-logo {
@@ -361,6 +493,11 @@
     justify-content: center;
     border-radius: 10px;
     font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.support-card-mini:hover .mavim-logo {
+    transform: scale(1.1) rotate(-5deg);
 }
 
 .support-info h4 { margin: 0; font-size: 16px; font-weight: 800; color: #333; }
@@ -372,6 +509,12 @@
     text-decoration: none;
     font-weight: 800;
     font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.call-btn:hover {
+    color: #F48FB1;
+    transform: scale(1.05);
 }
 
 .sisterhood-msg {
@@ -402,6 +545,12 @@
     background: #F48FB1; color: white; border: none;
     width: 35px; height: 35px; border-radius: 50%;
     cursor: pointer; z-index: 10001; font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    background: #E91E63;
+    transform: rotate(90deg) scale(1.1);
 }
 
 /* --- RESPONSIVE --- */
@@ -415,6 +564,10 @@
         flex-direction: column; 
         text-align: center; 
         gap: 30px;
+        width: 92%;
+    }
+    .hero-banner:hover {
+        transform: none; /* Disable lift on mobile hero to avoid layout issues */
     }
     .hero-progress-row { justify-content: center; width: 100%; }
     .hero-level-badge { 

@@ -160,14 +160,14 @@ export default function Save() {
         }
 
         if (res.data) {
-
           if (res.data.workNature) {
             setBusinessInfo(res.data.workNature);
           } else if (res.data.workType) {
             setBusinessInfo(res.data.workType);
           }
 
-          let occupationStr = res.data.occupation || res.data.role || res.data.persona || "Housewife";
+          // Updated prioritized fetching
+          let occupationStr = res.data.role || res.data.occupation || res.data.persona || "Housewife";
           if (occupationStr.toLowerCase().includes("working")) {
              setPersona("Working Woman");
           } else if (occupationStr.toLowerCase().includes("housewife")) {
@@ -400,7 +400,7 @@ export default function Save() {
               Hello {userName} ({persona})
             </span>
           </div>
-          <p style={{ marginTop: '5px', fontSize: '0.9rem', color: '#555', fontWeight: '500' }}>
+          <p style={{ marginTop: '10px', fontSize: '0.95rem', color: '#444', fontWeight: '500' }}>
             This dashboard is tailored to you! You can update your persona (Housewife/Working) by going to your <b>Profile Page</b>.
           </p>
 

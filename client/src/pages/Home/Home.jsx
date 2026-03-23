@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import { Instagram, Linkedin, Twitter, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
 import "./Home.css";
 import heroImg from "../../assets/images/arthikalogo.jpeg";
 import learnImg from "../../assets/images/learn.png";
@@ -121,22 +122,53 @@ export default function Home() {
                 <div className="footer-container">
                     <div className="footer-brand">
                         <h2 className="footer-logo">Arthika</h2>
-                        <p>A multilingual financial empowerment platform designed to make money management easy, accessible, and secure.</p>
+                        <p>A multilingual financial empowerment platform designed to make money management easy, accessible, and secure for everyone.</p>
+                        <div className="social-links">
+                            <a href="#" className="social-icon"><Instagram size={20} /></a>
+                            <a href="#" className="social-icon"><Linkedin size={20} /></a>
+                            <a href="#" className="social-icon"><Twitter size={20} /></a>
+                        </div>
                     </div>
-                    <div className="footer-links">
-                        <h3>Quick Links</h3>
+
+                    <div className="footer-column">
+                        <h3>Features</h3>
                         <ul>
-                            <li onClick={() => nav("/")} style={{ cursor: 'pointer' }}>Home</li>
-                            <li onClick={() => nav("/learn")} style={{ cursor: 'pointer' }}>Learn</li>
-                            <li onClick={() => nav("/invest")} style={{ cursor: 'pointer' }}>Invest</li>
-                            <li onClick={() => nav("/community")} style={{ cursor: 'pointer' }}>Community</li>
-                            <li onClick={() => nav("/contact")} style={{ cursor: 'pointer' }}>Contact Us</li>
-                            <li onClick={() => nav("/profile")} style={{ cursor: 'pointer' }}>Profile</li>
+                            <li onClick={() => nav("/learn")}>Learn to Earn</li>
+                            <li onClick={() => nav("/invest")}>Invest Smartly</li>
+                            <li onClick={() => nav("/community")}>SHG Community</li>
+                            <li onClick={() => nav("/invest")}>Govt. Schemes</li>
                         </ul>
+                    </div>
+
+                    <div className="footer-column">
+                        <h3>Support</h3>
+                        <ul>
+                            <li onClick={() => nav("/home#contact")}>Contact Us</li>
+                            <li onClick={() => nav("/profile")}>My Profile</li>
+
+                        </ul>
+                    </div>
+
+                    <div className="footer-column">
+                        <h3>Connect</h3>
+                        <div className="contact-info-footer">
+                            <div className="contact-item">
+                                <MapPin size={18} className="icon-pink" />
+                                <span>Pune, Maharashtra</span>
+                            </div>
+                            <div className="contact-item">
+                                <Mail size={18} className="icon-yellow" />
+                                <span>teamspakonix@gmail.com</span>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
                 <div className="footer-bottom">
-                    <p>© 2026 Arthika. All rights reserved.</p>
+                    <div className="footer-bottom-content">
+                        <p>© 2026 Arthika. Empowering journeys, one step at a time.</p>
+                        <p className="footer-made-with">Made with ❤️ for financial independence</p>
+                    </div>
                 </div>
             </footer>
         </div>

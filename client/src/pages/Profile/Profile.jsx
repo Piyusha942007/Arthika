@@ -91,14 +91,19 @@ const Profile = () => {
     };
 
     const handleToggle = (newRole) => {
+        console.log("Attempting to toggle role to:", newRole);
         axios.put(`${API_BASE_URL}/api/profile/update-role`, {
             email: user.primaryEmailAddress.emailAddress, role: newRole
         }).then(res => {
+            console.log("Profile update response:", res.data);
             setUserData(prevData => ({
                 ...prevData,
                 role: res.data.role || newRole
             }));
-        }).catch(err => console.error("Failed to update role:", err));
+        }).catch(err => {
+            console.error("Failed to update role:", err);
+            alert("Failed to update role. Please check console.");
+        });
     };
 
     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
