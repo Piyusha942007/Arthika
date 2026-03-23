@@ -7,7 +7,7 @@ import learnImg from "../../assets/images/learn.png";
 import communityImg from "../../assets/images/community.png";
 import goalIcon from "../../assets/images/goalIcon.png";
 import schemeIcon from "../../assets/images/schemeIcon.png";
-
+import Contact from "./Contact";
 export default function Home() {
     const { user, isLoaded } = useUser();
     const { signOut } = useClerk();
@@ -29,6 +29,17 @@ export default function Home() {
         };
         ensureUsername();
     }, [isLoaded, user]);
+
+    useEffect(() => {
+        if (window.location.hash === "#contact") {
+            const element = document.getElementById("contact");
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+            }
+        }
+    }, [nav]);
 
     return (
         <div className="home">
@@ -103,6 +114,9 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* CONTACT SECTION */}
+            <Contact />
+
             <footer className="footer">
                 <div className="footer-container">
                     <div className="footer-brand">
@@ -114,8 +128,10 @@ export default function Home() {
                         <ul>
                             <li onClick={() => nav("/")} style={{ cursor: 'pointer' }}>Home</li>
                             <li onClick={() => nav("/learn")} style={{ cursor: 'pointer' }}>Learn</li>
-                            <li>Dashboard</li>
-                            <li>Contact</li>
+                            <li onClick={() => nav("/invest")} style={{ cursor: 'pointer' }}>Invest</li>
+                            <li onClick={() => nav("/community")} style={{ cursor: 'pointer' }}>Community</li>
+                            <li onClick={() => nav("/contact")} style={{ cursor: 'pointer' }}>Contact Us</li>
+                            <li onClick={() => nav("/profile")} style={{ cursor: 'pointer' }}>Profile</li>
                         </ul>
                     </div>
                 </div>

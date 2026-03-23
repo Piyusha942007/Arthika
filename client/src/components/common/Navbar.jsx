@@ -31,6 +31,19 @@ export default function Navbar() {
 
     const isActive = (path) => location.pathname === path ? "active-link" : "";
 
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        setIsMobileMenuOpen(false);
+        if (location.pathname === "/home") {
+            const element = document.getElementById("contact");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        } else {
+            nav("/home#contact");
+        }
+    };
+
     return (
         <nav className="main-navbar">
             <div className="nav-content">
@@ -45,6 +58,7 @@ export default function Navbar() {
                     <Link to="/learn" className={isActive("/learn")} onClick={() => setIsMobileMenuOpen(false)}>Learn</Link>
                     <Link to="/invest" className={isActive("/invest")} onClick={() => setIsMobileMenuOpen(false)}>Invest</Link>
                     <Link to="/community" className={isActive("/community")} onClick={() => setIsMobileMenuOpen(false)}>Community</Link>
+                    <a href="#contact" className={location.pathname === "/home" && window.location.hash === "#contact" ? "active-link" : ""} onClick={handleContactClick}>Contact</a>
                 </div>
 
                 {/* Profile Section */}
