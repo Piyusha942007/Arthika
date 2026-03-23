@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import logoImg from "../../assets/images/arthikalogo.jpeg";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -48,10 +47,9 @@ export default function Navbar() {
     return (
         <nav className="main-navbar">
             <div className="nav-content">
-                {/* { Logo Section} */}
+                {/* Logo Section */}
                 <div className="nav-brand" onClick={() => nav("/home")} style={{ cursor: 'pointer' }}>
-
-                    <img src={logoImg} alt="Arthika Logo" className="nav-logo-icon" />
+                    <span className="brand-text">Arthika</span>
                 </div>
 
                 {/* Navigation Links */}
@@ -60,9 +58,9 @@ export default function Navbar() {
                     <Link to="/learn" className={isActive("/learn")} onClick={() => setIsMobileMenuOpen(false)}>Learn</Link>
                     <Link to="/invest" className={isActive("/invest")} onClick={() => setIsMobileMenuOpen(false)}>Invest</Link>
                     <Link to="/community" className={isActive("/community")} onClick={() => setIsMobileMenuOpen(false)}>Community</Link>
-                    <a href="#contact" className={location.pathname === "/home" && window.location.hash === "#contact" ? "active-link" : ""} onClick={handleContactClick}>Contact</a>
-                </div>
+                    <Link to="/home#contact" className={location.pathname === "/home" && window.location.hash === "#contact" ? "active-link" : ""} onClick={handleContactClick}>Contact</Link>
 
+                </div>
                 {/* Profile Section */}
                 <div className="nav-actions">
                     {isLoaded && user ? (

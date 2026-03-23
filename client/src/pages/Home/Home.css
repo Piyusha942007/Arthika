@@ -111,7 +111,7 @@ body {
 
 .hero-buttons .primary {
   background: var(--primary-yellow);
-  box-shadow: 0px 4px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -146,22 +146,30 @@ body {
   font-weight: 800;
   text-align: center;
   /* Reduced margin to bring "Learn to Earn" closer */
-  margin: 60px 0 10px 0; 
+  margin: 60px 0 10px 0;
   color: #000;
   text-transform: uppercase;
   width: 100%;
 }
 
 /* --- ALTERNATING SECTION BACKGROUNDS --- */
-.learn-section { background-color: var(--bg-light-cream) !important; }
-.invest-section { background-color: var(--bg-dark-cream) !important; }
-.community-block { background-color: var(--bg-light-cream) !important; }
+.learn-section {
+  background-color: var(--bg-light-cream) !important;
+}
+
+.invest-section {
+  background-color: var(--bg-dark-cream) !important;
+}
+
+.community-block {
+  background-color: var(--bg-light-cream) !important;
+}
 
 /* --- UPDATED: FEATURE BLOCK --- */
 .feature-block {
   width: 100%;
   /* Removed top padding to pull everything up */
-  padding: 0 5% 4rem 5%; 
+  padding: 0 5% 4rem 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -172,7 +180,7 @@ body {
   font-size: clamp(1.8rem, 5vw, 3.2rem);
   font-weight: 700;
   /* Reduced gap between title and content */
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 }
 
 /* --- UPDATED: LEARN SECTION CONTENT --- */
@@ -181,7 +189,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   /* Aligns the image and the boxes at the top */
-  align-items: flex-start; 
+  align-items: flex-start;
   gap: 3rem;
   margin-bottom: 3rem;
   width: 100%;
@@ -212,7 +220,7 @@ body {
   text-align: left;
   /* Layout for the bullet point */
   display: flex;
-  align-items: center; 
+  align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
 }
@@ -244,15 +252,18 @@ body {
 .card.yellow {
   flex: 1 1 320px;
   max-width: 480px;
-  min-height: 380px; /* Ensure uniform height for centering */
+  min-height: 380px;
+  /* Ensure uniform height for centering */
   background: var(--primary-yellow);
   border-radius: 40px;
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center everything vertically */
-  text-align: center; /* Center text inside the card */
+  justify-content: center;
+  /* Center everything vertically */
+  text-align: center;
+  /* Center text inside the card */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
@@ -263,24 +274,32 @@ body {
 }
 
 .card img {
-  width: 100px; /* Make the icons slightly bigger for better visual balance */
-  margin-bottom: 2.5rem; /* Larger gap below the icon */
+  width: 100px;
+  /* Make the icons slightly bigger for better visual balance */
+  margin-bottom: 2.5rem;
+  /* Larger gap below the icon */
 }
 
 .card h4 {
-  font-size: 2rem; /* Make the heading slightly bigger */
-  margin-bottom: 1.5rem; /* Larger gap below the heading */
+  font-size: 2rem;
+  /* Make the heading slightly bigger */
+  margin-bottom: 1.5rem;
+  /* Larger gap below the heading */
 }
 
 .card p {
-  font-size: 1.2rem; /* Slightly larger paragraph font */
+  font-size: 1.2rem;
+  /* Slightly larger paragraph font */
   font-weight: 500;
   line-height: 1.5;
-  color: #111; /* Slightly darker to improve contrast */
+  color: #111;
+  /* Slightly darker to improve contrast */
 }
 
 /* BUTTONS */
-.outline-yellow, .outline-pink, .outline-black {
+.outline-yellow,
+.outline-pink,
+.outline-black {
   background: #FFFFFF;
   border-radius: 50px;
   font-size: 1.3rem;
@@ -291,14 +310,41 @@ body {
   transition: all 0.3s ease;
 }
 
-.outline-yellow { border-color: var(--accent-yellow); color: var(--accent-yellow); }
-.outline-yellow:hover { background: var(--accent-yellow); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(251, 192, 45, 0.3); }
+.outline-yellow {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
 
-.outline-pink { border-color: var(--primary-pink); color: var(--primary-pink); }
-.outline-pink:hover { background: var(--primary-pink); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(244, 143, 177, 0.3); }
+.outline-yellow:hover {
+  background: var(--accent-yellow);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(251, 192, 45, 0.3);
+}
 
-.outline-black { border-color: #000; color: #000; }
-.outline-black:hover { background: #000; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+.outline-pink {
+  border-color: var(--primary-pink);
+  color: var(--primary-pink);
+}
+
+.outline-pink:hover {
+  background: var(--primary-pink);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(244, 143, 177, 0.3);
+}
+
+.outline-black {
+  border-color: #000;
+  color: #000;
+}
+
+.outline-black:hover {
+  background: #000;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
 /* COMMUNITY STYLES */
 .community-img {
@@ -336,7 +382,8 @@ body {
 .footer {
   width: 100%;
   background: #000;
-  padding: 4rem 5% 0 5%; /* Bottom padding handled by footer-bottom */
+  padding: 4rem 5% 0 5%;
+  /* Bottom padding handled by footer-bottom */
   color: #fff;
 }
 
@@ -416,7 +463,8 @@ body {
   border-top: 1px solid #333;
   padding: 1.5rem 0;
   margin-top: 2rem;
-  text-align: left; /* Aligns text to the left as seen in your SS */
+  text-align: left;
+  /* Aligns text to the left as seen in your SS */
 }
 
 .footer-bottom p {
@@ -435,42 +483,52 @@ body {
 
 /* MOBILE RESPONSIVENESS */
 @media (max-width: 768px) {
-  .navbar nav { display: none; }
-  .hero { 
-    padding: 2rem 1rem; 
-    border-radius: 25px; 
+  .navbar nav {
+    display: none;
+  }
+
+  .hero {
+    padding: 2rem 1rem;
+    border-radius: 25px;
     margin: 1rem auto;
     width: 92%;
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
   }
+
   .hero-text h2 {
     font-size: clamp(1.8rem, 8vw, 2.5rem);
   }
+
   .hero-text p {
     font-size: 1rem;
     margin: 1rem 0;
   }
+
   .hero-buttons button {
     padding: 0.6rem 1.8rem;
     font-size: 1.1rem;
   }
-  .feature-content { 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 1.5rem;
+
+  .feature-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
   }
-  .card.yellow { 
-    width: 100%; 
-    max-width: 100%; 
+
+  .card.yellow {
+    width: 100%;
+    max-width: 100%;
     min-height: auto;
     padding: 1.5rem 1rem;
   }
-  .section-title { 
+
+  .section-title {
     font-size: 1.8rem;
-    margin: 30px 0 10px 0; 
+    margin: 30px 0 10px 0;
   }
+
   .pink {
     font-size: 1.6rem;
   }
