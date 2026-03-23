@@ -35,11 +35,28 @@
 
 /* ================= BRAND ================= */
 .brand-text {
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--brand-yellow);
-    cursor: pointer;
-    letter-spacing: -1.5px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo-icon {
+    mix-blend-mode: multiply;
+    /* Ye white background ko gayab kar deta hai */
+    filter: contrast(110%);
+    width: 80px;
+    /* Text hatne ke baad thoda bada size better lagega */
+    height: 78px;
+    border-radius: 15px;
+    /* Consistent with your theme */
+    object-fit: cover;
+    border: 2px solid var(--brand-yellow);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.nav-logo-icon:hover {
+    transform: scale(1.05);
+    /* Logo par hover karne se halka sa zoom hoga */
 }
 
 /* ================= NAV LINKS ================= */

@@ -1,0 +1,18 @@
+client/src/App.jsx
+client/src/assets/images/image 1.png
+client/src/assets/images/image 2.png
+client/src/pages/Community/Community.css
+client/src/pages/Community/Community.jsx
+server/index.js
+server/node_modules/.package-lock.json
+server/node_modules/multer/lib/make-middleware.js
+server/node_modules/multer/lib/remove-uploaded-files.js
+server/node_modules/multer/package.json
+server/package-lock.json
+server/package.json
+server/seed.js
+server/src/controllers/businessController.js
+server/src/models/Business.js
+server/src/models/Comment.js
+server/src/models/SHG.js
+server/src/routes/businessRoutes.js

@@ -1,23 +1,24 @@
 import mongoose from 'mongoose';
 
-const businessSchema = new mongoose.Schema({
-    businessName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    location: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    photos: [{
-        type: String, // Store the local file paths (e.g., '/uploads/filename.jpg')
-    }],
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // Assuming a User model exists and they must be logged in to upload
-    }
+const BusinessSchema = new mongoose.Schema({
+  businessName: { type: String, required: true }, // Store as CamelCase
+  ownerName: String,
+  clerkId: { type: String, required: true }, // To identify who can delete the post
+  contact: { type: String, required: true }, // Format: +91 XXXXXXXXXX
+  location: String,
+  category: { 
+    type: String, 
+    enum: ['Health', 'Education', 'Food', 'Handicrafts', 'Finance', 'Other'] 
+  },
+  description: String,
+  imageUrl: String, // Cloudinary URL
+  comments: [{
+    clerkId: String, // Authenticate comment ownership
+    userName: String,
+    userImage: String,
+    text: String,
+    createdAt: { type: Date, default: Date.now }
+  }]
 }, { timestamps: true });
 
-export default mongoose.model('Business', businessSchema);
+export default mongoose.model('Business', BusinessSchema);

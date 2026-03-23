@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
+import API_BASE_URL from "../../config/apiConfig";
 import "./Lesson.css";
 
 export default function Lesson() {
@@ -42,11 +43,12 @@ export default function Lesson() {
     if (!isLoaded || !user) return;
 
     const fetchProgressAndVideo = async () => {
+      console.log("FETCHING FROM API_BASE_URL:", API_BASE_URL);
       setIsLoading(true);
       try {
         // Fetch progress
         const lang = localStorage.getItem("lang") || "en";
-        const progressRes = await fetch(`http://localhost:5000/api/lessons/progress?lang=${lang}&t=${Date.now()}`, {
+        const progressRes = await fetch(`${API_BASE_URL}/api/lessons/progress?lang=${lang}&t=${Date.now()}`, {
           headers: { 'x-user-id': user.id },
           cache: 'no-store'
         });
@@ -57,7 +59,7 @@ export default function Lesson() {
         }
 
         // Fetch video
-        const videoRes = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}?lang=${lang}`, {
+        const videoRes = await fetch(`${API_BASE_URL}/api/lessons/${level}/${stage}?lang=${lang}`, {
           method: 'GET',
           headers: { 'x-user-id': user.id }
         });
@@ -65,6 +67,7 @@ export default function Lesson() {
         const videoData = await videoRes.json();
 
         if (videoRes.ok) {
+          console.log("VIDEO FETCH SUCCESS:", videoData.videoUrl);
           setVideoUrl(videoData.videoUrl);
           setErrorMsg("");
         } else {
@@ -88,7 +91,7 @@ export default function Lesson() {
     // Fetch Quiz
     try {
       const lang = localStorage.getItem("lang") || "en";
-      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/quiz?lang=${lang}`, {
+      const response = await fetch(`${API_BASE_URL}/api/lessons/${level}/${stage}/quiz?lang=${lang}`, {
         headers: { 'x-user-id': user.id }
       });
       const data = await response.json();
@@ -112,7 +115,7 @@ export default function Lesson() {
     if (!user) return;
     try {
       const lang = localStorage.getItem("lang") || "en";
-      const response = await fetch(`http://localhost:5000/api/lessons/${level}/${stage}/complete?lang=${lang}`, {
+      const response = await fetch(`${API_BASE_URL}/api/lessons/${level}/${stage}/complete?lang=${lang}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

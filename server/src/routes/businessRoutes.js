@@ -1,10 +1,19 @@
 import express from 'express';
 const router = express.Router();
-import { registerBusiness, upload } from '../controllers/businessController.js';
+import { registerBusiness, getBusinesses, deleteBusiness, addComment, deleteComment, upload } from '../controllers/businessController.js';
 
-// Route: POST /api/business
-// Middleware: upload.array('photos', 5) allows up to 5 files under the 'photos' field
+// Route: GET and POST /api/business
 router.route('/')
-    .post(upload.array('photos', 5), registerBusiness);
+    .get(getBusinesses)
+    .post(upload.single('photo'), registerBusiness); // Using single()
+
+router.route('/:id')
+    .delete(deleteBusiness);
+
+router.route('/:id/comments')
+    .post(addComment);
+
+router.route('/:id/comments/:commentId')
+    .delete(deleteComment);
 
 export default router;

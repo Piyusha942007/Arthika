@@ -5,50 +5,52 @@ import Welcome from "./pages/Auth/Welcome";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SsoCallback from "./pages/Auth/SsoCallback";
-
 import Home from "./pages/Home/Home";
-import Invest from "./pages/Invest/Invest";
-import Save from "./pages/Invest/Save";
-import InvestLearn from "./pages/Invest/InvestLearn";
-
-import Learn from "./pages/Learn/Learn";
-import Lesson from "./pages/Learn/Lesson";
 import Community from "./pages/Community/Community";
-import Profile from "./pages/Profile/Profile"; 
-
 import Navbar from "./components/common/Navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 
+import Learn from "./pages/Learn/Learn";
+import Lesson from "./pages/Learn/Lesson";
+import Invest from "./pages/Invest/Invest";
+import InvestLearn from "./pages/Invest/InvestLearn";
+import Save from "./pages/Invest/Save";
+import Profile from "./pages/Profile/Profile";
+import Quiz from "./pages/Quiz/Quiz";
+import Dashboard from "./pages/Dashboard/Dashboard";
+
+// Helper component to handle conditional rendering of Navbar
 function Layout({ children }) {
   const location = useLocation();
-  // We hide the global Navbar on these specific pages
+
+  // Define paths where the Navbar SHOULD NOT appear
   const hideNavbarPaths = ["/", "/login", "/signup", "/signup/continue", "/sso-callback"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
+
+  // Define paths where the Chatbot SHOULD NOT appear
+  const hideChatbotPaths = [];
+  const shouldShowChatbot = shouldShowNavbar && !hideChatbotPaths.includes(location.pathname);
 
   return (
     <>
       {shouldShowNavbar && <Navbar />}
       <main>{children}</main>
-      {shouldShowNavbar && <Chatbot />}
+      {shouldShowChatbot && <Chatbot />}
     </>
   );
 }
 
-/* Protect private pages */
 function ProtectedRoute({ children }) {
-  const { isLoaded, isSignedIn } = useAuth();
-  
-  // Wait for Clerk to load before deciding to redirect
-  if (!isLoaded) return null; 
-
-  if (!isSignedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <Navigate to="/login" replace />
+      </SignedOut>
+    </>
+  );
 }
 
-/* Prevent logged-in users from auth pages */
 function PublicRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
   if (!isLoaded) return null;
@@ -59,7 +61,6 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Layout must be INSIDE BrowserRouter to use useLocation() */}
       <Layout>
         <Routes>
           {/* PUBLIC */}
@@ -70,57 +71,31 @@ export default function App() {
           <Route path="/sso-callback" element={<SsoCallback />} />
 
           {/* PRIVATE */}
-          <Route path="/home" element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          } />
-          <Route path="/community" element={
-            <ProtectedRoute>
-              <Community />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/learn" element={
-            <ProtectedRoute>
-              <Learn />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/learn/lesson/:id" element={
-            <ProtectedRoute>
-              <Lesson />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/invest" element={
-            <ProtectedRoute>
-              <Invest />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/invest/save" element={
-            <ProtectedRoute>
-              <Save />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/invest/learn" element={
-            <ProtectedRoute>
-              <InvestLearn />
-            </ProtectedRoute>
-          } />
-
-          <Route 
-            path="/profile" 
+          <Route
+            path="/home"
             element={
               <ProtectedRoute>
-                <Profile />
+                <Home />
               </ProtectedRoute>
-            } 
+            }
           />
+          <Route
+            path="/community"
+            element={
+              <ProtectedRoute>
+                <Community />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
+          <Route path="/learn/lesson/:id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
+          <Route path="/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
+          <Route path="/invest/learn" element={<ProtectedRoute><InvestLearn /></ProtectedRoute>} />
+          <Route path="/invest/save" element={<ProtectedRoute><Save /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
-          {/* FALLBACK */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>

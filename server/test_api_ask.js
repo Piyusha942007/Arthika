@@ -1,0 +1,1 @@
+fetch('http://localhost:5001/api/investAI/ask', {method: 'POST', body: JSON.stringify({persona: 'Housewife', question: 'How to save money?', language: 'en-IN', businessInfo: ''}), headers: {'Content-Type': 'application/json'}}).then(r=>r.text()).then(console.log).catch(console.error)

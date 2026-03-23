@@ -1,277 +1,10 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import { useUser, SignOutButton, useClerk, UserProfile } from "@clerk/clerk-react"; 
-// import './Profile.css';
-
-// const Profile = () => {
-//     const { user, isLoaded } = useUser();
-//     const { openUserProfile } = useClerk(); 
-//     const [userData, setUserData] = useState(null);
-
-//     const [isEditing, setIsEditing] = useState(false);
-//     const [editName, setEditName] = useState("");
-//     const [showSettings, setShowSettings] = useState(false);
-
-//     const today = new Date().getDate(); 
-
-//     // ✅ Greeting logic
-//     const hour = new Date().getHours();
-//     const greeting =
-//         hour < 12 ? "Good Morning" :
-//         hour < 17 ? "Good Afternoon" :
-//         "Good Evening";
-
-//     useEffect(() => {
-//         if (!isLoaded || !user) return;
-
-//         setEditName(user.fullName || "");
-//         const email = user.primaryEmailAddress.emailAddress;
-
-//         axios.get(`http://localhost:5000/api/profile/${email}`)
-//             .then(res => {
-//                 // 1. Get streaks from backend
-//                 let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
-
-//                 // 2. Add today's date (10) if it's not already in the array
-//                 // This ensures your streak count shows 3 instead of 2.
-//                 if (!backendStreaks.includes(today)) {
-//                     backendStreaks = [...backendStreaks, today];
-//                 }
-
-//                 setUserData({
-//                     ...res.data,
-//                     streaks: backendStreaks
-//                 });
-
-//                 // 3. Fetch highestUnlockedLevel from progress route 
-//                 // to sync badges across the Learn page and Profile page
-//                 return axios.get(`http://localhost:5000/api/lessons/progress?t=${Date.now()}`, {
-//                     headers: { 'x-user-id': user.id }
-//                 });
-//             })
-//             .then(progressRes => {
-//                 if (progressRes && progressRes.data) {
-//                     setUserData(prev => ({
-//                         ...prev,
-//                         level: progressRes.data.highestUnlockedLevel || 1
-//                     }));
-//                 }
-//             })
-//             .catch(() => {
-//                 // Fallback for new accounts or if server is down
-//                 setUserData({ 
-//                     streaks: [today], // Even on error, show today as active
-//                     role: 'Housewife', 
-//                     phone: "" 
-//                 });
-//             });
-//     }, [isLoaded, user, today]); // Added today to dependency array
-//     const handleUpdateName = async () => {
-//         try {
-//             const [firstName, ...lastNameParts] = editName.trim().split(" ");
-//             await user.update({ firstName, lastName: lastNameParts.join(" ") });
-//             setIsEditing(false); 
-//         } catch (err) { console.error(err); }
-//     };
-
-//     const handleToggle = (newRole) => {
-//         axios.put('http://localhost:5000/api/profile/update-role', { 
-//             email: user.primaryEmailAddress.emailAddress, role: newRole 
-//         }).then(res => {
-//             // Merge the updated role with the existing userData state 
-//             // to ensure streaks and other frontend-calculated data aren't lost
-//             setUserData(prevData => ({
-//                 ...prevData,
-//                 role: res.data.role || newRole
-//             }));
-//         }).catch(err => console.error("Failed to update role:", err));
-//     };
-
-//     if (!isLoaded || !userData) return <div className="loading-screen">Loading Arthika...</div>;
-
-//     const currentLevel = userData?.level || 1; 
-//     const totalLevels = 10;
-//     const progressPercentage = (currentLevel / totalLevels) * 100;
-
-//     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
-//     const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-//     const allBadges = [
-//         { level: 1, name: "The Identity Pioneer", icon: "🪪", color: "pink-ring", desc: "A digital fingerprint or a shining ID card icon." },
-//         { level: 2, name: "Digital Explorer", icon: "🚀", color: "orange-ring", desc: "A smartphone with a soaring rocket or a lightning bolt." },
-//         { level: 3, name: "Sisterhood Guardian", icon: "🪷", color: "pink-ring", desc: "Hands joined in a circle or a blooming lotus." },
-//         { level: 4, name: "Credit Catalyst", icon: "🔑", color: "orange-ring", desc: "A golden key or an open gate representing bank access." },
-//         { level: 5, name: "Budgeting Architect", icon: "🐷", color: "pink-ring", desc: "A well-organized piggy bank or a balanced scale." },
-//         { level: 6, name: "Safety Shield", icon: "🛡️", color: "orange-ring", desc: "An umbrella over a house or a sturdy stone wall." },
-//         { level: 7, name: "Wealth Weaver", icon: "🌱", color: "pink-ring", desc: "A small sprout turning into a golden tree." },
-//         { level: 8, name: "Village Visionary", icon: "🏪", color: "orange-ring", desc: "A storefront with an 'Open' sign or a spinning gear." },
-//         { level: 9, name: "Growth Strategist", icon: "🌉", color: "pink-ring", desc: "A bridge connecting a small town to a city skyline." },
-//         { level: 10, name: "Financial Maharani", icon: "👑", color: "orange-ring", desc: "A crown made of light or a torch being passed to another hand." }
-//     ];
-
-//     return (
-//         <div className="profile-page-container">
-//             {showSettings && (
-
-//                 <div className="custom-modal-overlay" onClick={() => setShowSettings(false)}>
-//                     <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
-//                         <button className="close-modal-btn" onClick={() => setShowSettings(false)}>×</button>
-//                         <UserProfile appearance={{
-//                             elements: {
-//                                 card: { boxShadow: "none", width: "100%", backgroundColor: "#ffffff" },
-//                                 navbar: { backgroundColor: "#ffffff", borderRight: "1px solid #F8EBCB", padding: "20px" },
-//                                 pageScrollBox: { backgroundColor: "#ffffff" },
-//                                 navbarButton: {
-//                                     borderRadius: "15px",
-//                                     marginBottom: "10px",
-//                                     padding: "12px 20px",
-//                                     fontWeight: "700",
-//                                     transition: "all 0.2s"
-//                                 },
-//                                 navbarButton__profile: {
-//                                     backgroundColor: "#F48FB1",
-//                                     color: "white",
-//                                     '&:hover': { backgroundColor: "#e2789c" }
-//                                 },
-//                                 navbarButton__security: {
-//                                     backgroundColor: "#FFCC4D",
-//                                     color: "white",
-//                                     '&:hover': { backgroundColor: "#e6b845" }
-//                                 }
-//                             }
-//                         }} />
-//                     </div>
-//                 </div>
-//             )}
-
-//             {/* <header className="header-nav">
-//                 <div className="logo-brand">Arthika</div>
-//                 <nav className="nav-items">
-//                     <span>learn</span><span>community</span><span>invest</span><span className="nav-active">profile</span>
-//                 </nav>
-//                 <div className="header-right">
-//                     <button onClick={() => setShowSettings(true)} className="account-settings-btn">⚙️ Settings</button>
-//                     <SignOutButton><button className="sign-out-btn">Sign Out</button></SignOutButton>
-//                 </div>
-//             </header> */}
-
-// <div className="hero-banner">
-//     <div className="hero-left">
-//         {/* Dynamic Greeting */}
-//         <h1 className="hero-greet">{greeting}, <span className="exact-case">{user.firstName || "Friend"}</span>!</h1>
-
-//         <div className="hero-progress-row">
-//             <div className="hero-progress-track">
-//                 <div 
-//                     className="hero-progress-fill" 
-//                     style={{ 
-//                         width: `${progressPercentage}%`,
-//                         transition: "width 0.5s ease-in-out" 
-//                     }}
-//                 ></div>
-//             </div>
-//             {/* ✅ Updated to show currentLevel/totalLevels (e.g., 1/10) */}
-//             <span className="hero-level-text">Level {currentLevel}/{totalLevels}</span>
-//         </div>
-//     </div>
-
-//     <div className="hero-right">
-//         {/* ✅ Updated big number to show currentLevel/totalLevels */}
-//         <div className="hero-big-num" style={{ fontSize: '40px' }}>
-//             {currentLevel}/{totalLevels}
-//         </div>
-//     </div>
-// </div>
-//             <main className="profile-layout">
-//                 <section className="profile-main-card">
-//                     <h2 className="card-heading">My Profile</h2>
-
-//                     <div className="profile-info-section">
-//                         <div className="profile-avatar-wrapper">
-//                             <div className="profile-avatar"><img src={user.imageUrl} alt="Profile" /></div>
-//                             <button onClick={() => setShowSettings(true)} className="change-photo-btn">Change Photo</button>
-//                         </div>
-
-//                         <div className="profile-details">
-//                             {isEditing ? (
-//                                 <div className="arthika-edit-form">
-//                                     <input className="arthika-input" value={editName} onChange={(e) => setEditName(e.target.value)} autoFocus />
-//                                     <div className="edit-actions">
-//                                         <button onClick={handleUpdateName} className="save-btn">Save</button>
-//                                         <button onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
-//                                     </div>
-//                                 </div>
-//                             ) : (
-//                                 <>
-//                                     <h3 className="profile-name exact-case">{user.fullName}</h3>
-//                                     {/* <p className="profile-phone">{userData?.phone || "Add Phone"}</p> */}
-//                                     <p className="profile-email">Email: {user.primaryEmailAddress.emailAddress}</p>
-//                                     <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
-//                                 </>
-//                             )}
-//                         </div>
-//                     </div>
-
-//                     <div className="role-container-block">
-//                         <h4 className="role-title">Role Toggle</h4>
-//                         <div className="role-btn-group">
-//                             <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
-//                             <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
-//                         </div>
-//                     </div>
-
-//                     <div className="streak-calendar-box">
-//                         <p className="cal-month">MARCH 2026</p>
-//                         <p className="cal-streak-label">🔥 {(userData?.streaks?.length || 0)}-Day Total Streak!</p>
-//                         <div className="cal-grid-header">
-//                             {dayLabels.map(label => <span key={label}>{label}</span>)}
-//                         </div>
-//                         <div className="cal-grid-body">
-//                             {daysInMonth.map(date => (
-//                                 <div key={date} className={`cal-date-circle ${userData?.streaks?.includes(date) ? 'streak-pink' : ''} ${date === today ? 'today-highlight' : ''}`}>
-//                                     {date}
-//                                 </div>
-//                             ))}
-//                         </div>
-//                     </div>
-//                 </section>
-
-//                 <aside className="profile-sidebar">
-//                     <div className="side-white-card">
-//                         <h2 className="side-title">My Badges</h2>
-//                         <div className="badge-list">
-//                             {allBadges.filter(b => b.level <= currentLevel).map((badge) => (
-//                                 <div className="badge-row" key={badge.level}>
-//                                     <div className={`badge-circle ${badge.color}`}>{badge.icon}</div>
-//                                     <div className="badge-text-box"><p>{badge.name}</p></div>
-//                                 </div>
-//                             ))}
-//                         </div>
-//                     </div>
-
-//                     <div className="side-white-card">
-//                         <h2 className="side-title">Support Circle</h2>
-//                         <div className="support-list">
-//                             <div className="support-item">
-//                                 <span className="user-icon">👤</span>
-//                                 <div className="support-details">
-//                                     <p className="sup-name">Sonia SHG</p>
-//                                     <p className="sup-phone">9876543210</p>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </aside>
-//             </main>
-//         </div>
-//     );
-// };
-
+import API_BASE_URL from "../../config/apiConfig";
 // export default Profile;
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser, useClerk, UserProfile } from "@clerk/clerk-react";
 import './Profile.css';
+import { allBadges } from "../../constants/badges";
 
 const Profile = () => {
     const { user, isLoaded } = useUser();
@@ -282,7 +15,8 @@ const Profile = () => {
     const [editName, setEditName] = useState("");
     const [showSettings, setShowSettings] = useState(false);
 
-    const today = new Date().getDate();
+    const todayStr = new Date().toISOString().split('T')[0]; // e.g. "2026-03-23"
+    const todayDay = new Date().getDate();
 
     // ✅ Greeting logic
     const hour = new Date().getHours();
@@ -297,39 +31,56 @@ const Profile = () => {
         setEditName(user.fullName || "");
         const email = user.primaryEmailAddress.emailAddress;
 
-        axios.get(`http://localhost:5000/api/profile/${email}`)
-            .then(res => {
+        const syncUserData = async () => {
+            try {
+                // 1. Pehle profile data fetch karo
+                const res = await axios.get(`${API_BASE_URL}/api/profile/${email}`);
                 let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
 
-                if (!backendStreaks.includes(today)) {
-                    backendStreaks = [...backendStreaks, today];
+                // 2. Agar aaj ki date missing hai, toh update karo
+                if (!backendStreaks.includes(todayStr)) {
+                    backendStreaks = [...backendStreaks, todayStr];
+
+                    // Backend ko update bhejo
+                    await axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
+                        email: email,
+                        streaks: backendStreaks
+                    });
+                    console.log("Streak synchronized with server.");
                 }
 
+                // 3. Sabse pehle base profile aur streaks set karo
                 setUserData(prev => ({
                     ...res.data,
                     streaks: backendStreaks
                 }));
 
-                return axios.get(`http://localhost:5000/api/lessons/progress?t=${Date.now()}`, {
+                // 4. Phir progress fetch karo
+                const progressRes = await axios.get(`${API_BASE_URL}/api/lessons/progress?t=${Date.now()}`, {
                     headers: { 'x-user-id': user.id }
                 });
-            })
-            .then(progressRes => {
-                if (progressRes && progressRes.data) {
+
+                if (progressRes.data) {
                     setUserData(prev => ({
                         ...prev,
                         level: progressRes.data.highestUnlockedLevel || 1
                     }));
                 }
-            })
-            .catch(() => {
-                setUserData({
-                    streaks: [today],
-                    role: 'Housewife',
-                    level: 1
-                });
-            });
-    }, [isLoaded, user, today]);
+            } catch (err) {
+                console.error("Error in sync:", err);
+                // Default fallback agar API fail ho jaye
+                if (!userData) {
+                    setUserData({
+                        streaks: [todayStr],
+                        role: 'Housewife',
+                        level: 1
+                    });
+                }
+            }
+        };
+
+        syncUserData();
+    }, [isLoaded, user, todayDay]);
 
     const handleUpdateName = async () => {
         try {
@@ -340,7 +91,7 @@ const Profile = () => {
     };
 
     const handleToggle = (newRole) => {
-        axios.put('http://localhost:5000/api/profile/update-role', {
+        axios.put(`${API_BASE_URL}/api/profile/update-role`, {
             email: user.primaryEmailAddress.emailAddress, role: newRole
         }).then(res => {
             setUserData(prevData => ({
@@ -359,18 +110,7 @@ const Profile = () => {
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    const allBadges = [
-        { level: 1, name: "The Identity Pioneer", icon: "🪪", color: "pink-ring" },
-        { level: 2, name: "Digital Explorer", icon: "🚀", color: "orange-ring" },
-        { level: 3, name: "Sisterhood Guardian", icon: "🪷", color: "pink-ring" },
-        { level: 4, name: "Credit Catalyst", icon: "🔑", color: "orange-ring" },
-        { level: 5, name: "Budgeting Architect", icon: "🐷", color: "pink-ring" },
-        { level: 6, name: "Safety Shield", icon: "🛡️", color: "orange-ring" },
-        { level: 7, name: "Wealth Weaver", icon: "🌱", color: "pink-ring" },
-        { level: 8, name: "Village Visionary", icon: "🏪", color: "orange-ring" },
-        { level: 9, name: "Growth Strategist", icon: "🌉", color: "pink-ring" },
-        { level: 10, name: "Financial Maharani", icon: "👑", color: "orange-ring" }
-    ];
+
 
     return (
         <div className="profile-page-container">
@@ -397,110 +137,101 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className="hero-right">
-                    <div className="hero-big-num">
-                        {currentLevel}
+                    <div className="hero-level-badge">
+                        <span className="level-label">LEVEL</span>
+                        <span className="level-number">{currentLevel}</span>
                     </div>
                 </div>
-            </div>
-
-            <main className="profile-layout">
-                <section className="profile-main-card">
-                    <h2 className="card-heading">My Profile</h2>
-
-                    <div className="profile-info-section">
-                        <div className="profile-avatar-wrapper">
-                            <div className="profile-avatar"><img src={user.imageUrl} alt="Profile" /></div>
-                            <button onClick={() => setShowSettings(true)} className="change-photo-btn">Edit Profile</button>
-                        </div>
-
-                        <div className="profile-details">
-                            {isEditing ? (
-                                <div className="arthika-edit-form">
-                                    <input className="arthika-input" value={editName} onChange={(e) => setEditName(e.target.value)} autoFocus />
-                                    <div className="edit-actions">
-                                        <button onClick={handleUpdateName} className="save-btn">Save</button>
-                                        <button onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
+            </div>            <main className="profile-dashboard">
+                <div className="dashboard-left">
+                    <section className="dashboard-card profile-details-card">
+                        <div className="profile-header-flex">
+                            <div className="p-avatar-box">
+                                <img src={user.imageUrl} alt="Profile" />
+                                <button onClick={() => setShowSettings(true)} className="p-edit-btn">✏️</button>
+                            </div>
+                            <div className="p-text-info">
+                                {isEditing ? (
+                                    <div className="p-edit-field">
+                                        <input value={editName} onChange={(e) => setEditName(e.target.value)} autoFocus />
+                                        <div className="p-edit-btns">
+                                            <button onClick={handleUpdateName} className="p-save">Save</button>
+                                            <button onClick={() => setIsEditing(false)} className="p-cancel">Cancel</button>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <>
-                                    <h3 className="profile-name exact-case">{user.fullName}</h3>
-                                    <p className="profile-email">{user.primaryEmailAddress.emailAddress}</p>
-                                    <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="role-container-block">
-                        <h4 className="role-title">Current Role</h4>
-                        <div className="role-btn-group">
-                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
-                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
-                        </div>
-                    </div>
-
-                    <div className="streak-calendar-box">
-                        <p className="cal-month">MARCH 2026</p>
-                        <p className="cal-streak-label">🔥 {(userData?.streaks?.length || 0)}-Day Total Streak!</p>
-                        <div className="cal-grid-header">
-                            {dayLabels.map(label => <span key={label}>{label}</span>)}
-                        </div>
-                        <div className="cal-grid-body">
-                            {daysInMonth.map(date => (
-                                <div key={date} className={`cal-date-circle ${userData?.streaks?.includes(date) ? 'streak-pink' : ''} ${date === today ? 'today-highlight' : ''}`}>
-                                    {date}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <aside className="profile-sidebar">
-                    <div className="side-white-card">
-                        <h2 className="side-title">My Badges</h2>
-                        <div className="badge-list">
-                            {/* Logic: Only show badge if the user has PASSED that level */}
-                            {allBadges.filter(b => b.level < currentLevel).map((badge) => (
-                                <div className="badge-row" key={badge.level}>
-                                    <div className={`badge-circle ${badge.color}`}>{badge.icon}</div>
-                                    <div className="badge-text-box">
-                                        <p className="badge-name-text">{badge.name}</p>
-                                        <span className="badge-status">Level {badge.level} Completed</span>
-                                    </div>
-                                </div>
-                            ))}
-
-                            {/* Locked Badge (Next Milestone) */}
-                            {currentLevel <= 10 && (
-                                <div className="badge-row locked-badge">
-                                    <div className="badge-circle locked">🔒</div>
-                                    <div className="badge-text-box">
-                                        <p className="badge-name-text" style={{ color: '#999' }}>Next: Level {currentLevel}</p>
-                                        <span className="badge-status-locked">Complete current level to unlock</span>
-                                    </div>
-                                </div>
-                            )}
-
-                            {allBadges.filter(b => b.level < currentLevel).length === 0 && currentLevel === 1 && (
-                                <p className="no-badges-msg">Start your first lesson to earn your first badge!</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="side-white-card">
-                        <h2 className="side-title">Support Circle</h2>
-                        <div className="support-list">
-                            <div className="support-item">
-                                <span className="user-icon">👤</span>
-                                <div className="support-details">
-                                    <p className="sup-name">Sonia SHG</p>
-                                    <p className="sup-phone">9876543210</p>
-                                </div>
+                                ) : (
+                                    <>
+                                        <h3 className="p-fullname">{user.fullName}</h3>
+                                        <p className="p-email">{user.primaryEmailAddress.emailAddress}</p>
+                                        <button onClick={() => setIsEditing(true)} className="p-name-edit">Edit Name</button>
+                                    </>
+                                )}
                             </div>
                         </div>
-                    </div>
-                </aside>
+
+                        <div className="p-role-row">
+                            <span className="p-role-label">Current Role:</span>
+                            <div className="p-role-toggles">
+                                <button onClick={() => handleToggle("Housewife")} className={`p-role-opt hw ${userData?.role === 'Housewife' ? 'active' : ''}`}>Housewife</button>
+                                <button onClick={() => handleToggle("Working")} className={`p-role-opt wk ${userData?.role === 'Working' ? 'active' : ''}`}>Working Woman</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="dashboard-card streak-section">
+                        <div className="section-header">
+                            <h2 className="section-title">Consistency Hub</h2>
+                            <p className="streak-count-glow">🔥 {userData?.streaks?.length || 0} Days Active</p>
+                        </div>
+                        <div className="calendar-container">
+                            <p className="calendar-month-text">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
+                            <div className="calendar-grid">
+                                {dayLabels.map(label => <span key={label} className="cal-label">{label}</span>)}
+                                {daysInMonth.map(date => {
+                                    const dateStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                                    const isStreak = userData?.streaks?.includes(dateStr);
+                                    const isToday = date === todayDay;
+                                    return (
+                                        <div key={date} className={`cal-cell ${isStreak ? 'active-streak' : ''} ${isToday ? 'current-day' : ''}`}>
+                                            {date}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div className="dashboard-right">
+                    <section className="dashboard-card badges-milestones">
+                        <h2 className="section-title">My Milestones</h2>
+                        <div className="badge-grid-compact">
+                            {allBadges.map((badge) => {
+                                const isUnlocked = badge.level < currentLevel;
+                                return (
+                                    <div className={`badge-item-mini ${isUnlocked ? 'unlocked' : 'locked'}`} key={badge.level} title={isUnlocked ? badge.name : "Locked"}>
+                                        <div className="badge-icon-disk" style={isUnlocked ? { background: badge.color } : {}}>
+                                            {isUnlocked ? badge.icon : "🔒"}
+                                        </div>
+                                        <p className="badge-mini-name">{isUnlocked ? badge.name : `Level ${badge.level}`}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    <section className="dashboard-card support-network">
+                        <h2 className="section-title">Sisterhood Circle</h2>
+                        <div className="support-card-mini">
+                            <div className="mavim-logo">MAVIM</div>
+                            <div className="support-info">
+                                <h4>Mahila Arthik Vikas Mahamandal</h4>
+                                <a href="tel:02024330104" className="call-btn">📞 020-24330104</a>
+                            </div>
+                        </div>
+                        <p className="sisterhood-msg">Together, we build the future. Reach out for any guidance on SHGs or Business.</p>
+                    </section>
+                </div>
             </main>
         </div>
     );

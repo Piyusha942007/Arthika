@@ -9,11 +9,23 @@ import shgRoutes from "./routes/shgRoutes.js";
 import businessRoutes from "./routes/businessRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
+import investChatRoutes from "./routes/investChatRoutes.js";
 
 const app = express();
 
+console.log("CORS: ALLOWED FRONTEND URL:", process.env.FRONTEND_URL);
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    const allowed = [process.env.FRONTEND_URL, "http://localhost:5173"].filter(Boolean);
+    console.log("CORS: REQUEST FROM ORIGIN:", origin);
+    if (!origin || allowed.includes(origin) || allowed.includes(origin + "/")) {
+      callback(null, true);
+    } else {
+      console.warn("CORS: BLOCKED ORIGIN:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
@@ -27,13 +39,21 @@ app.use("/api/shgs", shgRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/investAI", investChatRoutes);
 
 app.get("/", (req, res) => {
   res.send("Arthika API running 🚀");
 });
 
+// Start server when running directly (npm run dev)
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only listen if this file is run directly (not imported by server.js)
+const isDirectRun = process.argv[1] && (process.argv[1].endsWith('app.js') || process.argv[1].endsWith('src/app.js'));
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;

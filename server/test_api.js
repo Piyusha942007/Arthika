@@ -1,0 +1,1 @@
+fetch('http://localhost:5001/api/investAI/suggest', {method: 'POST', body: JSON.stringify({businessInfo: 'test', persona: 'Housewife'}), headers: {'Content-Type': 'application/json'}}).then(r=>r.text()).then(console.log).catch(console.error)

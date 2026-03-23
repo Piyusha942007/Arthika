@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import API_BASE_URL from "../../config/apiConfig";
 import "./Chatbot.css";
 
 const supportedLanguages = [
@@ -29,6 +30,14 @@ export default function Chatbot() {
     const isMutedRef = useRef(false);
     const lastBotMessageRef = useRef("Hello! I am Arthika. How can I help you with your finances today? You can speak to me in your own language.");
     const [inputText, setInputText] = useState("");
+    const [micError, setMicError] = useState(null); // 'not-allowed', 'network', or null
+
+    const prefilledQuestions = [
+        "How can I save money?",
+        "Schemes for women",
+        "How to start a business?",
+        "What is an SHG?"
+    ];
 
     const toggleMute = () => {
         const newMuted = !isMuted;
@@ -86,26 +95,9 @@ export default function Chatbot() {
     }, []);
 
     useEffect(() => {
+        // We still need to check for API support on load
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-
-            recognitionRef.current.onresult = async (event) => {
-                const transcript = event.results[0][0].transcript;
-                handleUserMessage(transcript);
-            };
-
-            recognitionRef.current.onerror = (event) => {
-                console.error("Speech recognition error", event.error);
-                setIsListening(false);
-            };
-
-            recognitionRef.current.onend = () => {
-                setIsListening(false);
-            };
-        } else {
+        if (!SpeechRecognition) {
             console.warn("Speech Recognition API not supported in this browser.");
         }
     }, []);
@@ -115,17 +107,53 @@ export default function Chatbot() {
             recognitionRef.current?.stop();
             setIsListening(false);
         } else {
-            synthRef.current.cancel();
+            // 1. Resume SpeechSynthesis on user gesture for mobile
+            if (synthRef.current?.paused) {
+                synthRef.current.resume();
+            }
+            synthRef.current?.cancel();
             setIsSpeaking(false);
 
+            // 2. Initialize SpeechRecognition INSIDE the click handler for Safari/Mobile
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Please try Chrome or Safari.");
+                return;
+            }
+
+            if (!recognitionRef.current) {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = false;
+                recognitionRef.current.interimResults = false;
+
+                recognitionRef.current.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    handleUserMessage(transcript);
+                };
+
+                recognitionRef.current.onerror = (event) => {
+                    console.error("Speech recognition error:", event.error);
+                    setIsListening(false);
+                    if (event.error === 'not-allowed') {
+                        setMicError('not-allowed');
+                    } else if (event.error === 'network') {
+                        setMicError('network');
+                    }
+                };
+
+                recognitionRef.current.onend = () => {
+                    setIsListening(false);
+                };
+            }
+
             try {
-                if (recognitionRef.current) {
-                    recognitionRef.current.lang = selectedLang;
-                }
-                recognitionRef.current?.start();
+                recognitionRef.current.lang = selectedLang;
+                recognitionRef.current.start();
                 setIsListening(true);
             } catch (e) {
-                console.error(e);
+                console.error("Start error:", e);
+                recognitionRef.current?.stop();
+                setIsListening(false);
             }
         }
     };
@@ -178,7 +206,7 @@ export default function Chatbot() {
         try {
             const langObj = supportedLanguages.find(l => l.code === selectedLang) || supportedLanguages[0];
 
-            const response = await fetch("http://localhost:5000/api/chat", {
+            const response = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: text, language: langObj.name })
@@ -247,23 +275,70 @@ export default function Chatbot() {
 
                     <div className="chatbot-messages">
                         {messages.map((msg, idx) => (
-                            <div key={idx} className={`message \${msg.role}`}>
+                            <div key={idx} className={`message ${msg.role}`}>
                                 {msg.role === "bot" && <div className="avatar">🤖</div>}
                                 <div className="bubble">{msg.text}</div>
                             </div>
                         ))}
+
+                        {messages.length === 1 && (
+                            <div className="prefilled-container" style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '8px', 
+                                marginTop: '10px',
+                                paddingLeft: '34px' // Align with bot bubble (avatar 24px + gap 10px)
+                            }}>
+                                <p style={{ margin: '0 0 5px 0', fontSize: '0.8rem', color: '#888', fontWeight: 'bold' }}>Quick Questions:</p>
+                                {prefilledQuestions.map((q, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => handleUserMessage(q)}
+                                        style={{ 
+                                            textAlign: 'left',
+                                            padding: '10px 15px', 
+                                            borderRadius: '12px', 
+                                            border: '1px solid #F8EBCB', 
+                                            background: '#fff', 
+                                            fontSize: '0.9rem', 
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                                            color: '#333',
+                                            width: 'fit-content',
+                                            maxWidth: '100%'
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.background = '#FFCC4D'; e.currentTarget.style.color = '#fff'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#333'; }}
+                                    >
+                                        {q}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="chatbot-input">
                         <div className="voice-controls">
                             <button
-                                className={`mic-btn \${isListening ? 'listening' : ''}`}
-                                onClick={toggleListen}
+                                className={`mic-btn ${isListening ? 'listening' : ''} ${micError ? 'error' : ''}`}
+                                onClick={() => {
+                                    setMicError(null);
+                                    toggleListen();
+                                }}
                                 title={isListening ? "Stop Listening" : "Start Speaking"}
                             >
-                                🎤
+                                {micError === 'not-allowed' ? "🚫" : (isListening ? "⏹️" : "🎤")}
                             </button>
-                            <p className="mic-hint">{isListening ? "Listening..." : "Tap mic to speak"}</p>
+                            <p className="mic-hint">
+                                {micError === 'not-allowed' ? (
+                                    <span style={{ color: '#d32f2f', textAlign: 'center' }}>
+                                        Mic blocked. <button onClick={() => alert("To enable: \n1. Tap the lock icon or 'Aa' in the URL bar.\n2. Tap 'Site Settings'.\n3. Set Microphone to 'Allow'.")} style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', cursor: 'pointer', padding: 0 }}>How to unblock?</button>
+                                    </span>
+                                ) : (
+                                    isListening ? "Listening..." : "Tap mic to speak"
+                                )}
+                            </p>
                         </div>
 
                         <form className="text-input-form" onSubmit={handleTextSubmit}>

@@ -29,9 +29,39 @@ router.get('/:email', async (req, res) => {
 router.put('/update-role', async (req, res) => {
     const { email, role } = req.body;
     try {
+        // Standardize: Sync 'role' and 'persona' for cross-page compatibility
+        const persona = role === "Working" ? "Working Woman" : "Housewife";
         const updatedUser = await User.findOneAndUpdate(
             { email }, 
-            { role }, 
+            { role, persona }, 
+            { new: true }
+        );
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.put('/update-streak', async (req, res) => {
+    const { email, streaks } = req.body;
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { email },
+            { streaks },
+            { new: true }
+        );
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.put('/update-work', async (req, res) => {
+    const { email, workNature } = req.body;
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { email },
+            { workNature },
             { new: true }
         );
         res.json(updatedUser);

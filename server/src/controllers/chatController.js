@@ -15,7 +15,7 @@ export const handleChat = async (req, res) => {
         // Initialize Gemini SDK with the key from .env inside the request handle
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-        // We use gemini-2.5-flash as it is supported by the new API keys
+        // Using gemini-2.5-flash - the currently available model
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const systemPrompt = `You are "Arthika", a highly empathetic, helpful, and knowledgeable financial advisor and guide for a web app named Arthika. 
@@ -38,6 +38,15 @@ The user is speaking to you in: ${language || 'English'}. You MUST reply in this
         return res.status(200).json({ reply: responseText });
     } catch (error) {
         console.error("Gemini Error:", error);
-        return res.status(500).json({ error: "Failed to process chat" });
+        
+        // Handle 429 Rate Limit error specifically
+        if (error.message && error.message.includes("429")) {
+            return res.status(200).json({ 
+                reply: "I'm receiving a lot of questions right now! Please wait a moment and then try asking me again. I'll be ready for you! ✨" 
+            });
+        }
+
+        const errorMsg = error?.message || "Failed to process chat";
+        return res.status(500).json({ error: errorMsg });
     }
 };
