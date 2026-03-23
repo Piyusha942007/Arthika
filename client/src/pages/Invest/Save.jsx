@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
+<<<<<<< HEAD
+import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase, Play, Pause, RefreshCw } from "lucide-react";
+=======
 import { Calculator, Building, Banknote, Calendar, ChevronRight, MessageSquare, Mic, Loader2, Sparkles, Sprout, Briefcase, Volume2, VolumeX } from "lucide-react";
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
 import "./Save.css";
 import dollarIcon from "../../assets/images/dollar-icon.png";
 import { getSuggestions, askArthika } from "../../services/GeminiService";
@@ -19,10 +23,23 @@ export default function Save() {
 
   // Persona State
   const [persona, setPersona] = useState("");
+  const [userName, setUserName] = useState(user?.fullName || "User");
   const [businessInfo, setBusinessInfo] = useState("");
 
+  const supportedLanguages = [
+      { code: "en-IN", name: "English", googCode: "en" },
+      { code: "hi-IN", name: "हिंदी (Hindi)", googCode: "hi" },
+      { code: "mr-IN", name: "मराठी (Marathi)", googCode: "mr" },
+      { code: "gu-IN", name: "ગુજરાતી (Gujarati)", googCode: "gu" },
+      { code: "bn-IN", name: "বাংলা (Bengali)", googCode: "bn" },
+      { code: "te-IN", name: "తెలుగు (Telugu)", googCode: "te" },
+      { code: "ta-IN", name: "தமிழ் (Tamil)", googCode: "ta" },
+      { code: "ur-IN", name: "اردو (Urdu)", googCode: "ur" },
+      { code: "ml-IN", name: "മലയാളം (Malayalam)", googCode: "ml" }
+  ];
+
   // Loan Tracker State
-  const [loanDetails, setLoanDetails] = useState({ bank: "", amount: "", interest: "", duration: "" });
+  const [loanDetails, setLoanDetails] = useState({ bank: "", scheme: "", amount: "", interest: "", duration: "" });
   const [payoffTimeline, setPayoffTimeline] = useState(null);
 
   // AI States
@@ -57,7 +74,57 @@ export default function Save() {
   const USER_API = "http://localhost:5000/api/profile"; // Original endpoint for fetching User details 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
 
+<<<<<<< HEAD
+  const loanData = {
+    SBI: [
+      { name: "Lakhpati Didi Digital Loan", interest: 8.5, tenure: 6 },
+      { name: "Stree Shakti Package", interest: 9.0, tenure: 7 },
+      { name: "SBI Dairy Plus", interest: 9.5, tenure: 5 },
+      { name: "Mahila Atmanirbhar Achiever", interest: 10, tenure: 10 },
+      { name: "PM Svanidhi (Women)", interest: 7.0, tenure: 2 }
+    ],
+    HDFC: [
+      { name: "Smart-Up Rural Women", interest: 10.5, tenure: 5 },
+      { name: "Pragati Loan", interest: 11, tenure: 3 },
+      { name: "Rural Housing Extension", interest: 9.2, tenure: 15 },
+      { name: "Sustainable Agri Finance", interest: 8.8, tenure: 7 }
+    ],
+    ICICI: [
+      { name: "SHG Bank Linkage", interest: 9, tenure: 5 },
+      { name: "Udyogini Scheme", interest: 5, tenure: 7 },
+      { name: "Insta Agri Gold Loan", interest: 8.5, tenure: 1 },
+      { name: "Micro Enterprise Loan", interest: 11.5, tenure: 5 }
+    ],
+    PNB: [
+      { name: "PNB Digi Shrestha", interest: 9.2, tenure: 5 },
+      { name: "Mahila Udyam Nidhi", interest: 8.15, tenure: 10 },
+      { name: "PNB Mahila Samriddhi", interest: 9.5, tenure: 7 },
+      { name: "Krishi Mahila Card", interest: 7.0, tenure: 1 }
+    ],
+    BOB: [
+      { name: "BOB Nari Shakti", interest: 8.4, tenure: 7 },
+      { name: "Baroda Kisan Pride", interest: 8.7, tenure: 7 },
+      { name: "Animal Husbandry KCC", interest: 7.0, tenure: 5 },
+      { name: "Sanitation Loan", interest: 9.0, tenure: 5 }
+    ],
+    Axis: [
+      { name: "Axis Asha Housing", interest: 8.75, tenure: 25 },
+      { name: "Bharat Microfinance", interest: 12, tenure: 2 },
+      { name: "Silk Personal Loan", interest: 11, tenure: 5 },
+      { name: "SBB Loan", interest: 10.5, tenure: 5 }
+    ],
+    Kotak: [
+      { name: "Kotak Silk Business", interest: 10.99, tenure: 5 },
+      { name: "Rural Micro Business Loan", interest: 11.5, tenure: 3 },
+      { name: "Education Loan for Daughters", interest: 9.5, tenure: 10 },
+      { name: "Kotak KCC", interest: 7.0, tenure: 1 }
+    ]
+  };
+
+  // Speech Recognition
+=======
   // Speech Recognition & Synthesis
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
   const recognitionRef = useRef(null);
   const synthRef = useRef(window.speechSynthesis);
 
@@ -220,19 +287,28 @@ export default function Save() {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(`${USER_API}/${userEmail}`);
+        
+        if (user?.fullName) {
+          setUserName(user.fullName);
+        } else if (res.data && res.data.name) {
+          setUserName(res.data.name);
+        }
+
         if (res.data) {
+
           if (res.data.workNature) {
             setBusinessInfo(res.data.workNature);
           } else if (res.data.workType) {
             setBusinessInfo(res.data.workType);
           }
-          // Setting the strict profile persona that the user configures in their specific Profile Page
-          if (res.data.role) {
-            setPersona(res.data.role);
-          } else if (res.data.persona) {
-            setPersona(res.data.persona);
+
+          let occupationStr = res.data.occupation || res.data.role || res.data.persona || "Housewife";
+          if (occupationStr.toLowerCase().includes("working")) {
+             setPersona("Working Woman");
+          } else if (occupationStr.toLowerCase().includes("housewife")) {
+             setPersona("Housewife");
           } else {
-            setPersona("Housewife");
+             setPersona(occupationStr);
           }
         }
       } catch (err) {
@@ -262,26 +338,71 @@ export default function Save() {
 
     const fetchSuggestions = async () => {
       setIsLoadingSuggestions(true);
-      const tips = await getSuggestions(persona, businessInfo);
+      const tips = await getSuggestions(persona, businessInfo, goals);
       setAiSuggestions(tips);
       setIsLoadingSuggestions(false);
     };
 
-    fetchSuggestions();
-  }, [persona, businessInfo]);
+    // Add slight delay so goals array has time to fetch before building the prompt
+    const timeout = setTimeout(fetchSuggestions, 800);
+    return () => clearTimeout(timeout);
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [persona]);
 
+
+  /* TEXT TO SPEECH */
+  const speak = (text) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = audioLang || "en-IN";
+    
+    const voices = window.speechSynthesis.getVoices();
+    const langVoices = voices.filter(voice => voice.lang.includes(audioLang) || voice.lang.includes(audioLang.split('-')[0]));
+
+    let bestVoice = null;
+    if (langVoices.length > 0) {
+        bestVoice = langVoices.find(v =>
+            v.name.toLowerCase().includes('female') ||
+            v.name.toLowerCase().includes('woman') ||
+            v.name.toLowerCase().includes('google') ||
+            v.name.toLowerCase().includes('swara') ||
+            v.name.toLowerCase().includes('neerja') ||
+            v.name.toLowerCase().includes('aditi') ||
+            v.name.toLowerCase().includes('madhur')
+        );
+        if (!bestVoice) bestVoice = langVoices[0];
+    }
+
+    if (bestVoice) {
+        utterance.voice = bestVoice;
+    }
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const pauseSpeech = () => window.speechSynthesis.pause();
+  const resumeSpeech = () => window.speechSynthesis.resume();
+  const replaySpeech = () => {
+    if (chatResponse) speak(chatResponse);
+  };
 
   /* ASK ARTHIKA */
   const handleAskArthika = async () => {
     if (!chatQuestion.trim()) return;
     setIsChatLoading(true);
-    const res = await askArthika(persona, chatQuestion, audioLang, businessInfo);
+    const langObj = supportedLanguages.find(l => l.code === audioLang) || supportedLanguages[0];
+    const res = await askArthika(persona, chatQuestion, langObj.name, businessInfo, goals);
     setChatResponse(res);
     setIsChatLoading(false);
     setChatQuestion("");
+<<<<<<< HEAD
+    speak(res);
+=======
     speakText(res);
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
   };
-
 
   /* ADD GOAL */
   const handleAddGoal = async () => {
@@ -382,7 +503,7 @@ export default function Save() {
       setGoals([...goals, savedGoal]);
 
       // Reset Loan form
-      setLoanDetails({ bank: "", amount: "", interest: "", duration: "" });
+      setLoanDetails({ bank: "", scheme: "", amount: "", interest: "", duration: "" });
       setPayoffTimeline(null);
     } catch (err) {
       console.error("Error saving loan as a goal:", err);
@@ -415,12 +536,29 @@ export default function Save() {
           <div className="persona-header">
             <h3>Arthika Dashboard</h3>
             <span className="persona-badge" style={{ padding: '8px 15px', background: '#F48FB1', color: '#fff', borderRadius: '20px', fontWeight: 'bold' }}>
+<<<<<<< HEAD
+              Hello {userName} ({persona})
+=======
               Hello, {user?.firstName || 'User'}! ({persona || 'Housewife'})
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
             </span>
           </div>
           <p style={{ marginTop: '5px', fontSize: '0.9rem', color: '#555', fontWeight: '500' }}>
             This dashboard is tailored to you! You can update your persona (Housewife/Working) by going to your <b>Profile Page</b>.
           </p>
+
+          {persona === "Working Woman" && (
+            <div className="business-input-container" style={{ marginTop: "15px" }}>
+              <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#333' }}>Tell me about your business/work (Ask Arthika will give personalized ideas!):</label>
+              <textarea
+                value={businessInfo}
+                onChange={(e) => setBusinessInfo(e.target.value)}
+                placeholder="E.g., I run a tailoring shop and want to expand..."
+                rows={2}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", marginTop: "5px", border: "1px solid #ddd" }}
+              />
+            </div>
+          )}
 
           <div className={`persona-tips ${isLoadingSuggestions ? 'ai-pulse' : ''}`} style={{ marginTop: '20px' }}>
             <Sparkles className="tip-icon" />
@@ -493,18 +631,42 @@ export default function Save() {
               <Building className="input-icon" />
               <select
                 value={loanDetails.bank}
-                onChange={(e) => setLoanDetails({ ...loanDetails, bank: e.target.value })}
+                onChange={(e) => setLoanDetails({ ...loanDetails, bank: e.target.value, scheme: "", interest: "", duration: "" })}
               >
                 <option value="">Select Indian Bank</option>
-                <option value="SBI">State Bank of India (SBI)</option>
-                <option value="HDFC">HDFC Bank</option>
-                <option value="ICICI">ICICI Bank</option>
-                <option value="PNB">Punjab National Bank</option>
-                <option value="BOB">Bank of Baroda (BOB)</option>
-                <option value="Axis">Axis Bank</option>
-                <option value="Kotak">Kotak Mahindra Bank</option>
+                {Object.keys(loanData).map((bank) => (
+                  <option key={bank} value={bank}>{bank}</option>
+                ))}
               </select>
             </div>
+
+            {loanDetails.bank && (
+              <div className="loan-input-group">
+                <Briefcase className="input-icon" />
+                <select
+                  value={loanDetails.scheme}
+                  onChange={(e) => {
+                    const selectedScheme = e.target.value;
+                    const schemeObj = loanData[loanDetails.bank].find(s => s.name === selectedScheme);
+                    if (schemeObj) {
+                      setLoanDetails({ 
+                        ...loanDetails, 
+                        scheme: selectedScheme, 
+                        interest: schemeObj.interest, 
+                        duration: schemeObj.tenure 
+                      });
+                    } else {
+                      setLoanDetails({ ...loanDetails, scheme: selectedScheme });
+                    }
+                  }}
+                >
+                  <option value="">Select Loan Scheme</option>
+                  {loanData[loanDetails.bank].map((scheme) => (
+                    <option key={scheme.name} value={scheme.name}>{scheme.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="loan-input-group">
               <Banknote className="input-icon" />
@@ -706,6 +868,15 @@ export default function Save() {
               <div className="loading-chat"><Loader2 className="spinner" size={24} /> Thinking...</div>
             ) : (
               chatResponse && (
+<<<<<<< HEAD
+                <div className="chat-response-container">
+                  <div className="chat-bubble">{chatResponse}</div>
+                  <div className="tts-controls" style={{ display: 'flex', gap: '10px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                    <button className="icon-btn" onClick={() => resumeSpeech()} title="Play" style={{ background: '#f5f5f5', border: '1px solid #ddd', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Play size={18} color="#555" /></button>
+                    <button className="icon-btn" onClick={pauseSpeech} title="Pause" style={{ background: '#f5f5f5', border: '1px solid #ddd', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Pause size={18} color="#555" /></button>
+                    <button className="icon-btn" onClick={replaySpeech} title="Replay" style={{ background: '#f5f5f5', border: '1px solid #ddd', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RefreshCw size={18} color="#555" /></button>
+                  </div>
+=======
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                   <div className="chat-bubble">{chatResponse}</div>
                   
@@ -727,6 +898,7 @@ export default function Save() {
                       Stop
                     </button>
                   )}
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
                 </div>
               )
             )}
@@ -764,6 +936,26 @@ export default function Save() {
               </button>
             </div>
 
+<<<<<<< HEAD
+            <select
+              value={audioLang}
+              onChange={(e) => setAudioLang(e.target.value)}
+              className="language-dropdown"
+              style={{
+                padding: '10px 15px',
+                borderRadius: '15px',
+                border: '3px solid #000',
+                fontWeight: 'bold',
+                outline: 'none',
+                width: 'max-content'
+              }}
+            >
+              {supportedLanguages.map(lang => (
+                 <option key={lang.code} value={lang.code}>{lang.name}</option>
+              ))}
+            </select>
+=======
+>>>>>>> 61e24800a0e318b742deeba515da54797533314d
 
             <button className="primary-btn" onClick={handleAskArthika} style={{ padding: '10px 40px' }}>
               Send
