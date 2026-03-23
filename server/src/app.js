@@ -45,8 +45,15 @@ app.get("/", (req, res) => {
   res.send("Arthika API running 🚀");
 });
 
+// Start server when running directly (npm run dev)
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only listen if this file is run directly (not imported by server.js)
+const isDirectRun = process.argv[1] && (process.argv[1].endsWith('app.js') || process.argv[1].endsWith('src/app.js'));
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
