@@ -5,6 +5,7 @@ import "./Save.css";
 import dollarIcon from "../../assets/images/dollar-icon.png";
 import { getSuggestions, askArthika } from "../../services/GeminiService";
 import axios from 'axios';
+import API_BASE_URL from '../../config/apiConfig';
 
 export default function Save() {
 
@@ -48,8 +49,8 @@ export default function Save() {
   const [audioLang, setAudioLang] = useState(initialLang);
 
   // Constants
-  const API = "http://localhost:5000/api/goals";
-  const USER_API = "http://localhost:5000/api/profile"; // Original endpoint for fetching User details 
+  const API = `${API_BASE_URL}/api/goals`;
+  const USER_API = `${API_BASE_URL}/api/profile`; // Original endpoint for fetching User details 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
 
   const loanData = {
@@ -433,7 +434,7 @@ export default function Save() {
                     onClick={async () => {
                       setIsEditingBusiness(false);
                       try {
-                        await axios.put("http://localhost:5000/api/profile/update-work", {
+                        await axios.put(`${API_BASE_URL}/api/profile/update-work`, {
                           email: userEmail,
                           workNature: businessInfo
                         });

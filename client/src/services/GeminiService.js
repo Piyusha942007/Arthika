@@ -1,6 +1,7 @@
 import axios from 'axios';
+import API_BASE_URL from '../config/apiConfig';
 
-const CHAT_API_URL = 'http://localhost:5000/api/chat';
+const CHAT_API_URL = `${API_BASE_URL}/api/chat`;
 
 export const getSuggestions = async (persona, businessInfo, goals) => {
   try {
