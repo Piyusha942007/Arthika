@@ -56,15 +56,12 @@ export default function Learn() {
       const currentHighest = highestUnlockedLevel;
 
       if (lastSeen < currentHighest) {
-        // Find all levels completed but not yet seen
-        const newEarnedBadges = [];
-        for (let l = lastSeen; l < currentHighest; l++) {
-          const b = allBadges.find((badge) => badge.level === l);
-          if (b) newEarnedBadges.push(b);
-        }
-
-        if (newEarnedBadges.length > 0) {
-          setBadgeQueue(prev => [...prev, ...newEarnedBadges]);
+        // Find ONLY the latest badge completed (currentHighest - 1)
+        const latestBadgeLevel = currentHighest - 1;
+        const b = allBadges.find((badge) => badge.level === latestBadgeLevel);
+        
+        if (b) {
+          setBadgeQueue(prev => [...prev, b]);
           // Sync localStorage immediately to avoid duplicate queueing on re-render
           localStorage.setItem("lastSeenLevel", currentHighest.toString());
         }
@@ -357,16 +354,6 @@ export default function Learn() {
         </div>
       </section>
       <ToastContainer />
-      <button 
-        onClick={() => {
-          localStorage.setItem("lastSeenLevel", "1");
-          setHighestUnlockedLevel(1); 
-          setTimeout(() => setHighestUnlockedLevel(4), 100); 
-        }} 
-        style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999, padding: '10px', background: 'red', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-      >
-        Test Multiple Badge Sequence
-      </button>
     </div>
   );
 }
