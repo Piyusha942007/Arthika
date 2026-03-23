@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import "./Learn.css";
-import treasureChest from "../../assets/images/treasure.png";
+import treasureOpen from "../../assets/images/treasure.png";
+import treasureClosed from "../../assets/images/treasure_closed.png";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { ToastContainer, toast } from 'react-toastify';
-import API_BASE_URL from "../../config/apiConfig";
 import 'react-toastify/dist/ReactToastify.css';
+import { allBadges } from "../../constants/badges";
 
 export default function Learn() {
   const { user, isLoaded } = useUser();
@@ -17,12 +18,19 @@ export default function Learn() {
   const [totalVideos, setTotalVideos] = useState(30);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+
+  // --- Animation States ---
+  const [isChestOpen, setIsChestOpen] = useState(false);
+  const [badgeQueue, setBadgeQueue] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [flyingBadge, setFlyingBadge] = useState(null);
+
   useEffect(() => {
     if (!isLoaded || !user) return;
 
     const fetchProgress = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
+        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
           headers: { 'x-user-id': user.id },
           cache: 'no-store'
         });
@@ -40,6 +48,68 @@ export default function Learn() {
     fetchProgress();
   }, [isLoaded, user, language]);
 
+  // --- Detection of New Badges ---
+  useEffect(() => {
+    if (highestUnlockedLevel <= 1) return;
+
+    const lastSeen = parseInt(localStorage.getItem("lastSeenLevel") || "1");
+    if (highestUnlockedLevel > lastSeen) {
+      const latestBadgeLevel = highestUnlockedLevel - 1;
+      const b = allBadges.find((badge) => badge.level === latestBadgeLevel);
+      if (b) {
+        setBadgeQueue(prev => [...prev, b]);
+        localStorage.setItem("lastSeenLevel", highestUnlockedLevel.toString());
+      }
+    }
+  }, [highestUnlockedLevel]);
+
+  // --- Animation Sequencer ---
+  useEffect(() => {
+    if (badgeQueue.length > 0 && !isAnimating) {
+      handleNextBadgeAnimation();
+    }
+  }, [badgeQueue, isAnimating]);
+
+  const handleNextBadgeAnimation = async () => {
+    setIsAnimating(true);
+    const badge = badgeQueue[0];
+
+    // 1. Open Chest
+    setIsChestOpen(true);
+    await new Promise(r => setTimeout(r, 600));
+
+    // 2. Set Flying Badge (Rising phase)
+    const chestEl = document.querySelector(".reward-container");
+    const chestRect = chestEl.getBoundingClientRect();
+
+    setFlyingBadge({
+      ...badge,
+      startX: chestRect.left + chestRect.width / 2 - 40,
+      startY: chestRect.top - 40,
+      midY: 100, // Move towards top of viewport
+    });
+
+    // 3. Wait for rise, then fly
+    await new Promise(r => setTimeout(r, 1000));
+
+    const targetEl = document.getElementById("navbar-profile-pill");
+    if (targetEl) {
+      const targetRect = targetEl.getBoundingClientRect();
+      setFlyingBadge(prev => prev ? {
+        ...prev,
+        targetX: targetRect.left + targetRect.width / 2 - 25,
+        targetY: targetRect.top + targetRect.height / 2 - 25
+      } : null);
+    }
+
+    // 4. Cleanup
+    await new Promise(r => setTimeout(r, 1500));
+    setFlyingBadge(null);
+    setIsChestOpen(false);
+    setBadgeQueue(prev => prev.slice(1));
+    setIsAnimating(false);
+  };
+
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
     setLanguage(newLang);
@@ -47,26 +117,25 @@ export default function Learn() {
   };
 
   const stepOffsets = [
-    60, -40, -120, -10, 120, 0, -100, 50, 80, -30
+    60, -40, -120, -10, 120, 0, -100, 50, 80, -30 // 10 total levels
   ];
 
   const steps = stepOffsets.map((offset, i) => {
     const level = i + 1;
     let status = "pending";
-    if (level < highestUnlockedLevel) status = "completed"; 
+    if (level < highestUnlockedLevel) status = "completed"; // Reverts to default pink CSS
     else if (level === highestUnlockedLevel) status = "current";
 
     return { status, label: `LEVEL ${level}`, offset };
   });
 
   const calculatePath = () => {
-    // Start at center of first circle (top: 40)
-    let d = `M ${300 + steps[0].offset} 40`;
+    let d = `M ${300 + steps[0].offset} 0`;
     for (let i = 1; i < steps.length; i++) {
       const prevX = 300 + steps[i - 1].offset;
-      const prevY = (i - 1) * 200 + 40;
+      const prevY = (i - 1) * 200;
       const currX = 300 + steps[i].offset;
-      const currY = i * 200 + 40;
+      const currY = i * 200;
       d += ` C ${prevX} ${prevY + 100}, ${currX} ${currY - 100}, ${currX} ${currY}`;
     }
     return d;
@@ -140,7 +209,7 @@ export default function Learn() {
       )}
 
       <section className="progress-section">
-        <h2>Your Progress</h2>
+        <h2>YOUR PROGRESS</h2>
         <div className="progress-bar">
           <motion.div
             className="progress-fill"
@@ -156,15 +225,15 @@ export default function Learn() {
 
       <section className="learn-content">
         <div className="info-text-top">
-          <h3>Earn Stars By Completing A Quiz Everyday!</h3>
+          <h3>Earn Stars by completing a quiz everyday!</h3>
         </div>
 
         <div className="path-container">
-          <svg className="path-svg" viewBox="0 0 600 2100" preserveAspectRatio="none">
+          <svg className="path-svg" viewBox="0 0 600 2000">
             <motion.path
               d={calculatePath()}
               stroke="#222"
-              strokeWidth="3"
+              strokeWidth="2"
               fill="transparent"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
@@ -173,69 +242,90 @@ export default function Learn() {
           </svg>
 
           {steps.map((step, i) => (
-            <div
+            <motion.div
               key={i}
-              className="step-wrapper"
-              style={{ 
-                top: i * 200 + 40,
-                left: `${((300 + step.offset) / 600) * 100}%`
+              className={`step ${step.status}`}
+              initial={{ opacity: 0, scale: 0.5, x: step.offset }}
+              whileInView={{ opacity: 1, scale: 1, x: step.offset }}
+              whileHover={{
+                scale: 1.15,
+                x: step.offset,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
+              whileTap={{ scale: 0.95, x: step.offset }}
+              viewport={{ once: true }}
+              onClick={() => {
+                if (["current", "completed"].includes(step.status)) {
+                  setSelectedLevel(i + 1);
+                } else {
+                  toast.info("Please complete the previous levels to unlock this one!", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "light",
+                  });
+                }
               }}
             >
-              <motion.div
-                className={`step ${step.status}`}
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                whileHover={{
-                  scale: 1.15,
-                  transition: { type: "spring", stiffness: 400, damping: 10 }
-                }}
-                whileTap={{ scale: 0.95 }}
-                viewport={{ once: true }}
-                onClick={() => {
-                  if (["current", "completed"].includes(step.status)) {
-                    setSelectedLevel(i + 1);
-                  } else {
-                    toast.info("Please complete the previous levels to unlock this one!", {
-                      position: "top-center",
-                      autoClose: 3000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      theme: "light",
-                    });
-                  }
-                }}
-              >
-                {step.status === "current" && (
-                  <div className="current-indicator-wrapper">
-                    <span className="level-tag">{step.label}</span>
-                    <motion.div
-                      className="start-now-text"
-                      animate={{ x: [0, -8, 0] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    >
-                      Start now ➔
-                    </motion.div>
-                  </div>
-                )}
-                <span className="step-number">✓</span>
-              </motion.div>
-            </div>
+              {step.status === "current" && (
+                <div className="current-indicator-wrapper">
+                  <span className="level-tag">{step.label}</span>
+                  <motion.div
+                    className="start-now-text"
+                    animate={{ x: [0, -8, 0] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  >
+                    Start now ➔
+                  </motion.div>
+                </div>
+              )}
+              <span className="step-number">✓</span>
+            </motion.div>
           ))}
 
           <motion.div
             className="reward-container"
             whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-            style={{ 
-              top: steps.length * 200,
-              left: '50%',
-              transform: 'translateX(-50%)'
-            }}
           >
-            <img src={treasureChest} alt="Reward" className="treasure-chest" />
-            <p className="reward-text">Unlock Chest!</p>
+            <img src={isChestOpen ? treasureOpen : treasureClosed} alt="Reward" className="treasure-chest" />
+            <p className="reward-text">{isChestOpen ? "Chest Opened!" : "Unlock Chest!"}</p>
           </motion.div>
+
+          <AnimatePresence>
+            {flyingBadge && (
+              <motion.div
+                className="flying-badge"
+                initial={{
+                  opacity: 0,
+                  scale: 0.5,
+                  left: flyingBadge.startX,
+                  top: flyingBadge.startY
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: [0.5, 1.2, 1],
+                  left: flyingBadge.targetX !== undefined ? [flyingBadge.startX, flyingBadge.startX, flyingBadge.targetX] : flyingBadge.startX,
+                  top: flyingBadge.targetX !== undefined
+                    ? [flyingBadge.startY, flyingBadge.midY, flyingBadge.targetY]
+                    : [flyingBadge.startY, flyingBadge.midY],
+                }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{
+                  duration: flyingBadge.targetX !== undefined ? 1.5 : 0.8,
+                  times: flyingBadge.targetX !== undefined ? [0, 0.4, 1] : [0, 1],
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="badge-icon-wrapper" style={{ backgroundColor: flyingBadge.color }}>
+                  <span className="badge-icon-reveal">{flyingBadge.icon}</span>
+                </div>
+                <div className="badge-name-reveal">{flyingBadge.name}</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
       <ToastContainer />

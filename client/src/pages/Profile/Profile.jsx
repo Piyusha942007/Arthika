@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser, useClerk, UserProfile } from "@clerk/clerk-react";
 import './Profile.css';
+import { allBadges } from "../../constants/badges";
 
 const Profile = () => {
     const { user, isLoaded } = useUser();
@@ -14,7 +15,8 @@ const Profile = () => {
     const [editName, setEditName] = useState("");
     const [showSettings, setShowSettings] = useState(false);
 
-    const today = new Date().getDate();
+    const todayStr = new Date().toISOString().split('T')[0]; // e.g. "2026-03-23"
+    const todayDay = new Date().getDate();
 
     // ✅ Greeting logic
     const hour = new Date().getHours();
@@ -36,8 +38,8 @@ const Profile = () => {
                 let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
 
                 // 2. Agar aaj ki date missing hai, toh update karo
-                if (!backendStreaks.includes(today)) {
-                    backendStreaks = [...backendStreaks, today];
+                if (!backendStreaks.includes(todayStr)) {
+                    backendStreaks = [...backendStreaks, todayStr];
 
                     // Backend ko update bhejo
                     await axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
@@ -69,7 +71,7 @@ const Profile = () => {
                 // Default fallback agar API fail ho jaye
                 if (!userData) {
                     setUserData({
-                        streaks: [today],
+                        streaks: [todayStr],
                         role: 'Housewife',
                         level: 1
                     });
@@ -78,7 +80,7 @@ const Profile = () => {
         };
 
         syncUserData();
-    }, [isLoaded, user, today]);
+    }, [isLoaded, user, todayDay]);
 
     const handleUpdateName = async () => {
         try {
@@ -108,18 +110,7 @@ const Profile = () => {
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    const allBadges = [
-        { level: 1, name: "The Identity Pioneer", icon: "🪪", color: "pink-ring" },
-        { level: 2, name: "Digital Explorer", icon: "🚀", color: "orange-ring" },
-        { level: 3, name: "Sisterhood Guardian", icon: "🪷", color: "pink-ring" },
-        { level: 4, name: "Credit Catalyst", icon: "🔑", color: "orange-ring" },
-        { level: 5, name: "Budgeting Architect", icon: "🐷", color: "pink-ring" },
-        { level: 6, name: "Safety Shield", icon: "🛡️", color: "orange-ring" },
-        { level: 7, name: "Wealth Weaver", icon: "🌱", color: "pink-ring" },
-        { level: 8, name: "Village Visionary", icon: "🏪", color: "orange-ring" },
-        { level: 9, name: "Growth Strategist", icon: "🌉", color: "pink-ring" },
-        { level: 10, name: "Financial Maharani", icon: "👑", color: "orange-ring" }
-    ];
+
 
     return (
         <div className="profile-page-container">
@@ -146,110 +137,101 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className="hero-right">
-                    <div className="hero-big-num">
-                        {currentLevel}
+                    <div className="hero-level-badge">
+                        <span className="level-label">LEVEL</span>
+                        <span className="level-number">{currentLevel}</span>
                     </div>
                 </div>
-            </div>
-
-            <main className="profile-layout">
-                <section className="profile-main-card">
-                    <h2 className="card-heading">My Profile</h2>
-
-                    <div className="profile-info-section">
-                        <div className="profile-avatar-wrapper">
-                            <div className="profile-avatar"><img src={user.imageUrl} alt="Profile" /></div>
-                            <button onClick={() => setShowSettings(true)} className="change-photo-btn">Edit Profile</button>
-                        </div>
-
-                        <div className="profile-details">
-                            {isEditing ? (
-                                <div className="arthika-edit-form">
-                                    <input className="arthika-input" value={editName} onChange={(e) => setEditName(e.target.value)} autoFocus />
-                                    <div className="edit-actions">
-                                        <button onClick={handleUpdateName} className="save-btn">Save</button>
-                                        <button onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
+            </div>            <main className="profile-dashboard">
+                <div className="dashboard-left">
+                    <section className="dashboard-card profile-details-card">
+                        <div className="profile-header-flex">
+                            <div className="p-avatar-box">
+                                <img src={user.imageUrl} alt="Profile" />
+                                <button onClick={() => setShowSettings(true)} className="p-edit-btn">✏️</button>
+                            </div>
+                            <div className="p-text-info">
+                                {isEditing ? (
+                                    <div className="p-edit-field">
+                                        <input value={editName} onChange={(e) => setEditName(e.target.value)} autoFocus />
+                                        <div className="p-edit-btns">
+                                            <button onClick={handleUpdateName} className="p-save">Save</button>
+                                            <button onClick={() => setIsEditing(false)} className="p-cancel">Cancel</button>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <>
-                                    <h3 className="profile-name exact-case">{user.fullName}</h3>
-                                    <p className="profile-email">{user.primaryEmailAddress.emailAddress}</p>
-                                    <button onClick={() => setIsEditing(true)} className="arthika-edit-link">Edit Name</button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="role-container-block">
-                        <h4 className="role-title">Current Role</h4>
-                        <div className="role-btn-group">
-                            <button onClick={() => handleToggle("Housewife")} className={`role-btn hw ${userData?.role === 'Housewife' ? 'active' : ''}`}><span>Housewife</span></button>
-                            <button onClick={() => handleToggle("Working")} className={`role-btn wk ${userData?.role === 'Working' ? 'active' : ''}`}><span>Working</span></button>
-                        </div>
-                    </div>
-
-                    <div className="streak-calendar-box">
-                        <p className="cal-month">MARCH 2026</p>
-                        <p className="cal-streak-label">🔥 {(userData?.streaks?.length || 0)}-Day Total Streak!</p>
-                        <div className="cal-grid-header">
-                            {dayLabels.map(label => <span key={label}>{label}</span>)}
-                        </div>
-                        <div className="cal-grid-body">
-                            {daysInMonth.map(date => (
-                                <div key={date} className={`cal-date-circle ${userData?.streaks?.includes(date) ? 'streak-pink' : ''} ${date === today ? 'today-highlight' : ''}`}>
-                                    {date}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <aside className="profile-sidebar">
-                    <div className="side-white-card">
-                        <h2 className="side-title">My Badges</h2>
-                        <div className="badge-list">
-                            {/* Logic: Only show badge if the user has PASSED that level */}
-                            {allBadges.filter(b => b.level < currentLevel).map((badge) => (
-                                <div className="badge-row" key={badge.level}>
-                                    <div className={`badge-circle ${badge.color}`}>{badge.icon}</div>
-                                    <div className="badge-text-box">
-                                        <p className="badge-name-text">{badge.name}</p>
-                                        <span className="badge-status">Level {badge.level} Completed</span>
-                                    </div>
-                                </div>
-                            ))}
-
-                            {/* Locked Badge (Next Milestone) */}
-                            {currentLevel <= 10 && (
-                                <div className="badge-row locked-badge">
-                                    <div className="badge-circle locked">🔒</div>
-                                    <div className="badge-text-box">
-                                        <p className="badge-name-text" style={{ color: '#999' }}>Next: Level {currentLevel}</p>
-                                        <span className="badge-status-locked">Complete current level to unlock</span>
-                                    </div>
-                                </div>
-                            )}
-
-                            {allBadges.filter(b => b.level < currentLevel).length === 0 && currentLevel === 1 && (
-                                <p className="no-badges-msg">Start your first lesson to earn your first badge!</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="side-white-card">
-                        <h2 className="side-title">Support Circle</h2>
-                        <div className="support-list">
-                            <div className="support-item">
-                                <span className="user-icon">👤</span>
-                                <div className="support-details">
-                                    <p className="sup-name">Mahila Arthik Vikas Mahamandal (MAVIM) </p>
-                                    <p className="sup-phone">020-24330104</p>
-                                </div>
+                                ) : (
+                                    <>
+                                        <h3 className="p-fullname">{user.fullName}</h3>
+                                        <p className="p-email">{user.primaryEmailAddress.emailAddress}</p>
+                                        <button onClick={() => setIsEditing(true)} className="p-name-edit">Edit Name</button>
+                                    </>
+                                )}
                             </div>
                         </div>
-                    </div>
-                </aside>
+
+                        <div className="p-role-row">
+                            <span className="p-role-label">Current Role:</span>
+                            <div className="p-role-toggles">
+                                <button onClick={() => handleToggle("Housewife")} className={`p-role-opt hw ${userData?.role === 'Housewife' ? 'active' : ''}`}>Housewife</button>
+                                <button onClick={() => handleToggle("Working")} className={`p-role-opt wk ${userData?.role === 'Working' ? 'active' : ''}`}>Working Woman</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="dashboard-card streak-section">
+                        <div className="section-header">
+                            <h2 className="section-title">Consistency Hub</h2>
+                            <p className="streak-count-glow">🔥 {userData?.streaks?.length || 0} Days Active</p>
+                        </div>
+                        <div className="calendar-container">
+                            <p className="calendar-month-text">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
+                            <div className="calendar-grid">
+                                {dayLabels.map(label => <span key={label} className="cal-label">{label}</span>)}
+                                {daysInMonth.map(date => {
+                                    const dateStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                                    const isStreak = userData?.streaks?.includes(dateStr);
+                                    const isToday = date === todayDay;
+                                    return (
+                                        <div key={date} className={`cal-cell ${isStreak ? 'active-streak' : ''} ${isToday ? 'current-day' : ''}`}>
+                                            {date}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div className="dashboard-right">
+                    <section className="dashboard-card badges-milestones">
+                        <h2 className="section-title">My Milestones</h2>
+                        <div className="badge-grid-compact">
+                            {allBadges.map((badge) => {
+                                const isUnlocked = badge.level < currentLevel;
+                                return (
+                                    <div className={`badge-item-mini ${isUnlocked ? 'unlocked' : 'locked'}`} key={badge.level} title={isUnlocked ? badge.name : "Locked"}>
+                                        <div className="badge-icon-disk" style={isUnlocked ? { background: badge.color } : {}}>
+                                            {isUnlocked ? badge.icon : "🔒"}
+                                        </div>
+                                        <p className="badge-mini-name">{isUnlocked ? badge.name : `Level ${badge.level}`}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    <section className="dashboard-card support-network">
+                        <h2 className="section-title">Sisterhood Circle</h2>
+                        <div className="support-card-mini">
+                            <div className="mavim-logo">MAVIM</div>
+                            <div className="support-info">
+                                <h4>Mahila Arthik Vikas Mahamandal</h4>
+                                <a href="tel:02024330104" className="call-btn">📞 020-24330104</a>
+                            </div>
+                        </div>
+                        <p className="sisterhood-msg">Together, we build the future. Reach out for any guidance on SHGs or Business.</p>
+                    </section>
+                </div>
             </main>
         </div>
     );

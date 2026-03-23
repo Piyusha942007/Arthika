@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   role: String,
   level: { type: Number, default: 1 },
   progress: { type: Number, default: 0 },
-  streaks: [Number], // Array of days
+  streaks: [String], // Array of date strings (YYYY-MM-DD)
   // New Persona & Finance fields
   persona: { type: String, default: 'Housewife' }, // 'Housewife' | 'Working'
   workType: { type: String, default: 'Entrepreneur' }, // 'Entrepreneur' | 'Employee'
