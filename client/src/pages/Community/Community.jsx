@@ -27,6 +27,7 @@ export default function Community() {
     const [statusText, setStatusText] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [bizSearchTerm, setBizSearchTerm] = useState('');
+    const [bizLocSearch, setBizLocSearch] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('All');
     const [locFilter, setLocFilter] = useState('All');
     const [commentText, setCommentText] = useState('');
@@ -55,7 +56,7 @@ export default function Community() {
 
     const handleSubmitBusiness = async (e) => {
         e.preventDefault();
-        
+
         if (!businessForm.businessName || !businessForm.ownerName || !businessForm.contact || !businessForm.location || !businessForm.description) {
             alert('Please fill out all the fields.');
             return;
@@ -68,7 +69,7 @@ export default function Community() {
 
         setSubmitting(true);
         const formData = new FormData();
-        
+
         // Strict Camel Case logic via map and join
         const camelCaseName = businessForm.businessName.split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase())
@@ -81,7 +82,7 @@ export default function Community() {
         formData.append('location', businessForm.location);
         formData.append('category', businessForm.category);
         formData.append('description', businessForm.description);
-        
+
         if (photo) {
             formData.append('photo', photo);
         }
@@ -108,13 +109,13 @@ export default function Community() {
 
     const handleDeletePost = async (bizId, e) => {
         e.stopPropagation();
-        if(!user || !user.id) return;
+        if (!user || !user.id) return;
         try {
             await axios.delete(`http://localhost:5000/api/business/${bizId}`, {
                 data: { clerkId: user.id }
             });
             fetchBusinesses();
-            if(selectedBusiness?._id === bizId) setSelectedBusiness(null);
+            if (selectedBusiness?._id === bizId) setSelectedBusiness(null);
         } catch (error) {
             console.error("Failed to delete post", error);
         }
@@ -141,7 +142,7 @@ export default function Community() {
     };
 
     const handleDeleteComment = async (bizId, commentId) => {
-        if(!user || !user.id) return;
+        if (!user || !user.id) return;
         try {
             const res = await axios.delete(`http://localhost:5000/api/business/${bizId}/comments/${commentId}`, {
                 data: { clerkId: user.id }
@@ -184,8 +185,8 @@ export default function Community() {
 
     const handlePhoneChange = (e) => {
         let val = e.target.value.replace(/\D/g, '').slice(0, 10);
-        if(val.startsWith('91') && val.length > 2) val = val.substring(2);
-        setBusinessForm(prev => ({...prev, contact: val.length > 0 ? "+91 " + val : ""}));
+        if (val.startsWith('91') && val.length > 2) val = val.substring(2);
+        setBusinessForm(prev => ({ ...prev, contact: val.length > 0 ? "+91 " + val : "" }));
     };
 
     const getLocation = () => {
@@ -195,7 +196,7 @@ export default function Community() {
                 .then(res => res.json())
                 .then(data => {
                     const city = data.address.city || data.address.town || data.address.village || data.address.state || "Unknown Area";
-                    setBusinessForm(prev => ({...prev, location: city}));
+                    setBusinessForm(prev => ({ ...prev, location: city }));
                     setLocLoading(false);
                 })
                 .catch(() => setLocLoading(false));
@@ -382,15 +383,19 @@ export default function Community() {
     );
 
     const renderEarn = () => {
-        let filteredBusinesses = businesses.filter(b => 
-            (b.businessName || "").toLowerCase().includes(bizSearchTerm.toLowerCase()) || 
+        let filteredBusinesses = businesses.filter(b =>
+            (b.businessName || "").toLowerCase().includes(bizSearchTerm.toLowerCase()) ||
             (b.location || "").toLowerCase().includes(bizSearchTerm.toLowerCase())
         );
-
+        if (bizLocSearch) {
+            filteredBusinesses = filteredBusinesses.filter(b =>
+                (b.location || "").toLowerCase().includes(bizLocSearch.toLowerCase())
+            );
+        }
         if (categoryFilter !== 'All') {
             filteredBusinesses = filteredBusinesses.filter(b => b.category === categoryFilter);
         }
-        
+
         if (locFilter !== 'All') {
             filteredBusinesses = filteredBusinesses.filter(b => b.location && b.location.toLowerCase() === locFilter.toLowerCase());
         }
@@ -399,159 +404,186 @@ export default function Community() {
         const uniqueLocations = Array.from(new Set(businesses.map(b => b.location).filter(Boolean)));
 
         return (
-        <div className="view-content animate-in earn-view-container" style={{ paddingBottom: '100px' }}>
-            <h1 className="section-title text-center" style={{ marginBottom: '20px', fontSize: '36px' }}>Want to grow your business?</h1>
-            
-            <div className="glassmorphism-card">
-                <h2 className="text-center" style={{ marginBottom: '20px', fontSize: '24px' }}>Business Details</h2>
-                <form onSubmit={handleSubmitBusiness} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <input type="text" name="businessName" placeholder="Enter business name" value={businessForm.businessName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', textTransform: 'capitalize' }} required />
-                    <input type="text" name="ownerName" placeholder="Enter your name" value={businessForm.ownerName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
-                    <input type="text" name="contact" placeholder="Enter your contact (10 digits)" value={businessForm.contact} onChange={handlePhoneChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
-                    
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="text" name="location" placeholder="Click '📍 Location' to fetch" value={businessForm.location} onChange={handleInputChange} style={{ flex: 1, padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', background: '#f5f5f5', cursor: 'not-allowed' }} readOnly required />
-                        <button type="button" className="geo-btn" onClick={getLocation} disabled={locLoading}>
-                            {locLoading ? '📍 Locating...' : '📍 Location'}
+            <div className="view-content animate-in earn-view-container" style={{ paddingBottom: '100px' }}>
+                <h1 className="section-title text-center" style={{ marginBottom: '20px', fontSize: '36px' }}>Want to grow your business?</h1>
+
+                <div className="glassmorphism-card">
+                    <h2 className="text-center" style={{ marginBottom: '20px', fontSize: '24px' }}>Business Details</h2>
+                    <form onSubmit={handleSubmitBusiness} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <input type="text" name="businessName" placeholder="Enter business name" value={businessForm.businessName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', textTransform: 'capitalize' }} required />
+                        <input type="text" name="ownerName" placeholder="Enter your name" value={businessForm.ownerName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
+                        <input type="text" name="contact" placeholder="Enter your contact (10 digits)" value={businessForm.contact} onChange={handlePhoneChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
+
+                        {/* CHANGE THIS BLOCK */}
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <input
+                                type="text"
+                                name="location"
+                                placeholder="Enter location or use 📍"
+                                value={businessForm.location}
+                                onChange={handleInputChange}
+                                style={{ flex: 1, padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }}
+                                required
+                            />
+                            <button type="button" className="geo-btn" onClick={getLocation} disabled={locLoading}>
+                                {locLoading ? '📍 Locating...' : '📍 Location'}
+                            </button>
+                        </div>
+
+                        <select name="category" value={businessForm.category} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }}>
+                            <option value="Health">Health</option>
+                            <option value="Education">Education</option>
+                            <option value="Food">Food</option>
+                            <option value="Handicrafts">Handicrafts</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <textarea name="description" placeholder="Enter description of your business" value={businessForm.description} onChange={handleInputChange} rows="3" style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', resize: 'vertical' }} required></textarea>
+
+                        <div className="upload-zone" onClick={() => fileInputRef.current.click()}>
+                            <p style={{ margin: 0, fontSize: '16px', color: '#555', fontWeight: '600' }}>Drop photos here or click to upload</p>
+                            <div style={{ background: '#FFCC4D', borderRadius: '20px', padding: '5px 15px', display: 'inline-block', marginTop: '10px', fontWeight: 'bold', fontSize: '14px', color: '#000' }}>choose file</div>
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+
+                            {preview && (
+                                <div className="preview-container" onClick={e => e.stopPropagation()}>
+                                    <div className="preview-wrapper">
+                                        <img src={preview} alt="preview" className="preview-thumb" />
+                                        <button type="button" className="remove-thumb-btn" onClick={removePhoto}>X</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <button type="submit" disabled={submitting} className="submit-btn-gradient">
+                            {submitting ? 'Uploading...' : 'Submit Business'}
                         </button>
+                    </form>
+                </div>
+
+                <div className="community-grid-section">
+                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                        <h2 style={{ fontSize: '32px', marginBottom: '5px' }}>Our Community</h2>
+                        <p style={{ fontSize: '16px', color: '#333', fontWeight: 'bold' }}>join now by uploading your business</p>
                     </div>
 
-                    <select name="category" value={businessForm.category} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }}>
-                        <option value="Health">Health</option>
-                        <option value="Education">Education</option>
-                        <option value="Food">Food</option>
-                        <option value="Handicrafts">Handicrafts</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <div className="biz-search-row" style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
 
-                    <textarea name="description" placeholder="Enter description of your business" value={businessForm.description} onChange={handleInputChange} rows="3" style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', resize: 'vertical' }} required></textarea>
-                    
-                    <div className="upload-zone" onClick={() => fileInputRef.current.click()}>
-                        <p style={{ margin: 0, fontSize: '16px', color: '#555', fontWeight: '600' }}>Drop photos here or click to upload</p>
-                        <div style={{ background: '#FFCC4D', borderRadius: '20px', padding: '5px 15px', display: 'inline-block', marginTop: '10px', fontWeight: 'bold', fontSize: '14px', color: '#000' }}>choose file</div>
-                        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
-                        
-                        {preview && (
-                            <div className="preview-container" onClick={e => e.stopPropagation()}>
-                                <div className="preview-wrapper">
-                                    <img src={preview} alt="preview" className="preview-thumb" />
-                                    <button type="button" className="remove-thumb-btn" onClick={removePhoto}>X</button>
-                                </div>
+                        {/* Business Name Bar */}
+                        <input
+                            type="text"
+                            placeholder="Search business"
+                            value={bizSearchTerm}
+                            onChange={(e) => setBizSearchTerm(e.target.value)}
+                            className="search-filter-input"
+                        />
+
+                        {/* Location Search Bar */}
+                        <input
+                            type="text"
+                            placeholder="Search by location"
+                            value={bizLocSearch}
+                            onChange={(e) => setBizLocSearch(e.target.value)}
+                            className="search-filter-input"
+                        />
+
+                        {/* Dropdowns */}
+                        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '10px 20px', borderRadius: '20px', border: '1px solid #ccc', outline: 'none' }}>
+                            <option value="All">All Categories</option>
+                            <option value="Health">Health</option>
+                            <option value="Education">Education</option>
+                            <option value="Food">Food</option>
+                            <option value="Handicrafts">Handicrafts</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <select value={locFilter} onChange={(e) => setLocFilter(e.target.value)} style={{ padding: '10px 20px', borderRadius: '20px', border: '1px solid #ccc', outline: 'none' }}>
+                            <option value="All">All Locations</option>
+                            {uniqueLocations.map((loc, idx) => (
+                                <option key={idx} value={loc}>{loc}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="community-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+                        {filteredBusinesses.length === 0 ? (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px', backgroundColor: '#fff', borderRadius: '20px', border: '2px dashed #FFCC4D' }}>
+                                <h3 style={{ fontSize: '24px', color: '#000', marginBottom: '10px' }}>Be the first to grow your business here!</h3>
+                                <p style={{ color: '#666', fontSize: '16px' }}>Upload your photos and details above to feature heavily across the local community.</p>
                             </div>
+                        ) : (
+                            filteredBusinesses.map((biz) => (
+                                <div key={biz._id} className="biz-card" onClick={() => setSelectedBusiness(biz)} style={{ position: 'relative' }}>
+                                    {user && biz.clerkId === user.id && (
+                                        <button className="delete-btn" onClick={(e) => handleDeletePost(biz._id, e)} style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10, padding: '8px 12px' }}>🗑️ Delete</button>
+                                    )}
+                                    <div className="biz-card-header">{biz.businessName}</div>
+                                    {biz.imageUrl ? (
+                                        <img src={biz.imageUrl} alt="business" className="biz-card-image" />
+                                    ) : (
+                                        <div className="biz-card-image" style={{ background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ color: '#aaa' }}>No image</span>
+                                        </div>
+                                    )}
+                                    <div style={{ padding: '15px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                        <p style={{ fontSize: '15px', marginBottom: '10px', color: '#444', flexGrow: 1 }}>{biz.description}</p>
+                                        <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}><strong>Owner:</strong> {biz.ownerName}</p>
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <span style={{ background: '#000', color: '#fff', padding: '8px 30px', borderRadius: '20px', fontSize: '15px', fontWeight: 'bold' }}>Contact</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
                         )}
                     </div>
-
-                    <button type="submit" disabled={submitting} className="submit-btn-gradient">
-                        {submitting ? 'Uploading...' : 'Submit Business'}
-                    </button>
-                </form>
-            </div>
-
-            <div className="community-grid-section">
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <h2 style={{ fontSize: '32px', marginBottom: '5px' }}>Our Community</h2>
-                    <p style={{ fontSize: '16px', color: '#333', fontWeight: 'bold' }}>join now by uploading your business</p>
-                </div>
-                
-                <div className="biz-search-row" style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <input type="text" placeholder="Search business" value={bizSearchTerm} onChange={(e) => setBizSearchTerm(e.target.value)} style={{ padding: '10px 20px', borderRadius: '20px', border: '1px solid #ccc', outline: 'none', width: '250px', maxWidth: '100%' }} />
-                    
-                    <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '10px 20px', borderRadius: '20px', border: '1px solid #ccc', outline: 'none' }}>
-                        <option value="All">All Categories</option>
-                        <option value="Health">Health</option>
-                        <option value="Education">Education</option>
-                        <option value="Food">Food</option>
-                        <option value="Handicrafts">Handicrafts</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Other">Other</option>
-                    </select>
-
-                    <select value={locFilter} onChange={(e) => setLocFilter(e.target.value)} style={{ padding: '10px 20px', borderRadius: '20px', border: '1px solid #ccc', outline: 'none' }}>
-                        <option value="All">All Locations</option>
-                        {uniqueLocations.map((loc, idx) => (
-                            <option key={idx} value={loc}>{loc}</option>
-                        ))}
-                    </select>
                 </div>
 
-                <div className="community-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
-                    {filteredBusinesses.length === 0 ? (
-                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px', backgroundColor: '#fff', borderRadius: '20px', border: '2px dashed #FFCC4D' }}>
-                            <h3 style={{ fontSize: '24px', color: '#000', marginBottom: '10px' }}>Be the first to grow your business here!</h3>
-                            <p style={{ color: '#666', fontSize: '16px' }}>Upload your photos and details above to feature heavily across the local community.</p>
-                        </div>
-                    ) : (
-                        filteredBusinesses.map((biz) => (
-                            <div key={biz._id} className="biz-card" onClick={() => setSelectedBusiness(biz)} style={{position: 'relative'}}>
-                                {user && biz.clerkId === user.id && (
-                                    <button className="delete-btn" onClick={(e) => handleDeletePost(biz._id, e)} style={{position: 'absolute', top: '10px', right: '10px', zIndex: 10, padding: '8px 12px'}}>🗑️ Delete</button>
-                                )}
-                                <div className="biz-card-header">{biz.businessName}</div>
-                                {biz.imageUrl ? (
-                                    <img src={biz.imageUrl} alt="business" className="biz-card-image" />
-                                ) : (
-                                    <div className="biz-card-image" style={{ background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <span style={{ color: '#aaa' }}>No image</span>
+                {selectedBusiness && (
+                    <div className="modal-overlay" onClick={() => setSelectedBusiness(null)}>
+                        <div className="modal-container" onClick={e => e.stopPropagation()}>
+                            <button className="close-modal-btn" onClick={() => setSelectedBusiness(null)}>✕</button>
+
+                            <img src={selectedBusiness.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'} alt="business" className="modal-left-img" />
+
+                            <div className="modal-right-content">
+                                <h2>{selectedBusiness.businessName}</h2>
+                                <p className="modal-owner">Owned by {selectedBusiness.ownerName} • 📍 {selectedBusiness.location} | {selectedBusiness.category || 'Other'}</p>
+
+                                <p className="modal-desc">{selectedBusiness.description}</p>
+
+                                <button className="modal-contact-btn">📞 {selectedBusiness.contact}</button>
+
+                                <div className="comments-section">
+                                    <h3>Community Comments ({selectedBusiness.comments ? selectedBusiness.comments.length : 0})</h3>
+                                    <div className="comment-input-area">
+                                        <input type="text" placeholder="Write a comment..." value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handlePostComment()} />
+                                        <button onClick={handlePostComment}>Post</button>
                                     </div>
-                                )}
-                                <div style={{ padding: '15px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                                    <p style={{ fontSize: '15px', marginBottom: '10px', color: '#444', flexGrow: 1 }}>{biz.description}</p>
-                                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}><strong>Owner:</strong> {biz.ownerName}</p>
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                        <span style={{ background: '#000', color: '#fff', padding: '8px 30px', borderRadius: '20px', fontSize: '15px', fontWeight: 'bold' }}>Contact</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
 
-            {selectedBusiness && (
-                <div className="modal-overlay" onClick={() => setSelectedBusiness(null)}>
-                    <div className="modal-container" onClick={e => e.stopPropagation()}>
-                        <button className="close-modal-btn" onClick={() => setSelectedBusiness(null)}>✕</button>
-                        
-                        <img src={selectedBusiness.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'} alt="business" className="modal-left-img" />
-                        
-                        <div className="modal-right-content">
-                            <h2>{selectedBusiness.businessName}</h2>
-                            <p className="modal-owner">Owned by {selectedBusiness.ownerName} • 📍 {selectedBusiness.location} | {selectedBusiness.category || 'Other'}</p>
-                            
-                            <p className="modal-desc">{selectedBusiness.description}</p>
-                            
-                            <button className="modal-contact-btn">📞 {selectedBusiness.contact}</button>
-                            
-                            <div className="comments-section">
-                                <h3>Community Comments ({selectedBusiness.comments ? selectedBusiness.comments.length : 0})</h3>
-                                <div className="comment-input-area">
-                                    <input type="text" placeholder="Write a comment..." value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handlePostComment()} />
-                                    <button onClick={handlePostComment}>Post</button>
-                                </div>
-                                
-                                <div className="comments-scroll-area">
-                                    {selectedBusiness.comments && selectedBusiness.comments.slice().reverse().map((c, i) => (
-                                        <div key={i} className="mock-comment" style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
-                                            {c.userImage ? <img src={c.userImage} alt="" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#ccc' }}></div>}
-                                            <div style={{ flex: 1 }}>
-                                                <strong>{c.userName}</strong>
-                                                <span style={{color: '#333', display: 'block'}}>{c.text}</span>
+                                    <div className="comments-scroll-area">
+                                        {selectedBusiness.comments && selectedBusiness.comments.slice().reverse().map((c, i) => (
+                                            <div key={i} className="mock-comment" style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
+                                                {c.userImage ? <img src={c.userImage} alt="" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#ccc' }}></div>}
+                                                <div style={{ flex: 1 }}>
+                                                    <strong>{c.userName}</strong>
+                                                    <span style={{ color: '#333', display: 'block' }}>{c.text}</span>
+                                                </div>
+                                                {user && c.clerkId === user.id && (
+                                                    <button onClick={() => handleDeleteComment(selectedBusiness._id, c._id)} style={{ background: 'transparent', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', padding: '5px' }}>
+                                                        Delete
+                                                    </button>
+                                                )}
                                             </div>
-                                            {user && c.clerkId === user.id && (
-                                                <button onClick={() => handleDeleteComment(selectedBusiness._id, c._id)} style={{ background: 'transparent', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', padding: '5px' }}>
-                                                    Delete
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
         );
     };
 
