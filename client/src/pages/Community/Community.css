@@ -11,11 +11,11 @@
 
 .community-content {
     width: 95%;
-    max-width: 980px;
-    margin: 5px auto;
+    max-width: 1100px;
+    margin: 0 auto;
     position: relative;
     z-index: 10;
-    padding-bottom: 80px;
+    padding-bottom: 60px;
 }
 
 /* BIG HUB STYLES (First Page) */
@@ -98,14 +98,14 @@
 /* CONNECT VIEW */
 .help-section-card {
     background: #fff;
-    border-radius: 70px;
-    padding: 70px 40px;
+    border-radius: 30px;
+    padding: 40px 30px;
 }
 
 .section-title {
-    font-size: 38px;
-    font-weight: 950;
-    margin-bottom: 60px;
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 30px;
     text-align: center;
     color: #000;
     text-transform: uppercase;
@@ -113,8 +113,8 @@
 
 .help-cards-container {
     display: flex;
-    gap: 40px;
-    margin-bottom: 100px;
+    gap: 24px;
+    margin-bottom: 40px;
     justify-content: center;
     flex-wrap: wrap;
     align-items: stretch;
@@ -122,12 +122,12 @@
 
 .help-card.pill-box-shape {
     flex: 1;
-    min-width: 300px;
+    min-width: 280px;
     max-width: 420px; 
-    padding: 60px 35px;
+    padding: 30px 25px;
     text-align: center;
     border: none;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -135,22 +135,22 @@
     align-items: center;
 }
 
-.shape-right { border-radius: 110px 20px 110px 20px; }
-.shape-left { border-radius: 20px 110px 20px 110px; }
+.shape-right { border-radius: 40px 12px 40px 12px; }
+.shape-left { border-radius: 12px 40px 12px 40px; }
 
 .pink-card { 
     background: #F499B8; 
-    box-shadow: 0 25px 90px rgba(244, 153, 184, 0.35);
+    box-shadow: 0 12px 40px rgba(244, 153, 184, 0.25);
 }
 
 .interactive-box:hover {
-    transform: translateY(-12px) translateX(10px) scale(1.02);
+    transform: translateY(-6px) scale(1.02);
 }
 
 .card-title {
-    font-size: 28px;
-    font-weight: 950;
-    margin-bottom: 40px;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 20px;
     text-align: center;
     color: #000;
 }
@@ -159,22 +159,22 @@
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     width: 100%;
 }
 
 .data-pill {
     width: 100%;
-    padding: 16px 20px;
-    border-radius: 80px;
+    padding: 12px 16px;
+    border-radius: 30px;
     text-align: center;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     border: none;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -182,14 +182,13 @@
 }
 
 .data-pill strong { 
-    font-weight: 950; 
-    font-size: 18px; 
+    font-weight: 900; 
+    font-size: 15px; 
     transition: color 0.3s ease;
 }
 
 .data-pill:hover strong {
     color: #F43F5E;
-    transform: scale(1.08);
 }
 
 .yellow-pill { background: #FED05E; color: #000; }
@@ -197,31 +196,31 @@
 
 .multi-line-pill {
     flex-direction: column;
-    padding: 12px 20px;
+    padding: 10px 16px;
     white-space: normal;
     text-align: center;
 }
 
 /* Search Section */
-.find-nearest-section { margin-top: 120px; text-align: center; }
-.section-subtitle { font-size: 32px; font-weight: 950; margin-bottom: 40px; color: #000; }
+.find-nearest-section { margin-top: 40px; text-align: center; }
+.section-subtitle { font-size: 24px; font-weight: 900; margin-bottom: 20px; color: #000; }
 
 .location-input-container.x-large {
     background: #FEF9EF;
-    border-radius: 80px;
-    padding: 25px 60px;
-    max-width: 700px;
-    border: 5px solid #000;
-    margin: 0 auto 35px auto;
+    border-radius: 50px;
+    padding: 14px 30px;
+    max-width: 550px;
+    border: 3px solid #000;
+    margin: 0 auto 20px auto;
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 15px;
     width: 90%;
 }
 
 .location-input.search-text {
-    font-size: 24px;
-    font-weight: 800;
+    font-size: 16px;
+    font-weight: 700;
     text-align: center;
     flex: 1;
     border: none;
@@ -230,69 +229,79 @@
 }
 
 .search-shgs-pill-btn.smaller-btn {
-    padding: 20px 80px;
-    border-radius: 80px;
-    font-size: 22px;
-    font-weight: 950;
-    border: 5px solid #000;
+    padding: 14px 50px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 800;
+    border: 3px solid #000;
     background: #E0E0E0;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.search-shgs-pill-btn:hover { background: #000; color: #fff; transform: scale(1.05); }
+.search-shgs-pill-btn:hover { background: #000; color: #fff; transform: scale(1.03); }
 
 /* NGO List */
-.ngo-list-container { margin-top: 120px; width: 100%; }
-.ngo-intro { font-size: 32px; font-weight: 950; text-align: center; margin-bottom: 60px; }
+.ngo-list-container { margin-top: 40px; width: 100%; }
+.ngo-intro { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 25px; }
 
 .ngo-card.ultra-compact {
     background: #fff;
-    border-radius: 70px;
-    padding: 40px 60px;
-    border: 5px solid #E0E0E0;
-    margin: 0 auto 40px auto;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    border-radius: 20px;
+    padding: 24px 30px;
+    border: 2px solid #E0E0E0;
+    margin: 0 auto 16px auto;
+    transition: all 0.3s ease;
     width: 100%;
-    max-width: 950px;
+    max-width: 700px;
 }
 
 .ngo-card.hover-light-pink:hover {
     background: #FFF0F5 !important; 
     border-color: #F499B8 !important; 
-    transform: scale(1.02) translateY(-12px);
-    box-shadow: 0 35px 80px rgba(244, 153, 184, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(244, 153, 184, 0.2);
 }
 
-.ngo-info h3 { font-size: 28px; font-weight: 950; margin-bottom: 15px; }
-.ngo-info p { font-size: 16px; margin: 10px 0; }
+.ngo-info h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.ngo-info p { font-size: 14px; margin: 6px 0; }
 
-/* Visit Website Button - Exact Hover Request */
+/* Visit Website Button */
 .visit-btn.smaller-btn {
-    margin-top: 30px;
-    border: 5px solid #FED05E; /* Yellow border */
+    margin-top: 15px;
+    border: 3px solid #FED05E;
     background: transparent;
-    color: #FED05E; /* Yellow text */
-    padding: 15px 70px;
-    border-radius: 80px;
-    font-size: 20px;
-    font-weight: 950;
+    color: #FED05E;
+    padding: 10px 40px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
 }
 
 .visit-btn.smaller-btn:hover { 
-    background: #FED05E !important; /* Turns Yellow on hover as requested */
-    color: #000 !important; /* Dark text for contrast */
-    transform: scale(1.06); 
-    box-shadow: 0 10px 30px rgba(254, 208, 94, 0.4);
+    background: #FED05E !important;
+    color: #000 !important;
+    transform: scale(1.03); 
+    box-shadow: 0 6px 16px rgba(254, 208, 94, 0.3);
 }
 
 /* MOBILE RESPONSIVENESS */
 @media (max-width: 750px) {
-    .community-content { width: 100%; padding: 0 15px; }
-    .hub-container.big-hub { flex-direction: column; align-items: center; padding: 40px 0; gap: 30px; }
-    .help-card.pill-box-shape { width: 100%; max-width: 100%; border-radius: 80px 20px; padding: 50px 25px; }
-    .section-title { font-size: 32px; }
+    .community-content { width: 100%; padding: 0 12px; }
+    .hub-container.big-hub { flex-direction: column; align-items: center; padding: 30px 0; gap: 20px; }
+    .help-section-card { padding: 24px 16px; border-radius: 20px; }
+    .help-card.pill-box-shape { width: 100%; max-width: 100%; border-radius: 24px 10px; padding: 24px 18px; }
+    .section-title { font-size: 24px; margin-bottom: 20px; }
+    .card-title { font-size: 18px; margin-bottom: 14px; }
+    .data-pill { padding: 10px 14px; font-size: 13px; }
+    .location-input-container.x-large { padding: 12px 20px; border-width: 2px; }
+    .search-shgs-pill-btn.smaller-btn { padding: 12px 30px; font-size: 14px; border-width: 2px; }
+    .ngo-card.ultra-compact { padding: 18px 20px; border-radius: 16px; }
+    .ngo-info h3 { font-size: 17px; }
+    .visit-btn.smaller-btn { padding: 8px 28px; font-size: 13px; border-width: 2px; }
+    .section-subtitle { font-size: 20px; }
 }
 
 .bottom-bar-gradient {

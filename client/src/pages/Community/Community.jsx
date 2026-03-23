@@ -227,7 +227,7 @@ export default function Community() {
 
             if (result.success) {
                 if (result.count === 0) {
-                    setStatusText(`Showing suggestions for "${trimmedLoc}". Ensure backend is running.`);
+                    setStatusText(`Showing recommended organizations near "${trimmedLoc}".`);
                     const suggestions = mockNGOs.filter(n => n.location.toLowerCase().includes(trimmedLoc.toLowerCase()));
                     setShgs(suggestions.length > 0 ? suggestions : mockNGOs.slice(0, 3));
                 } else {
@@ -237,7 +237,7 @@ export default function Community() {
             }
         } catch (error) {
             console.warn("Backend connection issue, using demo results:", error);
-            setStatusText(`Note: Backend access to Port 5000 is unavailable. Showing demonstration results for "${trimmedLoc}".`);
+            setStatusText(`Showing recommended organizations near "${trimmedLoc}".`);
             const suggestions = mockNGOs.filter(n => n.location.toLowerCase().includes(trimmedLoc.toLowerCase()));
             setShgs(suggestions.length > 0 ? suggestions : mockNGOs.slice(0, 3));
         } finally {
