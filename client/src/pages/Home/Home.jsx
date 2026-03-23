@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import { Instagram, Linkedin, Twitter, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
+import { Mail, MapPin, Phone, ExternalLink, TrendingUp, Shield, LifeBuoy, Compass } from "lucide-react";
 import "./Home.css";
 import heroImg from "../../assets/images/arthikalogo.jpeg";
 import learnImg from "../../assets/images/learn.png";
@@ -123,34 +123,28 @@ export default function Home() {
                     <div className="footer-brand">
                         <h2 className="footer-logo">Arthika</h2>
                         <p>A multilingual financial empowerment platform designed to make money management easy, accessible, and secure for everyone.</p>
-                        <div className="social-links">
-                            <a href="#" className="social-icon"><Instagram size={20} /></a>
-                            <a href="#" className="social-icon"><Linkedin size={20} /></a>
-                            <a href="#" className="social-icon"><Twitter size={20} /></a>
-                        </div>
                     </div>
 
                     <div className="footer-column">
-                        <h3>Features</h3>
+                        <h3><TrendingUp size={20} className="footer-icon-title" /> Features</h3>
                         <ul>
                             <li onClick={() => nav("/learn")}>Learn to Earn</li>
                             <li onClick={() => nav("/invest")}>Invest Smartly</li>
                             <li onClick={() => nav("/community")}>SHG Community</li>
-                            <li onClick={() => nav("/invest")}>Govt. Schemes</li>
+                            <li onClick={() => nav("/invest/learn")}>Govt. Schemes</li>
                         </ul>
                     </div>
 
                     <div className="footer-column">
-                        <h3>Support</h3>
+                        <h3><Shield size={20} className="footer-icon-title" /> Support</h3>
                         <ul>
                             <li onClick={() => nav("/home#contact")}>Contact Us</li>
                             <li onClick={() => nav("/profile")}>My Profile</li>
-
                         </ul>
                     </div>
 
                     <div className="footer-column">
-                        <h3>Connect</h3>
+                        <h3><LifeBuoy size={20} className="footer-icon-title" /> Connect</h3>
                         <div className="contact-info-footer">
                             <div className="contact-item">
                                 <MapPin size={18} className="icon-pink" />
@@ -160,7 +154,6 @@ export default function Home() {
                                 <Mail size={18} className="icon-yellow" />
                                 <span>teamspakonix@gmail.com</span>
                             </div>
-
                         </div>
                     </div>
                 </div>

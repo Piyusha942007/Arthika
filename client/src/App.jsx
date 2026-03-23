@@ -58,9 +58,12 @@ function PublicRoute({ children }) {
   return children;
 }
 
+import ScrollToTop from "./components/common/ScrollToTop";
+
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Layout>
         <Routes>
           {/* PUBLIC */}
