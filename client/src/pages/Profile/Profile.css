@@ -278,22 +278,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    border: 1.5px solid #eee;
+    border-radius: 50%;
+    border: 2px solid #FFCC4D;
     font-weight: 800;
-    color: #888;
+    color: #333;
     font-size: 14px;
-    transition: 0.2s;
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+}
+
+.cal-cell:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(255, 204, 77, 0.4);
 }
 
 .cal-cell.active-streak {
-    background: #F48FB1;
-    color: white;
-    border-color: #F48FB1;
+    background: #F48FB1 !important;
+    color: white !important;
+    border-color: #FFCC4D !important;
+    box-shadow: 0 4px 10px rgba(244, 143, 177, 0.3);
 }
 
 .cal-cell.current-day {
-    border: 3px solid #FFCC4D;
+    border: 3px solid #333; /* Darker border for today as seen in previous designs */
     transform: scale(1.1);
 }
 
