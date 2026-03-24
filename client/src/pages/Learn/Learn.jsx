@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import "./Learn.css";
 import treasureOpen from "../../assets/images/treasure.png";
 import treasureClosed from "../../assets/images/treasure_closed.png";
@@ -8,6 +9,7 @@ import { useUser } from "@clerk/clerk-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { allBadges } from "../../constants/badges";
+import API_BASE_URL from "../../config/apiConfig";
 
 export default function Learn() {
   const { user, isLoaded } = useUser();
@@ -29,20 +31,30 @@ export default function Learn() {
     if (!isLoaded || !user) return;
 
     const fetchProgress = async () => {
+      console.log("DEBUG: fetchProgress called", { API_BASE_URL, userId: user.id, language });
       try {
-        const response = await fetch(`http://localhost:5000/api/lessons/progress?lang=${language}&t=${Date.now()}`, {
-          headers: { 'x-user-id': user.id },
-          cache: 'no-store'
+        const response = await axios.get(`${API_BASE_URL}/api/lessons/progress`, {
+          params: { lang: language, t: Date.now() },
+          headers: { 'x-user-id': user.id }
         });
-        if (response.ok) {
-          const data = await response.json();
-          setHighestUnlockedLevel(data.highestUnlockedLevel);
-          setHighestUnlockedStage(data.highestUnlockedStage);
-          setCompletedVideos(data.completedVideos);
-          setTotalVideos(data.totalVideos);
+        
+        console.log("DEBUG: fetchProgress response:", response.data);
+        const data = response.data;
+        if (data) {
+          setHighestUnlockedLevel(data.highestUnlockedLevel || 1);
+          setHighestUnlockedStage(data.highestUnlockedStage || 1);
+          setCompletedVideos(data.completedVideos || 0);
+          setTotalVideos(data.totalVideos || 30);
         }
       } catch (error) {
-        console.error("Failed to fetch progress", error);
+        console.error("DEBUG: Failed to fetch progress", error);
+        toast.error(`Error: Could not reach backend at ${API_BASE_URL}. Check console for details.`, {
+          position: "top-right",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
       }
     };
     fetchProgress();

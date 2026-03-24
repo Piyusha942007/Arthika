@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import UserProgress from '../models/UserProgress.js';
+import User from '../models/User.js';
 import Quiz from '../models/Quiz.js';
 
 // Cloudinary usually initialized in app.js or here. 
@@ -21,9 +22,11 @@ export const getLessonVideo = async (req, res) => {
         const userId = req.headers['x-user-id'] || 'test-user-id';
 
         let progress = await UserProgress.findOne({ userId });
+        console.log("DEBUG: getLessonVideo progress for userId:", userId, progress ? { level: progress.highestUnlockedLevel, stage: progress.highestUnlockedStage } : "NOT FOUND");
 
         // If not found, create a blank record
         if (!progress) {
+            console.log("DEBUG: Creating new progress for:", userId);
             progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1 });
         }
 
@@ -223,7 +226,21 @@ export const getProgress = async (req, res) => {
         }
 
         if (!progress) {
+            console.log("DEBUG: progress not found for userId:", userId, ". Creating new record.");
             progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1, languagePreference: language });
+        } else {
+            console.log("DEBUG: Found progress for userId:", userId, progress);
+        }
+
+        // Diagnostic: Check User model too (optional but helpful for debugging)
+        try {
+            // Find user by Clerk ID? Wait, User model doesn't have clerkId, it has email.
+            // But we don't have email here.
+            // Wait, does the User model have the clerkId as 'password' or something? 
+            // Usually Clerk users are synced to a local User model.
+            console.log("DEBUG: userId from Clerk:", userId);
+        } catch (uErr) {
+            console.warn("DEBUG: Failed to check User model:", uErr.message);
         }
 
         // Example assumption: 10 levels, 3 stages each = 30 total videos
