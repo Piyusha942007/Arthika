@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import logo from "../../assets/images/arthikalogo.jpeg";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -49,7 +50,8 @@ export default function Navbar() {
             <div className="nav-content">
                 {/* Logo Section */}
                 <div className="nav-brand" onClick={() => nav("/home")} style={{ cursor: 'pointer' }}>
-                    <span className="brand-text">Arthika</span>
+                    <img src={logo} alt="Arthika Logo" className="nav-logo-icon" />
+
                 </div>
 
                 {/* Navigation Links */}

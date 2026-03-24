@@ -33,21 +33,26 @@
     overflow: visible !important;
 }
 
-/* ================= BRAND ================= */
-.brand-text {
+.nav-brand {
     display: flex;
     align-items: center;
+    gap: 12px;
+}
+
+/* ================= BRAND ================= */
+.brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
 }
 
 .nav-logo-icon {
     mix-blend-mode: multiply;
-    /* Ye white background ko gayab kar deta hai */
     filter: contrast(110%);
     width: 80px;
-    /* Text hatne ke baad thoda bada size better lagega */
     height: 78px;
     border-radius: 15px;
-    /* Consistent with your theme */
     object-fit: cover;
     border: 2px solid var(--brand-yellow);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -56,7 +61,6 @@
 
 .nav-logo-icon:hover {
     transform: scale(1.05);
-    /* Logo par hover karne se halka sa zoom hoga */
 }
 
 /* ================= NAV LINKS ================= */

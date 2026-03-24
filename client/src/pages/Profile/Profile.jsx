@@ -33,15 +33,15 @@ const Profile = () => {
 
         const syncUserData = async () => {
             try {
-                // 1. Pehle profile data fetch karo
+                // 1. Fetch profile data first
                 const res = await axios.get(`${API_BASE_URL}/api/profile/${email}`);
                 let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
 
-                // 2. Agar aaj ki date missing hai, toh update karo
+                // 2. If today's date is missing, update it
                 if (!backendStreaks.includes(todayStr)) {
                     backendStreaks = [...backendStreaks, todayStr];
 
-                    // Backend ko update bhejo
+                    // Send update to Backend
                     await axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
                         email: email,
                         streaks: backendStreaks
@@ -49,13 +49,13 @@ const Profile = () => {
                     console.log("Streak synchronized with server.");
                 }
 
-                // 3. Sabse pehle base profile aur streaks set karo
+                // 3. Set base profile and streaks first
                 setUserData(prev => ({
                     ...res.data,
                     streaks: backendStreaks
                 }));
 
-                // 4. Phir progress fetch karo
+                // 4. Then fetch progress
                 const progressRes = await axios.get(`${API_BASE_URL}/api/lessons/progress?t=${Date.now()}`, {
                     headers: { 'x-user-id': user.id }
                 });
@@ -68,7 +68,7 @@ const Profile = () => {
                 }
             } catch (err) {
                 console.error("Error in sync:", err);
-                // Default fallback agar API fail ho jaye
+                // Default fallback if API fails
                 if (!userData) {
                     setUserData({
                         streaks: [todayStr],
