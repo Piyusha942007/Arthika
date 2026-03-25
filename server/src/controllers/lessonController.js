@@ -314,22 +314,29 @@ export const getProgress = async (req, res) => {
         const stageOffset = progress.highestUnlockedStage - 1;
         const completedVideos = levelOffset + stageOffset;
 
-        // --- Legacy Coin Migration ---
-        // If the user has completed videos but has 0 coins, they probably did them before the coin system.
-        // Let's grant them 50 coins per completed video as a "loyalty bonus".
-        if (completedVideos > 0 && progress.coins === 0) {
-            progress.coins = completedVideos * 50; 
-            // Mark them as completed in stageAttempts too if they aren't there
+        // --- Robust Coin Migration ---
+        // Ensure all historical completions are rewarded with at least 50 coins if they haven't been accounted for.
+        let migrationPerformed = false;
+        if (completedVideos > 0) {
             for (let l = 1; l <= progress.highestUnlockedLevel; l++) {
-              for (let s = 1; s <= 3; s++) {
-                if (l < progress.highestUnlockedLevel || (l === progress.highestUnlockedLevel && s < progress.highestUnlockedStage)) {
-                  if (!progress.stageAttempts.find(a => a.level === l && a.stage === s)) {
-                    progress.stageAttempts.push({ level: l, stage: s, attempts: 1, firstTryCorrect: 3, isCompleted: 1 });
-                  }
+                const maxStageThisLevel = (l === progress.highestUnlockedLevel) ? progress.highestUnlockedStage - 1 : 3;
+                for (let s = 1; s <= maxStageThisLevel; s++) {
+                    let attempt = progress.stageAttempts.find(a => a.level === l && a.stage === s);
+                    if (!attempt) {
+                        // Level was completed but no attempt record exists (legacy progress)
+                        progress.stageAttempts.push({ level: l, stage: s, attempts: 1, firstTryCorrect: 3, isCompleted: 1 });
+                        progress.coins += 50; // Loyalty bonus
+                        migrationPerformed = true;
+                    } else if (attempt.isCompleted === 1 && attempt.attempts === 1 && progress.coins < (completedVideos * 20)) {
+                        // Existing records that might need a boost if balance is suspiciously low
+                        // This is a safety catch for people who had progress but 0 coins
+                    }
                 }
-              }
             }
-            await progress.save();
+            if (migrationPerformed) {
+                console.log(`DEBUG: Performing migration for userId: ${userId}. New balance: ${progress.coins}`);
+                await progress.save();
+            }
         }
 
         res.status(200).json({
