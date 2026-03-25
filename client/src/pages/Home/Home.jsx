@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { Mail, MapPin, Phone, ExternalLink, TrendingUp, Shield, LifeBuoy, Compass } from "lucide-react";
+import { motion } from "framer-motion";
 import "./Home.css";
 import heroImg from "../../assets/images/arthikalogo.jpeg";
 import learnImg from "../../assets/images/learn.png";
@@ -9,11 +10,13 @@ import communityImg from "../../assets/images/community.png";
 import goalIcon from "../../assets/images/goalIcon.png";
 import schemeIcon from "../../assets/images/schemeIcon.png";
 import Contact from "./Contact";
+
 export default function Home() {
     const { user, isLoaded } = useUser();
     const { signOut } = useClerk();
     const nav = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [logoEnlarged, setLogoEnlarged] = useState(false);
 
     useEffect(() => {
         const ensureUsername = async () => {
@@ -42,11 +45,22 @@ export default function Home() {
         }
     }, [nav]);
 
+    const fadeInUp = {
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    };
+
     return (
         <div className="home">
 
             {/* HERO SECTION */}
-            <section className="hero">
+            <motion.section 
+                className="hero"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={fadeInUp}
+            >
                 <div className="hero-text">
                     {user?.username && <h1 className="logo" style={{ marginBottom: "1rem", fontSize: "2.5rem" }}>Welcome {user.username}</h1>}
                     <h2>Financial confidence<br />starts here</h2>
@@ -56,63 +70,109 @@ export default function Home() {
                     </p>
 
                     <div className="hero-buttons">
-                        {/* Updated Hero Button */}
                         <button className="secondary" onClick={() => nav("/learn")}>Learn</button>
                         <button className="secondary" onClick={() => nav("/invest")}>Invest</button>
                     </div>
                 </div>
 
-                <div className="hero-image">
+                <motion.div 
+                    className="hero-image"
+                    initial={{ scale: 1, rotate: 0 }}
+                    animate={{ scale: logoEnlarged ? 1.5 : 1, rotate: 0 }}
+                    whileHover={{ scale: logoEnlarged ? 1.52 : 1.05 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    onClick={() => setLogoEnlarged(!logoEnlarged)}
+                    style={{ cursor: "zoom-in" }}
+                >
                     <img src={heroImg} alt="Finance Illustration" />
-                </div>
-            </section>
+                </motion.div>
+            </motion.section>
 
             {/* FEATURES */}
             <section className="features">
-                <h2 className="section-title">FEATURES WE OFFER</h2>
+                <motion.h2 
+                    className="section-title"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                >
+                    FEATURES WE OFFER
+                </motion.h2>
 
-                <div className="feature-block learn-section">
+                <motion.div 
+                    className="feature-block learn-section"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={fadeInUp}
+                >
                     <h3 className="pink">Learn to Earn</h3>
                     <div className="feature-content">
-                        <img src={learnImg} alt="Learning" />
+                        <motion.img 
+                            src={learnImg} 
+                            alt="Learning" 
+                            whileHover={{ scale: 1.03 }}
+                        />
                         <ul>
                             <li>Interactive quizzes to test your knowledge</li>
                             <li>Watch lessons in your language</li>
                             <li>Track daily progress</li>
                         </ul>
                     </div>
-                    {/* Updated Feature Section Button */}
                     <button className="outline-yellow" onClick={() => nav("/learn")}>Go to learn page</button>
-                </div>
+                </motion.div>
 
                 {/* Invest Smartly */}
-                <div className="feature-block invest-section">
+                <motion.div 
+                    className="feature-block invest-section"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={fadeInUp}
+                >
                     <h3 className="pink">Invest Smartly</h3>
                     <div className="cards">
-                        <div className="card yellow">
+                        <motion.div 
+                            className="card yellow"
+                            whileHover={{ y: -5 }}
+                        >
                             <img src={goalIcon} alt="Goal Icon" />
                             <h4>Goal-Based Planning</h4>
                             <p>Start saving for milestones like a college fund or business venture.</p>
-                        </div>
-                        <div className="card yellow">
+                        </motion.div>
+                        <motion.div 
+                            className="card yellow"
+                            whileHover={{ y: -5 }}
+                        >
                             <img src={schemeIcon} alt="Scheme Icon" />
                             <h4>Government Schemes</h4>
                             <p>Explore bank-specific perks and government-backed programs.</p>
-                        </div>
+                        </motion.div>
                     </div>
                     <button className="outline-pink" onClick={() => nav("/invest")}>Go to invest page</button>
-                </div>
+                </motion.div>
 
                 {/* Community */}
-                <div className="feature-block community-block">
+                <motion.div 
+                    className="feature-block community-block"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={fadeInUp}
+                >
                     <h3 className="pink">Build a Community</h3>
-                    <img src={communityImg} alt="Community" className="community-img" />
+                    <motion.img 
+                        src={communityImg} 
+                        alt="Community" 
+                        className="community-img" 
+                        whileHover={{ scale: 1.02 }}
+                    />
                     <div className="community-actions">
                         <button className="yellow">Get Expert Help</button>
                         <button className="yellow">Grow with SHGs</button>
                     </div>
                     <button className="outline-black" onClick={() => nav("/community")}>Join a community</button>
-                </div>
+                </motion.div>
             </section>
 
             {/* CONTACT SECTION */}
