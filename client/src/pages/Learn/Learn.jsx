@@ -16,16 +16,16 @@ export default function Learn() {
   const navigate = useNavigate();
 
   // --- Optimized State Initialization (Instant Load from Cache) ---
-  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(() => 
+  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(() =>
     parseInt(localStorage.getItem("highestUnlockedLevel") || "1")
   );
-  const [highestUnlockedStage, setHighestUnlockedStage] = useState(() => 
+  const [highestUnlockedStage, setHighestUnlockedStage] = useState(() =>
     parseInt(localStorage.getItem("highestUnlockedStage") || "1")
   );
-  const [completedVideos, setCompletedVideos] = useState(() => 
+  const [completedVideos, setCompletedVideos] = useState(() =>
     parseInt(localStorage.getItem("completedVideos") || "0")
   );
-  const [totalVideos, setTotalVideos] = useState(() => 
+  const [totalVideos, setTotalVideos] = useState(() =>
     parseInt(localStorage.getItem("totalVideos") || "30")
   );
   const [totalCoins, setTotalCoins] = useState(() => {
@@ -72,8 +72,9 @@ export default function Learn() {
           params: { lang: language, t: Date.now() },
           headers: { 'x-user-id': user.id }
         });
-        
+
         const data = response.data;
+        console.log("DEBUG: Progress Data from API:", data);
         if (data) {
           // Update State
           setHighestUnlockedLevel(data.highestUnlockedLevel || 1);
@@ -129,8 +130,8 @@ export default function Learn() {
     // 2. Set Flying Badge (Rising phase)
     const chestEl = document.querySelector(".reward-container");
     if (!chestEl) {
-        setIsAnimating(false);
-        return;
+      setIsAnimating(false);
+      return;
     }
     const chestRect = chestEl.getBoundingClientRect();
 
@@ -138,7 +139,7 @@ export default function Learn() {
       ...badge,
       startX: chestRect.left + chestRect.width / 2 - 40,
       startY: chestRect.top - 40,
-      midY: 100, 
+      midY: 100,
     });
 
     // 3. Wait for rise, then fly
@@ -163,13 +164,13 @@ export default function Learn() {
   };
 
   const stepOffsets = [
-    60, -40, -120, -10, 120, 0, -100, 50, 80, -30 
+    60, -40, -120, -10, 120, 0, -100, 50, 80, -30
   ];
 
   const steps = stepOffsets.map((offset, i) => {
     const level = i + 1;
     let status = "pending";
-    if (level < highestUnlockedLevel) status = "completed"; 
+    if (level < highestUnlockedLevel) status = "completed";
     else if (level === highestUnlockedLevel) status = "current";
 
     return { status, label: `LEVEL ${level}`, offset };
@@ -189,11 +190,11 @@ export default function Learn() {
 
   const modalVariants = {
     hidden: { opacity: 0, scale: 0.8, y: 20 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
+    visible: {
+      opacity: 1,
+      scale: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 } 
+      transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 }
     },
     exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } }
   };
@@ -205,10 +206,9 @@ export default function Learn() {
 
   return (
     <div className="learn-page">
-      {/* Coin Bank Display - Positioned fixed below Navbar */}
-      <div style={{ position: 'fixed', top: '100px', right: '30px', zIndex: 9999 }}>
-        <motion.div 
-          style={{ 
+      <div className="coin-bank-wrapper">
+        <motion.div
+          style={{
             pointerEvents: 'auto',
             cursor: 'pointer'
           }}
@@ -218,23 +218,8 @@ export default function Learn() {
           whileTap={{ scale: 0.95 }}
           id="coin-bank"
         >
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.9)', 
-            backdropFilter: 'blur(10px)',
-            padding: '12px 24px', 
-            borderRadius: '35px',
-            border: '4px solid #ffcc4d', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '12px',
-            boxShadow: '0 8px 32px rgba(255, 204, 77, 0.3)', 
-            fontWeight: '900', 
-            fontSize: '24px',
-            color: '#333',
-            minWidth: '120px',
-            justifyContent: 'center'
-          }}>
-            <motion.span 
+          <div className="coin-bank-card">
+            <motion.span
               animate={{ rotate: [0, 15, -15, 0] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
               style={{ fontSize: '32px' }}
@@ -251,7 +236,7 @@ export default function Learn() {
             <motion.div
               key={coin.id}
               initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
-              animate={{ 
+              animate={{
                 x: Math.cos(coin.angle) * coin.distance,
                 y: Math.sin(coin.angle) * coin.distance,
                 opacity: 0,
@@ -276,7 +261,7 @@ export default function Learn() {
       {/* Stage Selection Modal */}
       <AnimatePresence>
         {selectedLevel && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -284,29 +269,29 @@ export default function Learn() {
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 1000,
               display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }} 
+            }}
             onClick={() => setSelectedLevel(null)}
           >
-            <motion.div 
+            <motion.div
               variants={modalVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
               style={{
-                background: 'rgba(255, 255, 255, 0.95)', 
-                padding: '40px', 
+                background: 'rgba(255, 255, 255, 0.95)',
+                padding: '40px',
                 borderRadius: '30px',
-                textAlign: 'center', 
-                maxWidth: '450px', 
+                textAlign: 'center',
+                maxWidth: '450px',
                 width: '90%',
                 boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
                 border: '1px solid rgba(255,255,255,0.3)'
-              }} 
+              }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ 
-                color: '#333', 
-                fontSize: '2.2rem', 
+              <h2 style={{
+                color: '#333',
+                fontSize: '2.2rem',
                 marginBottom: '10px',
                 background: 'linear-gradient(45deg, #f48fb1, #ffcc4d)',
                 WebkitBackgroundClip: 'text',
@@ -314,7 +299,7 @@ export default function Learn() {
                 fontWeight: '900'
               }}>Level {selectedLevel}</h2>
               <p style={{ marginBottom: '30px', color: '#666', fontSize: '1.1rem' }}>Choose your challenge!</p>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {[1, 2, 3].map(stage => {
                   let isUnlocked = false;
@@ -345,9 +330,9 @@ export default function Learn() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ 
-                          width: '35px', height: '35px', borderRadius: '50%', 
-                          background: isUnlocked ? '#f48fb1' : '#ccc', 
+                        <span style={{
+                          width: '35px', height: '35px', borderRadius: '50%',
+                          background: isUnlocked ? '#f48fb1' : '#ccc',
                           color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '0.9rem'
                         }}>{stage}</span>
@@ -359,18 +344,18 @@ export default function Learn() {
                   );
                 })}
               </div>
-              
+
               <motion.button
                 whileHover={{ color: '#333', scale: 1.05 }}
                 onClick={() => setSelectedLevel(null)}
-                style={{ 
-                  marginTop: '30px', 
-                  background: 'transparent', 
-                  border: 'none', 
-                  color: '#aaa', 
-                  cursor: 'pointer', 
+                style={{
+                  marginTop: '30px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#aaa',
+                  cursor: 'pointer',
                   fontWeight: '600',
-                  fontSize: '1rem' 
+                  fontSize: '1rem'
                 }}>
                 Wait, I'll come back later
               </motion.button>
@@ -379,7 +364,7 @@ export default function Learn() {
         )}
       </AnimatePresence>
 
-      <motion.section 
+      <motion.section
         className="progress-section"
         whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(244, 143, 177, 0.4)' }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -400,7 +385,7 @@ export default function Learn() {
 
       <section className="learn-content">
         <div className="info-text-top">
-          <h3>Progress through levels to unlock the treasure! 💎</h3>
+          <h3>Progress  through  levels  to  unlock  the  treasure! 💎</h3>
         </div>
 
         <div className="path-container" style={{ marginTop: '40px' }}>

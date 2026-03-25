@@ -188,23 +188,9 @@ export default function Lesson() {
         </button>
 
         {/* Coin Bank Display - Consistent with Learn Page */}
-        <div style={{ position: 'relative' }}>
+        <div className="lesson-coin-wrapper">
           <motion.div 
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.9)', 
-              backdropFilter: 'blur(10px)',
-              padding: '8px 16px', 
-              borderRadius: '30px',
-              border: '3px solid #ffcc4d', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px',
-              boxShadow: '0 4px 15px rgba(255, 204, 77, 0.25)', 
-              fontWeight: '900', 
-              fontSize: '20px',
-              color: '#333',
-              cursor: 'pointer'
-            }}
+            className="lesson-coin-card"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             whileHover={{ scale: 1.1, rotate: [0, -2, 2, 0] }}

@@ -345,7 +345,9 @@ export const getProgress = async (req, res) => {
             languagePreference: progress.languagePreference || 'english',
             completedVideos,
             totalVideos,
-            totalCoins: progress.coins || 0
+            totalCoins: progress.coins || 0,
+            migrationApplied: migrationPerformed,
+            userId: userId // Useful for checking if Clerk ID matches what's in DB
         });
     } catch (error) {
         console.error('Error fetching progress:', error);
