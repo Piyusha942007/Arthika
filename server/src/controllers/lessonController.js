@@ -53,14 +53,33 @@ export const getLessonVideo = async (req, res) => {
         }
 
         const folderPath = `${languagePrefix}/Level_${level}`;
+        console.log(`Cloudinary Search in folder="${folderPath}"`);
 
-        const searchResult = await cloudinary.search
-            .expression(`resource_type:video AND folder:"${folderPath}" AND filename:Stage_${stage}*`)
+        // Try multiple naming patterns: "Stage_1" or "Level5_Stage1"
+        const searchExpression = `resource_type:video AND folder:"${folderPath}" AND (filename:Stage_${stage}* OR filename:Level${level}_Stage${stage}*)`;
+        
+        let searchResult = await cloudinary.search
+            .expression(searchExpression)
             .max_results(1)
             .execute();
 
+        // FALLBACK: If not found, check if ANY videos exist in that folder to help debug naming
         if (!searchResult.resources || searchResult.resources.length === 0) {
-            return res.status(404).json({ message: `Video for Level ${level}, Stage ${stage} not found.` });
+            console.warn(`DEBUG: Specific search failed. Checking all files in ${folderPath}...`);
+            const allFilesInFolder = await cloudinary.search
+                .expression(`resource_type:video AND folder:"${folderPath}"`)
+                .max_results(5)
+                .execute();
+            
+            const existingFiles = allFilesInFolder.resources ? allFilesInFolder.resources.map(r => r.filename).join(', ') : 'None';
+            console.log(`DEBUG: Files found in ${folderPath}: [${existingFiles}]`);
+
+            return res.status(404).json({ 
+                message: `Video not found with Stage_${stage}* pattern.`,
+                details: `Search Path: ${folderPath}, Files found in folder: [${existingFiles}]`,
+                level,
+                stage
+            });
         }
 
         // Use the secure_url returned directly from Cloudinary
@@ -182,6 +201,46 @@ export const verifyQuizAndComplete = async (req, res) => {
             progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1, languagePreference: language });
         }
 
+        // --- Coin Logic ---
+        let coinsEarned = 0;
+        let isFirstTry = false;
+
+        // Find or create stage attempt record
+        let attemptRecord = progress.stageAttempts.find(a => a.level === level && a.stage === stage);
+        if (!attemptRecord) {
+            isFirstTry = true;
+            attemptRecord = { level, stage, attempts: 1, firstTryCorrect: 0, isCompleted: 1 };
+            progress.stageAttempts.push(attemptRecord);
+        } else {
+            attemptRecord.attempts += 1;
+            if (attemptRecord.isCompleted === 0) {
+              attemptRecord.isCompleted = 1;
+            }
+        }
+
+        // Calculate coins
+        // Formula: 10 coins per correct answer on first try, 5 coins otherwise? 
+        // User said: "points according to the correct answers in first try"
+        // Let's do: 20 coins per correct answer if it's the first try and they PASS.
+        // If they pass but not on first try, maybe 5 coins per correct answer?
+        
+        const correctCount = review.filter(r => r.isCorrect).length;
+        
+        if (isFirstTry) {
+            attemptRecord.firstTryCorrect = correctCount;
+            coinsEarned = correctCount * 20; // 20 coins per correct answer on first try
+        } else {
+            // If they already completed it, maybe no more coins? 
+            // Or if they failed before and now passed, give some base coins.
+            // Let's say if they failed before, they get 5 coins per correct answer now.
+            // But if they ALREADY passed before, 0 coins.
+            if (attemptRecord.attempts === 2 && attemptRecord.firstTryCorrect === 0) {
+                coinsEarned = correctCount * 5; 
+            }
+        }
+
+        progress.coins += coinsEarned;
+
         // Only progress user if they are completing their *currently* highest allowed lesson
         // and haven't already surpassed it
         let advanced = false;
@@ -194,15 +253,19 @@ export const verifyQuizAndComplete = async (req, res) => {
                     progress.highestUnlockedStage = 1;
                 }
             }
-            await progress.save();
             advanced = true;
         }
+
+        await progress.save();
 
         res.status(200).json({
             message: 'Lesson and quiz completed successfully!',
             passed: true,
             highestUnlockedLevel: progress.highestUnlockedLevel,
             highestUnlockedStage: progress.highestUnlockedStage,
+            coinsEarned,
+            totalCoins: progress.coins,
+            isFirstTry,
             review
         });
     } catch (error) {
@@ -247,18 +310,35 @@ export const getProgress = async (req, res) => {
         const totalVideos = 30;
 
         // Calculate how many videos the user has completed.
-        // Initially, progress is Level 1, Stage 1. This means NO completed quizzes/videos.
-        // Once Stage 1 completes, it becomes Level 1, Stage 2 (which means 1 video is completed).
         const levelOffset = (progress.highestUnlockedLevel - 1) * 3;
         const stageOffset = progress.highestUnlockedStage - 1;
         const completedVideos = levelOffset + stageOffset;
 
+        // --- Legacy Coin Migration ---
+        // If the user has completed videos but has 0 coins, they probably did them before the coin system.
+        // Let's grant them 50 coins per completed video as a "loyalty bonus".
+        if (completedVideos > 0 && progress.coins === 0) {
+            progress.coins = completedVideos * 50; 
+            // Mark them as completed in stageAttempts too if they aren't there
+            for (let l = 1; l <= progress.highestUnlockedLevel; l++) {
+              for (let s = 1; s <= 3; s++) {
+                if (l < progress.highestUnlockedLevel || (l === progress.highestUnlockedLevel && s < progress.highestUnlockedStage)) {
+                  if (!progress.stageAttempts.find(a => a.level === l && a.stage === s)) {
+                    progress.stageAttempts.push({ level: l, stage: s, attempts: 1, firstTryCorrect: 3, isCompleted: 1 });
+                  }
+                }
+              }
+            }
+            await progress.save();
+        }
+
         res.status(200).json({
             highestUnlockedLevel: progress.highestUnlockedLevel,
             highestUnlockedStage: progress.highestUnlockedStage,
-            languagePreference: 'english',
+            languagePreference: progress.languagePreference || 'english',
             completedVideos,
-            totalVideos
+            totalVideos,
+            totalCoins: progress.coins || 0
         });
     } catch (error) {
         console.error('Error fetching progress:', error);

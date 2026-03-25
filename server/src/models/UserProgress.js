@@ -16,9 +16,20 @@ const userProgressSchema = new mongoose.Schema({
     },
     languagePreference: {
         type: String,
-        enum: ['english', 'hindi'],
+        enum: ['english', 'hindi', 'marathi'],
         default: 'english'
-    }
+    },
+    coins: {
+        type: Number,
+        default: 0
+    },
+    stageAttempts: [{
+        level: Number,
+        stage: Number,
+        attempts: { type: Number, default: 0 },
+        firstTryCorrect: { type: Number, default: 0 }, // Number of correct answers on first try
+        isCompleted: { type: Number, default: 0 } // 0 or 1
+    }]
 }, { timestamps: true });
 
 export default mongoose.model('UserProgress', userProgressSchema);
