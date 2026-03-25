@@ -14,10 +14,20 @@ import API_BASE_URL from "../../config/apiConfig";
 export default function Learn() {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
-  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(1);
-  const [highestUnlockedStage, setHighestUnlockedStage] = useState(1);
-  const [completedVideos, setCompletedVideos] = useState(0);
-  const [totalVideos, setTotalVideos] = useState(30);
+
+  // --- Optimized State Initialization (Instant Load from Cache) ---
+  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(() => 
+    parseInt(localStorage.getItem("highestUnlockedLevel") || "1")
+  );
+  const [highestUnlockedStage, setHighestUnlockedStage] = useState(() => 
+    parseInt(localStorage.getItem("highestUnlockedStage") || "1")
+  );
+  const [completedVideos, setCompletedVideos] = useState(() => 
+    parseInt(localStorage.getItem("completedVideos") || "0")
+  );
+  const [totalVideos, setTotalVideos] = useState(() => 
+    parseInt(localStorage.getItem("totalVideos") || "30")
+  );
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
 
@@ -31,30 +41,28 @@ export default function Learn() {
     if (!isLoaded || !user) return;
 
     const fetchProgress = async () => {
-      console.log("DEBUG: fetchProgress called", { API_BASE_URL, userId: user.id, language });
       try {
         const response = await axios.get(`${API_BASE_URL}/api/lessons/progress`, {
           params: { lang: language, t: Date.now() },
           headers: { 'x-user-id': user.id }
         });
         
-        console.log("DEBUG: fetchProgress response:", response.data);
         const data = response.data;
         if (data) {
+          // Update State
           setHighestUnlockedLevel(data.highestUnlockedLevel || 1);
           setHighestUnlockedStage(data.highestUnlockedStage || 1);
           setCompletedVideos(data.completedVideos || 0);
           setTotalVideos(data.totalVideos || 30);
+
+          // Update Cache for next visit
+          localStorage.setItem("highestUnlockedLevel", (data.highestUnlockedLevel || 1).toString());
+          localStorage.setItem("highestUnlockedStage", (data.highestUnlockedStage || 1).toString());
+          localStorage.setItem("completedVideos", (data.completedVideos || 0).toString());
+          localStorage.setItem("totalVideos", (data.totalVideos || 30).toString());
         }
       } catch (error) {
         console.error("DEBUG: Failed to fetch progress", error);
-        toast.error(`Error: Could not reach backend at ${API_BASE_URL}. Check console for details.`, {
-          position: "top-right",
-          autoClose: 10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-        });
       }
     };
     fetchProgress();
@@ -92,17 +100,21 @@ export default function Learn() {
 
     // 2. Set Flying Badge (Rising phase)
     const chestEl = document.querySelector(".reward-container");
+    if (!chestEl) {
+        setIsAnimating(false);
+        return;
+    }
     const chestRect = chestEl.getBoundingClientRect();
 
     setFlyingBadge({
       ...badge,
       startX: chestRect.left + chestRect.width / 2 - 40,
       startY: chestRect.top - 40,
-      midY: 100, // Move towards top of viewport
+      midY: 100, 
     });
 
     // 3. Wait for rise, then fly
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 800));
 
     const targetEl = document.getElementById("navbar-profile-pill");
     if (targetEl) {
@@ -115,7 +127,7 @@ export default function Learn() {
     }
 
     // 4. Cleanup
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(r, 1200));
     setFlyingBadge(null);
     setIsChestOpen(false);
     setBadgeQueue(prev => prev.slice(1));
@@ -129,13 +141,13 @@ export default function Learn() {
   };
 
   const stepOffsets = [
-    60, -40, -120, -10, 120, 0, -100, 50, 80, -30 // 10 total levels
+    60, -40, -120, -10, 120, 0, -100, 50, 80, -30 
   ];
 
   const steps = stepOffsets.map((offset, i) => {
     const level = i + 1;
     let status = "pending";
-    if (level < highestUnlockedLevel) status = "completed"; // Reverts to default pink CSS
+    if (level < highestUnlockedLevel) status = "completed"; 
     else if (level === highestUnlockedLevel) status = "current";
 
     return { status, label: `LEVEL ${level}`, offset };
@@ -225,9 +237,9 @@ export default function Learn() {
         <div className="progress-bar">
           <motion.div
             className="progress-fill"
-            initial={{ width: 0 }}
+            initial={false}
             animate={{ width: `${(completedVideos / totalVideos) * 100}%` }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           />
         </div>
         <p className="progress-text" key={completedVideos}>
@@ -249,7 +261,7 @@ export default function Learn() {
               fill="transparent"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 2.5, ease: "easeInOut" }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
             />
           </svg>
 
@@ -273,11 +285,6 @@ export default function Learn() {
                   toast.info("Please complete the previous levels to unlock this one!", {
                     position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    theme: "light",
                   });
                 }
               }}
