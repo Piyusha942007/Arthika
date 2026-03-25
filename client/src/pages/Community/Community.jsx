@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { useUser } from '@clerk/clerk-react';
 import './Community.css';
@@ -6,6 +7,45 @@ import './Community.css';
 // Import icons from local assets as requested
 import connectIcon from '../../assets/images/image 2.png';
 import earnIcon from '../../assets/images/image 1.png';
+
+const MagneticButton = ({ children, className, onClick, disabled, type = "button" }) => {
+    const ref = useRef(null);
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e;
+        const { left, top, width, height } = ref.current.getBoundingClientRect();
+        const x = clientX - (left + width / 2);
+        const y = clientY - (top + height / 2);
+        ref.current.style.transform = `translate(${x * 0.4}px, ${y * 0.4}px)`;
+    };
+    const handleMouseLeave = () => {
+        ref.current.style.transform = `translate(0px, 0px)`;
+    };
+    return (
+        <div className="magnetic-wrap" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+            <button ref={ref} type={type} className={className} onClick={onClick} disabled={disabled}>
+                {children}
+            </button>
+        </div>
+    );
+};
+
+const TiltImage = ({ src }) => {
+    const imgRef = useRef(null);
+    const handleMouseMove = (e) => {
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - left) / width - 0.5;
+        const y = (e.clientY - top) / height - 0.5;
+        imgRef.current.style.transform = `perspective(1000px) rotateY(${x * 25}deg) rotateX(${y * -25}deg) scale3d(1.1, 1.1, 1.1)`;
+    };
+    const handleMouseLeave = () => {
+        imgRef.current.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)`;
+    };
+    return (
+        <div className="modal-left-img-wrapper" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+            <img ref={imgRef} src={src} alt="Business" className="modal-left-img" />
+        </div>
+    );
+};
 
 export default function Community() {
     const { user } = useUser();
@@ -34,6 +74,10 @@ export default function Community() {
     const [locLoading, setLocLoading] = useState(false);
     const [selectedBusiness, setSelectedBusiness] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [commentsLoading, setCommentsLoading] = useState(false);
+    const [postStatus, setPostStatus] = useState('idle'); // 'idle', 'loading', 'success'
+    const [likedBusinesses, setLikedBusinesses] = useState(new Set());
+    const [bursts, setBursts] = useState([]);
 
     const fileInputRef = useRef(null);
 
@@ -53,6 +97,18 @@ export default function Community() {
             fetchBusinesses();
         }
     }, [view]);
+
+    useEffect(() => {
+        if (selectedBusiness) {
+            setCommentsLoading(true);
+            document.body.style.overflow = 'hidden';
+            const timer = setTimeout(() => setCommentsLoading(false), 800);
+            return () => {
+                clearTimeout(timer);
+                document.body.style.overflow = 'unset';
+            };
+        }
+    }, [selectedBusiness?._id]);
 
     const handleSubmitBusiness = async (e) => {
         e.preventDefault();
@@ -123,6 +179,7 @@ export default function Community() {
 
     const handlePostComment = async () => {
         if (!commentText.trim() || !selectedBusiness) return;
+        setPostStatus('loading');
         const commentData = {
             clerkId: user?.id || '',
             userName: user?.fullName || 'Anonymous',
@@ -132,13 +189,39 @@ export default function Community() {
         try {
             const res = await axios.post(`http://localhost:5000/api/business/${selectedBusiness._id}/comments`, commentData);
             if (res.data.success) {
-                setSelectedBusiness(res.data.data); // Update modal live
-                setCommentText('');
+                setPostStatus('success');
+                setTimeout(() => {
+                    setSelectedBusiness(res.data.data); // Update modal live
+                    setCommentText('');
+                    setPostStatus('idle');
+                }, 1000);
                 fetchBusinesses(); // Keep background state fresh
             }
         } catch (error) {
             console.error("Failed to post comment", error);
+            setPostStatus('idle');
         }
+    };
+
+    const toggleLike = (bizId, e) => {
+        e.stopPropagation();
+        const newLikes = new Set(likedBusinesses);
+        if (newLikes.has(bizId)) {
+            newLikes.delete(bizId);
+        } else {
+            newLikes.add(bizId);
+            // Trigger burst particles
+            const newBurst = {
+                id: Date.now(),
+                particles: Array.from({ length: 8 }).map((_, i) => ({
+                    tx: (Math.random() - 0.5) * 100,
+                    ty: (Math.random() - 0.5) * 100
+                }))
+            };
+            setBursts(prev => [...prev, newBurst]);
+            setTimeout(() => setBursts(prev => prev.filter(b => b.id !== newBurst.id)), 600);
+        }
+        setLikedBusinesses(newLikes);
     };
 
     const handleDeleteComment = async (bizId, commentId) => {
@@ -540,48 +623,119 @@ export default function Community() {
                     </div>
                 </div>
 
-                {selectedBusiness && (
+                {selectedBusiness && createPortal(
                     <div className="modal-overlay" onClick={() => setSelectedBusiness(null)}>
+                        {/* Gold Dust Particles */}
+                        <div className="modal-particles">
+                            {Array.from({ length: 20 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="particle"
+                                    style={{
+                                        left: `${Math.random() * 100}%`,
+                                        top: `${Math.random() * 100}%`,
+                                        '--x': `${(Math.random() - 0.5) * 200}px`,
+                                        '--y': `${(Math.random() - 0.5) * 200}px`,
+                                        '--duration': `${2 + Math.random() * 3}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+
                         <div className="modal-container" onClick={e => e.stopPropagation()}>
                             <button className="close-modal-btn" onClick={() => setSelectedBusiness(null)}>✕</button>
 
-                            <img src={selectedBusiness.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'} alt="business" className="modal-left-img" />
+                            <TiltImage src={selectedBusiness.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'} />
 
                             <div className="modal-right-content">
-                                <h2>{selectedBusiness.businessName}</h2>
-                                <p className="modal-owner">Owned by {selectedBusiness.ownerName} • 📍 {selectedBusiness.location} | {selectedBusiness.category || 'Other'}</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h2>{selectedBusiness.businessName}</h2>
+                                    <button
+                                        className={`heart-btn ${likedBusinesses.has(selectedBusiness._id) ? 'liked' : ''}`}
+                                        onClick={(e) => toggleLike(selectedBusiness._id, e)}
+                                    >
+                                        {likedBusinesses.has(selectedBusiness._id) ? '❤️' : '🤍'}
+                                        {bursts.map(b => (
+                                            <div key={b.id} className="heart-burst">
+                                                {b.particles.map((p, i) => (
+                                                    <div key={i} className="burst-particle" style={{ '--tx': `${p.tx}px`, '--ty': `${p.ty}px` }} />
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </button>
+                                </div>
+                                <p className="modal-owner">
+                                    <span>Owned by {selectedBusiness.ownerName}</span>
+                                    <span>•</span>
+                                    <span>📍 {selectedBusiness.location}</span>
+                                    <span>•</span>
+                                    <span style={{ background: '#eee', padding: '2px 8px', borderRadius: '10px', fontSize: '12px' }}>{selectedBusiness.category || 'Other'}</span>
+                                </p>
 
                                 <p className="modal-desc">{selectedBusiness.description}</p>
 
-                                <button className="modal-contact-btn">📞 {selectedBusiness.contact}</button>
+                                <div style={{ marginBottom: '30px' }}>
+                                    <MagneticButton className="modal-contact-btn" onClick={() => window.open(`tel:${selectedBusiness.contact}`)}>
+                                        📞 {selectedBusiness.contact}
+                                    </MagneticButton>
+                                </div>
 
                                 <div className="comments-section">
-                                    <h3>Community Comments ({selectedBusiness.comments ? selectedBusiness.comments.length : 0})</h3>
-                                    <div className="comment-input-area">
-                                        <input type="text" placeholder="Write a comment..." value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handlePostComment()} />
-                                        <button onClick={handlePostComment}>Post</button>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '15px' }}>
+                                        Community Thoughts ({selectedBusiness.comments ? selectedBusiness.comments.length : 0})
+                                    </h3>
+
+                                    <div className="comment-input-area" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Say something nice..."
+                                            value={commentText}
+                                            onChange={e => setCommentText(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && handlePostComment()}
+                                            disabled={postStatus !== 'idle'}
+                                        />
+                                        <MagneticButton
+                                            className="comment-post-btn"
+                                            onClick={handlePostComment}
+                                            disabled={postStatus !== 'idle' || !commentText.trim()}
+                                        >
+                                            {postStatus === 'loading' ? '⌛' : postStatus === 'success' ? '✅' : 'Post'}
+                                        </MagneticButton>
                                     </div>
 
                                     <div className="comments-scroll-area">
-                                        {selectedBusiness.comments && selectedBusiness.comments.slice().reverse().map((c, i) => (
-                                            <div key={i} className="mock-comment" style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
-                                                {c.userImage ? <img src={c.userImage} alt="" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#ccc' }}></div>}
-                                                <div style={{ flex: 1 }}>
-                                                    <strong>{c.userName}</strong>
-                                                    <span style={{ color: '#333', display: 'block' }}>{c.text}</span>
-                                                </div>
-                                                {user && c.clerkId === user.id && (
-                                                    <button onClick={() => handleDeleteComment(selectedBusiness._id, c._id)} style={{ background: 'transparent', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', padding: '5px' }}>
-                                                        Delete
-                                                    </button>
-                                                )}
+                                        {commentsLoading ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                                {[1, 2, 3].map(i => (
+                                                    <div key={i} className="skeleton-box" style={{ height: '60px', width: '100%' }}></div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        ) : selectedBusiness.comments && selectedBusiness.comments.length > 0 ? (
+                                            selectedBusiness.comments.slice().reverse().map((c, i) => (
+                                                <div key={i} className="mock-comment" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'rgba(0,0,0,0.02)', padding: '15px', borderRadius: '16px', marginBottom: '12px' }}>
+                                                    {c.userImage ? <img src={c.userImage} alt="" style={{ width: '35px', height: '35px', borderRadius: '50%', border: '2px solid #fff' }} /> : <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#ddd' }}></div>}
+                                                    <div style={{ flex: 1 }}>
+                                                        <strong style={{ display: 'block', fontSize: '14px', marginBottom: '2px' }}>{c.userName}</strong>
+                                                        <span style={{ color: '#444', fontSize: '14px', lineHeight: '1.4' }}>{c.text}</span>
+                                                    </div>
+                                                    {user && c.clerkId === user.id && (
+                                                        <button onClick={() => handleDeleteComment(selectedBusiness._id, c._id)} style={{ background: 'transparent', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>✕</button>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="empty-comments">
+                                                <div className="floating-bubble">💬</div>
+                                                <p style={{ fontWeight: '700', color: '#333' }}>No comments yet.</p>
+                                                <p style={{ fontSize: '14px' }}>Be the first to say hi to {selectedBusiness.ownerName}!</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
             </div>
         );
