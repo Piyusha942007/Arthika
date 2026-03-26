@@ -3,6 +3,7 @@ import API_BASE_URL from "../../config/apiConfig";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser, useClerk, UserProfile } from "@clerk/clerk-react";
+import { motion } from "framer-motion";
 import './Profile.css';
 import { allBadges } from "../../constants/badges";
 
@@ -33,47 +34,42 @@ const Profile = () => {
 
         const syncUserData = async () => {
             try {
-                // 1. Fetch profile data first
-                const res = await axios.get(`${API_BASE_URL}/api/profile/${email}`);
-                let backendStreaks = Array.isArray(res.data.streaks) ? res.data.streaks : [];
+                // Fetch profile and progress in parallel
+                const [profileRes, progressRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/api/profile/${email}`),
+                    axios.get(`${API_BASE_URL}/api/lessons/progress?t=${Date.now()}`, {
+                        headers: { 'x-user-id': user.id }
+                    })
+                ]);
 
-                // 2. If today's date is missing, update it
+                let backendStreaks = Array.isArray(profileRes.data.streaks) ? profileRes.data.streaks : [];
+
+                // Update streaks if today's date is missing
                 if (!backendStreaks.includes(todayStr)) {
                     backendStreaks = [...backendStreaks, todayStr];
-
-                    // Send update to Backend
                     await axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
                         email: email,
                         streaks: backendStreaks
                     });
-                    console.log("Streak synchronized with server.");
                 }
 
-                // 3. Set base profile and streaks first
-                setUserData(prev => ({
-                    ...res.data,
-                    streaks: backendStreaks
-                }));
-
-                // 4. Then fetch progress
-                const progressRes = await axios.get(`${API_BASE_URL}/api/lessons/progress?t=${Date.now()}`, {
-                    headers: { 'x-user-id': user.id }
+                setUserData({
+                    ...profileRes.data,
+                    streaks: backendStreaks,
+                    level: progressRes.data?.highestUnlockedLevel || 1,
+                    coins: progressRes.data?.totalCoins || 0,
+                    completedVideos: progressRes.data?.completedVideos || 0,
+                    totalVideos: progressRes.data?.totalVideos || 30
                 });
 
-                if (progressRes.data) {
-                    setUserData(prev => ({
-                        ...prev,
-                        level: progressRes.data.highestUnlockedLevel || 1
-                    }));
-                }
             } catch (err) {
                 console.error("Error in sync:", err);
-                // Default fallback if API fails
                 if (!userData) {
                     setUserData({
                         streaks: [todayStr],
                         role: 'Housewife',
-                        level: 1
+                        level: 1,
+                        coins: 0
                     });
                 }
             }
@@ -110,7 +106,7 @@ const Profile = () => {
 
     const currentLevel = userData?.level || 1;
     const totalLevels = 10;
-    const progressPercentage = ((currentLevel - 1) / totalLevels) * 100;
+    const progressPercentage = (currentLevel / totalLevels) * 100;
 
     const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -133,18 +129,27 @@ const Profile = () => {
                     <h1 className="hero-greet">{greeting}, <span className="exact-case">{user.firstName || "Friend"}</span>!</h1>
                     <div className="hero-progress-row">
                         <div className="hero-progress-track">
-                            <div
+                            <motion.div
                                 className="hero-progress-fill"
-                                style={{ width: `${progressPercentage}%` }}
-                            ></div>
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progressPercentage}%` }}
+                                transition={{ duration: 1.5, ease: "easeOut" }}
+                            ></motion.div>
                         </div>
                         <span className="hero-level-text">Level {currentLevel}/{totalLevels}</span>
                     </div>
                 </div>
                 <div className="hero-right">
-                    <div className="hero-level-badge">
-                        <span className="level-label">LEVEL</span>
-                        <span className="level-number">{currentLevel}</span>
+                    <div className="hero-stats-glass">
+                        <div className="hero-stat-item">
+                            <span className="stat-label">LEVEL</span>
+                            <span className="stat-value">{currentLevel}</span>
+                        </div>
+                        <div className="stat-divider"></div>
+                        <div className="hero-stat-item">
+                            <span className="stat-label">COINS</span>
+                            <span className="stat-value">🪙 {userData?.coins || 0}</span>
+                        </div>
                     </div>
                 </div>
             </div>            <main className="profile-dashboard">

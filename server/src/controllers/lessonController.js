@@ -143,10 +143,11 @@ export const getQuiz = async (req, res) => {
 };
 
 export const verifyQuizAndComplete = async (req, res) => {
+    const userId = req.headers['x-user-id'] || 'test-user-id';
+    console.time(`verifyQuizAndComplete-${userId}`);
     try {
         const level = parseInt(req.params.level, 10);
         const stage = parseInt(req.params.stage, 10);
-        const userId = req.headers['x-user-id'] || 'test-user-id';
         const { userAnswers } = req.body; // Expecting an array of selected option indexes
 
         let progress = await UserProgress.findOne({ userId });
@@ -192,6 +193,7 @@ export const verifyQuizAndComplete = async (req, res) => {
         }
 
         if (!passed) {
+            console.timeEnd(`verifyQuizAndComplete-${userId}`);
             return res.status(400).json({ message: 'Quiz failed. Please check the explanations and try again!', passed: false, review });
         }
 
@@ -218,22 +220,12 @@ export const verifyQuizAndComplete = async (req, res) => {
             }
         }
 
-        // Calculate coins
-        // Formula: 10 coins per correct answer on first try, 5 coins otherwise? 
-        // User said: "points according to the correct answers in first try"
-        // Let's do: 20 coins per correct answer if it's the first try and they PASS.
-        // If they pass but not on first try, maybe 5 coins per correct answer?
-        
         const correctCount = review.filter(r => r.isCorrect).length;
         
         if (isFirstTry) {
             attemptRecord.firstTryCorrect = correctCount;
             coinsEarned = correctCount * 20; // 20 coins per correct answer on first try
         } else {
-            // If they already completed it, maybe no more coins? 
-            // Or if they failed before and now passed, give some base coins.
-            // Let's say if they failed before, they get 5 coins per correct answer now.
-            // But if they ALREADY passed before, 0 coins.
             if (attemptRecord.attempts === 2 && attemptRecord.firstTryCorrect === 0) {
                 coinsEarned = correctCount * 5; 
             }
@@ -242,8 +234,6 @@ export const verifyQuizAndComplete = async (req, res) => {
         progress.coins += coinsEarned;
 
         // Only progress user if they are completing their *currently* highest allowed lesson
-        // and haven't already surpassed it
-        let advanced = false;
         if (level === progress.highestUnlockedLevel && stage === progress.highestUnlockedStage) {
             if (stage < 3) {
                 progress.highestUnlockedStage += 1;
@@ -253,10 +243,10 @@ export const verifyQuizAndComplete = async (req, res) => {
                     progress.highestUnlockedStage = 1;
                 }
             }
-            advanced = true;
         }
 
         await progress.save();
+        console.timeEnd(`verifyQuizAndComplete-${userId}`);
 
         res.status(200).json({
             message: 'Lesson and quiz completed successfully!',
@@ -270,13 +260,15 @@ export const verifyQuizAndComplete = async (req, res) => {
         });
     } catch (error) {
         console.error('Error completing lesson:', error);
+        console.timeEnd(`verifyQuizAndComplete-${userId}`);
         res.status(500).json({ message: 'Error saving progress' });
     }
 };
 
 export const getProgress = async (req, res) => {
+    const userId = req.headers['x-user-id'] || 'test-user-id';
+    console.time(`getProgress-${userId}`);
     try {
-        const userId = req.headers['x-user-id'] || 'test-user-id';
         let progress = await UserProgress.findOne({ userId });
 
         const langQuery = req.query.lang || 'en';
@@ -292,24 +284,10 @@ export const getProgress = async (req, res) => {
             console.log("DEBUG: progress not found for userId:", userId, ". Creating new record.");
             progress = await UserProgress.create({ userId, highestUnlockedLevel: 1, highestUnlockedStage: 1, languagePreference: language });
         } else {
-            console.log("DEBUG: Found progress for userId:", userId, progress);
+            console.log("DEBUG: Found progress for userId:", userId);
         }
 
-        // Diagnostic: Check User model too (optional but helpful for debugging)
-        try {
-            // Find user by Clerk ID? Wait, User model doesn't have clerkId, it has email.
-            // But we don't have email here.
-            // Wait, does the User model have the clerkId as 'password' or something? 
-            // Usually Clerk users are synced to a local User model.
-            console.log("DEBUG: userId from Clerk:", userId);
-        } catch (uErr) {
-            console.warn("DEBUG: Failed to check User model:", uErr.message);
-        }
-
-        // Example assumption: 10 levels, 3 stages each = 30 total videos
         const totalVideos = 30;
-
-        // Calculate how many videos the user has completed.
         const levelOffset = (progress.highestUnlockedLevel - 1) * 3;
         const stageOffset = progress.highestUnlockedStage - 1;
         const completedVideos = levelOffset + stageOffset;
@@ -324,7 +302,6 @@ export const getProgress = async (req, res) => {
             progress.coins = minimumExpected;
             migrationPerformed = true;
 
-            // Ensure stageAttempts exist
             const attempts = progress.stageAttempts || [];
             for (let l = 1; l <= (progress.highestUnlockedLevel || 1); l++) {
                 const maxStageThisLevel = (l === progress.highestUnlockedLevel) ? (progress.highestUnlockedStage - 1) : 3;
@@ -338,14 +315,10 @@ export const getProgress = async (req, res) => {
         }
 
         if (migrationPerformed) {
-            try {
-                await progress.save();
-            } catch (saveErr) {
-                console.error("[MIGRATION ERROR] Failed to save progress:", saveErr);
-            }
+            await progress.save();
         }
 
-        console.log(`[PROGRESS] User: ${userId} | Completed: ${completedVideos} | Coins: ${progress.coins} | Migrated: ${migrationPerformed}`);
+        console.timeEnd(`getProgress-${userId}`);
 
         res.status(200).json({
             highestUnlockedLevel: progress.highestUnlockedLevel,
@@ -355,10 +328,11 @@ export const getProgress = async (req, res) => {
             totalVideos,
             totalCoins: progress.coins || 0,
             migrationApplied: migrationPerformed,
-            userId: userId // Useful for checking if Clerk ID matches what's in DB
+            userId: userId
         });
     } catch (error) {
         console.error('Error fetching progress:', error);
+        console.timeEnd(`getProgress-${userId}`);
         res.status(500).json({ message: 'Error fetching progress data' });
     }
 };
