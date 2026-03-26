@@ -10,7 +10,10 @@ import { allBadges } from "../../constants/badges";
 const Profile = () => {
     const { user, isLoaded } = useUser();
     const { openUserProfile } = useClerk();
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState(() => {
+        const cached = localStorage.getItem("profileData");
+        return cached ? JSON.parse(cached) : null;
+    });
 
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState("");
@@ -42,34 +45,43 @@ const Profile = () => {
                     })
                 ]);
 
-                let backendStreaks = Array.isArray(profileRes.data.streaks) ? profileRes.data.streaks : [];
-
-                // Update streaks if today's date is missing
-                if (!backendStreaks.includes(todayStr)) {
-                    backendStreaks = [...backendStreaks, todayStr];
-                    await axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
-                        email: email,
-                        streaks: backendStreaks
-                    });
-                }
-
-                setUserData({
+                const fetchedData = {
                     ...profileRes.data,
-                    streaks: backendStreaks,
                     level: progressRes.data?.highestUnlockedLevel || 1,
                     coins: progressRes.data?.totalCoins || 0,
                     completedVideos: progressRes.data?.completedVideos || 0,
                     totalVideos: progressRes.data?.totalVideos || 30
-                });
+                };
+
+                // SET DATA IMMEDIATELY
+                setUserData(fetchedData);
+                localStorage.setItem("profileData", JSON.stringify(fetchedData));
+
+                // UPDATE STREAK IN BACKGROUND
+                let backendStreaks = Array.isArray(profileRes.data.streaks) ? profileRes.data.streaks : [];
+                if (!backendStreaks.includes(todayStr)) {
+                    const newStreaks = [...backendStreaks, todayStr];
+                    axios.put(`${API_BASE_URL}/api/profile/update-streak`, {
+                        email: email,
+                        streaks: newStreaks
+                    }).then(() => {
+                        const updated = { ...fetchedData, streaks: newStreaks };
+                        setUserData(updated);
+                        localStorage.setItem("profileData", JSON.stringify(updated));
+                    }).catch(e => console.error("Background streak update failed", e));
+                }
 
             } catch (err) {
                 console.error("Error in sync:", err);
+                // Only use hardcoded fallback if NO cached data exists
                 if (!userData) {
                     setUserData({
                         streaks: [todayStr],
                         role: 'Housewife',
                         level: 1,
-                        coins: 0
+                        coins: 0,
+                        completedVideos: 0,
+                        totalVideos: 30
                     });
                 }
             }
