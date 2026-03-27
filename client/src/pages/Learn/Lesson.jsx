@@ -24,6 +24,7 @@ export default function Lesson() {
   const [errorMsg, setErrorMsg] = useState("");
   const [quizError, setQuizError] = useState("");
   const [quizReview, setQuizReview] = useState(null);
+  const [showAnswers, setShowAnswers] = useState(false);
   
   // Progress states
   const [completedVideos, setCompletedVideos] = useState(0);
@@ -166,7 +167,7 @@ export default function Lesson() {
         // Refresh the progress bar to instantly reflect the new completed lesson
         setCompletedVideos(prev => prev + 1);
       } else {
-        setQuizError(data.message);
+        setQuizError("Wrong answer(s), try again ❌");
         if (data.review) setQuizReview(data.review);
       }
     } catch (error) {
@@ -315,16 +316,9 @@ export default function Lesson() {
                           <li 
                             key={oIndex} 
                             onClick={() => handleAnswerChange(qIndex, oIndex)}
-                            className={`quiz-option ${selectedAnswers[qIndex] === oIndex ? 'selected' : ''}`}
+                            className={`quiz-option ${selectedAnswers[qIndex] === oIndex ? "selected" : ""}`}
                             style={{ 
-                              padding: '12px 20px', 
-                              margin: '5px 0', 
-                              borderRadius: '12px', 
-                              border: '2px solid transparent',
-                              cursor: 'pointer',
-                              background: selectedAnswers[qIndex] === oIndex ? '#f48fb1' : '#fff',
-                              color: selectedAnswers[qIndex] === oIndex ? '#fff' : '#333',
-                              fontWeight: '600',
+                              fontWeight: '300', // Thin font weight
                               display: 'flex',
                               alignItems: 'center',
                               gap: '12px'
@@ -336,11 +330,57 @@ export default function Lesson() {
                         ))}
                       </ul>
                       {quizReview && quizReview[qIndex] !== undefined && !quizReview[qIndex] && (
-                        <p style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>Incorrect. Try again!</p>
+                        <p style={{ color: '#d32f2f', fontSize: '14px', marginTop: '5px', fontWeight: 'bold' }}>Wrong answer(s), try again ❌</p>
                       )}
                     </div>
                   ))}
                   {quizData.length === 0 && <p>Loading questions...</p>}
+                  {quizError && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                      <p style={{ color: '#d32f2f', fontWeight: 'bold', marginTop: '15px', fontSize: '1.5rem' }}>
+                        {quizError}
+                      </p>
+                      {quizReview && (
+                        <button
+                          onClick={() => setShowAnswers(!showAnswers)}
+                          className="view-answers-btn"
+                          style={{
+                            background: '#f48fb1',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            fontSize: '1rem'
+                          }}
+                        >
+                          {showAnswers ? "HIDE ANSWERS" : "VIEW ANSWERS"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {showAnswers && quizReview && (
+                    <div className="answers-review-box" style={{ marginTop: '20px', padding: '20px', background: '#fff', borderRadius: '20px', textAlign: 'left', border: '2px solid #f48fb1' }}>
+                      <h5 style={{ fontSize: '1.2rem', marginBottom: '15px', color: '#f48fb1' }}>Review Answers:</h5>
+                      {quizReview.map((item, idx) => (
+                        <div key={idx} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+                          <p style={{ fontWeight: 'bold' }}>Q{idx + 1}: {item.questionText}</p>
+                          <p style={{ color: item.isCorrect ? '#2e7d32' : '#d32f2f' }}>
+                            Your Answer: {item.userAnswer} {item.isCorrect ? "✅" : "❌"}
+                          </p>
+                          {!item.isCorrect && (
+                            <>
+                              <p style={{ color: '#2e7d32', fontWeight: 'bold' }}>Correct Answer: {item.correctAnswer}</p>
+                              <p style={{ fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>💡 {item.explanation}</p>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <button 
                     onClick={handleQuizSubmit}
                     className="quiz-btn"
@@ -357,8 +397,40 @@ export default function Lesson() {
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', damping: 10 }}
                   >
-                    <h2 style={{ fontSize: '3rem' }}>🎉 STAGE COMPLETE!</h2>
-                    <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Great job! You earned some coins!</p>
+                    <h2 style={{ fontSize: '3rem' }}>{stage === 3 ? "🎉 LEVEL COMPLETE! 🎓" : "🎉 STAGE COMPLETE! 🚀"}</h2>
+                    <p style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '30px' }}>
+                      {stage === 3 ? "Level completed, go to next level 🌟" : "Stage completed, move to next stage ✨"}
+                    </p>
+                    
+                    {parseInt(id) < totalVideos && (
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: '#fce4ec' }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setShowQuiz(false);
+                          setPassed(false);
+                          setSelectedAnswers({});
+                          setQuizError("");
+                          setQuizReview(null);
+                          setShowAnswers(false);
+                          navigate(`/learn/lesson/${parseInt(id) + 1}`);
+                        }}
+                        className="quiz-btn"
+                        style={{ 
+                          background: '#fff', 
+                          color: '#f48fb1', 
+                          border: '4px solid #f48fb1',
+                          fontSize: '1.5rem',
+                          padding: '15px 40px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '15px'
+                        }}
+                      >
+                        {stage === 3 ? "GO TO NEXT LEVEL" : "GO TO NEXT STAGE"}
+                        <span style={{ fontSize: '2rem' }}>➜</span>
+                      </motion.button>
+                    )}
                   </motion.div>
                 </div>
               )}
