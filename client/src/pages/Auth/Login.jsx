@@ -10,7 +10,7 @@ export default function Login() {
   const nav = useNavigate();
 
   const [method, setMethod] = useState("email");
-  const [form, setForm] = useState({ identifier: "", password: "" });
+  const [form, setForm] = useState({ identifier: "piyushaamrutkar41@gmail.com", password: "" });
   const [code, setCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [err, setErr] = useState("");

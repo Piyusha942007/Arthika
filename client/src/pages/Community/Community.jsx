@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { useUser } from '@clerk/clerk-react';
+import API_BASE_URL from '../../config/apiConfig';
 import './Community.css';
 
 // Import icons from local assets as requested
@@ -83,7 +84,7 @@ export default function Community() {
 
     const fetchBusinesses = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/business');
+            const res = await axios.get(`${API_BASE_URL}/api/business`);
             if (res.data.success) {
                 setBusinesses(res.data.data);
             }
@@ -144,7 +145,7 @@ export default function Community() {
         }
 
         try {
-            const res = await axios.post('http://localhost:5000/api/business', formData, {
+            const res = await axios.post(`${API_BASE_URL}/api/business`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             if (res.data.success) {
@@ -167,7 +168,7 @@ export default function Community() {
         e.stopPropagation();
         if (!user || !user.id) return;
         try {
-            await axios.delete(`http://localhost:5000/api/business/${bizId}`, {
+            await axios.delete(`${API_BASE_URL}/api/business/${bizId}`, {
                 data: { clerkId: user.id }
             });
             fetchBusinesses();
@@ -187,7 +188,7 @@ export default function Community() {
             text: commentText
         };
         try {
-            const res = await axios.post(`http://localhost:5000/api/business/${selectedBusiness._id}/comments`, commentData);
+            const res = await axios.post(`${API_BASE_URL}/api/business/${selectedBusiness._id}/comments`, commentData);
             if (res.data.success) {
                 setPostStatus('success');
                 setTimeout(() => {
@@ -227,7 +228,7 @@ export default function Community() {
     const handleDeleteComment = async (bizId, commentId) => {
         if (!user || !user.id) return;
         try {
-            const res = await axios.delete(`http://localhost:5000/api/business/${bizId}/comments/${commentId}`, {
+            const res = await axios.delete(`${API_BASE_URL}/api/business/${bizId}/comments/${commentId}`, {
                 data: { clerkId: user.id }
             });
             if (res.data.success) {
@@ -304,7 +305,7 @@ export default function Community() {
         setHasSearched(true);
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/shgs?location=${encodeURIComponent(trimmedLoc)}`);
+            const response = await fetch(`${API_BASE_URL}/api/shgs?location=${encodeURIComponent(trimmedLoc)}`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const result = await response.json();
 
