@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
@@ -107,33 +107,47 @@ export default function Lesson() {
   const onVideoEnded = async () => {
     try {
       const lang = localStorage.getItem("lang") || "en";
-      const res = await fetch(`${API_BASE_URL}/api/lessons/quiz/${level}/${stage}?lang=${lang}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lessons/${level}/${stage}/quiz?lang=${lang}`, {
         headers: { 'x-user-id': user.id }
       });
       const data = await res.json();
+      console.log("DEBUG: Quiz Data received:", data);
       if (res.ok) {
-        setQuizData(data.quiz);
+        setQuizData(data.questions || []);
         setShowQuiz(true);
+      } else {
+        setErrorMsg("Failed to load quiz. Please try again.");
       }
     } catch (error) {
       console.error("Failed to fetch quiz", error);
     }
   };
 
-  const handleAnswerChange = (questionId, option) => {
-    setSelectedAnswers(prev => ({ ...prev, [questionId]: option }));
+  // Handle direct quiz jump via query param
+  const queryParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  useEffect(() => {
+    const isMastered = ((level - 1) * 3 + stage <= completedVideos);
+    if (queryParams.get("quiz") === "true" && !showQuiz && !isLoading && videoUrl && isMastered) {
+      onVideoEnded();
+    }
+  }, [queryParams, showQuiz, isLoading, videoUrl, onVideoEnded]);
+
+  const handleAnswerChange = (questionId, optionIndex) => {
+    setSelectedAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
   };
 
   const handleQuizSubmit = async () => {
     try {
       const lang = localStorage.getItem("lang") || "en";
-      const res = await fetch(`${API_BASE_URL}/api/lessons/complete`, {
+      const userAnswers = Object.keys(selectedAnswers).sort().map(key => selectedAnswers[key]);
+
+      const res = await fetch(`${API_BASE_URL}/api/lessons/${level}/${stage}/complete`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           'x-user-id': user.id 
         },
-        body: JSON.stringify({ level, stage, answers: selectedAnswers, lang })
+        body: JSON.stringify({ userAnswers, lang })
       });
       const data = await res.json();
 
@@ -265,17 +279,29 @@ export default function Lesson() {
               <h2>🔒 {errorMsg}</h2>
             </div>
           ) : !showQuiz ? (
-            <video
-              key={videoUrl}
-              controls
-              autoPlay
-              width="100%"
-              src={videoUrl}
-              onEnded={onVideoEnded}
-              style={{ backgroundColor: 'black', borderRadius: '30px' }}
-            >
-              Your browser does not support the video tag.
-            </video>
+            <div className="video-wrapper-hover">
+              <video
+                key={videoUrl}
+                controls
+                autoPlay
+                width="100%"
+                src={videoUrl}
+                onEnded={onVideoEnded}
+                style={{ backgroundColor: 'black', borderRadius: '30px', minHeight: '200px' }}
+                onError={(e) => {
+                  console.error("Video Error:", e);
+                  if (videoUrl) setErrorMsg("Video failed to play. You can still try the quiz.");
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+              {!videoUrl && !isLoading && !errorMsg && (
+                <div style={{ padding: '20px', background: '#fff', borderRadius: '20px', margin: '10px 0' }}>
+                   <p>Video not available. You can try the quiz directly.</p>
+                   <button onClick={onVideoEnded} className="quiz-btn" style={{ fontSize: '1rem', padding: '10px' }}>GO TO QUIZ</button>
+                </div>
+              )}
+            </div>
           ) : (
             <div className="quiz-container">
               {!passed ? (
@@ -283,24 +309,28 @@ export default function Lesson() {
                   <h4 style={{ fontSize: '22px', marginBottom: '20px' }}>Video Finished! Answer the quiz:</h4>
                   {quizData.map((q, qIndex) => (
                     <div key={qIndex} className="quiz-question" style={{ marginBottom: '20px', textAlign: 'left' }}>
-                      <p style={{ fontWeight: '800', marginBottom: '10px' }}>{q.question}</p>
+                      <p style={{ fontWeight: '800', marginBottom: '10px' }}>{q.questionText || q.question}</p>
                       <ul style={{ listStyle: 'none', padding: 0 }}>
                         {q.options.map((option, oIndex) => (
                           <li 
                             key={oIndex} 
-                            onClick={() => handleAnswerChange(qIndex, option)}
-                            className={`quiz-option ${selectedAnswers[qIndex] === option ? 'selected' : ''}`}
+                            onClick={() => handleAnswerChange(qIndex, oIndex)}
+                            className={`quiz-option ${selectedAnswers[qIndex] === oIndex ? 'selected' : ''}`}
                             style={{ 
                               padding: '12px 20px', 
                               margin: '5px 0', 
                               borderRadius: '12px', 
                               border: '2px solid transparent',
                               cursor: 'pointer',
-                              background: selectedAnswers[qIndex] === option ? '#f48fb1' : '#fff',
-                              color: selectedAnswers[qIndex] === option ? '#fff' : '#333',
-                              fontWeight: '600'
+                              background: selectedAnswers[qIndex] === oIndex ? '#f48fb1' : '#fff',
+                              color: selectedAnswers[qIndex] === oIndex ? '#fff' : '#333',
+                              fontWeight: '600',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px'
                             }}
                           >
+                            <span className="option-circle" />
                             {option}
                           </li>
                         ))}
@@ -310,11 +340,12 @@ export default function Lesson() {
                       )}
                     </div>
                   ))}
-                  {quizError && <p style={{ color: 'red', fontWeight: 'bold' }}>{quizError}</p>}
+                  {quizData.length === 0 && <p>Loading questions...</p>}
                   <button 
                     onClick={handleQuizSubmit}
                     className="quiz-btn"
                     style={{ marginTop: '20px', background: '#333', color: 'white' }}
+                    disabled={Object.keys(selectedAnswers).length === 0}
                   >
                     SUBMIT ANSWERS
                   </button>

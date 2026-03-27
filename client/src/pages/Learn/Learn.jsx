@@ -307,40 +307,63 @@ export default function Learn() {
                   else if (selectedLevel === highestUnlockedLevel && stage <= highestUnlockedStage) isUnlocked = true;
 
                   return (
-                    <motion.button
-                      key={stage}
-                      variants={itemVariants}
-                      whileHover={isUnlocked ? { scale: 1.05, x: 10, backgroundColor: '#f48fb1', color: '#fff' } : {}}
-                      whileTap={isUnlocked ? { scale: 0.95 } : {}}
-                      onClick={isUnlocked ? () => navigate(`/learn/lesson/${(selectedLevel - 1) * 3 + stage}`) : undefined}
-                      style={{
-                        padding: '18px 28px',
-                        background: isUnlocked ? 'rgba(244, 143, 177, 0.1)' : 'rgba(240, 240, 240, 0.5)',
-                        color: isUnlocked ? '#f48fb1' : '#999',
-                        border: isUnlocked ? '2px solid #f48fb1' : '2px solid #eee',
-                        borderRadius: '20px',
-                        cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                        fontWeight: '800',
-                        fontSize: '1.2rem',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        boxShadow: isUnlocked ? '0 4px 12px rgba(244, 143, 177, 0.15)' : 'none'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{
-                          width: '35px', height: '35px', borderRadius: '50%',
-                          background: isUnlocked ? '#f48fb1' : '#ccc',
-                          color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '0.9rem'
-                        }}>{stage}</span>
-                        <span>Stage {stage}</span>
-                      </div>
-                      {!isUnlocked && <span style={{ fontSize: '1.4rem' }}>🔒</span>}
-                      {isUnlocked && <span style={{ fontSize: '1.2rem' }}>➔</span>}
-                    </motion.button>
+                    <div key={stage} style={{ display: 'flex', gap: '10px' }}>
+                      <motion.button
+                        variants={itemVariants}
+                        whileHover={isUnlocked ? { scale: 1.05, x: 5, backgroundColor: '#f48fb1', color: '#fff' } : {}}
+                        whileTap={isUnlocked ? { scale: 0.95 } : {}}
+                        onClick={isUnlocked ? () => navigate(`/learn/lesson/${(selectedLevel - 1) * 3 + stage}`) : undefined}
+                        style={{
+                          flex: 1,
+                          padding: '18px 28px',
+                          background: isUnlocked ? 'rgba(244, 143, 177, 0.1)' : 'rgba(240, 240, 240, 0.5)',
+                          color: isUnlocked ? '#f48fb1' : '#999',
+                          border: isUnlocked ? '2px solid #f48fb1' : '2px solid #eee',
+                          borderRadius: '20px',
+                          cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                          fontWeight: '800',
+                          fontSize: '1.1rem',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          boxShadow: isUnlocked ? '0 4px 12px rgba(244, 143, 177, 0.15)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <span style={{
+                            width: '30px', height: '30px', borderRadius: '50%',
+                            background: isUnlocked ? '#f48fb1' : '#ccc',
+                            color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.8rem'
+                          }}>{stage}</span>
+                          <span>Stage {stage}</span>
+                        </div>
+                        {!isUnlocked && <span style={{ fontSize: '1.2rem' }}>🔒</span>}
+                        {isUnlocked && <span style={{ fontSize: '1rem' }}>➔</span>}
+                      </motion.button>
+                      
+                      {isUnlocked && (
+                        <motion.button
+                          whileHover={{ scale: 1.05, backgroundColor: '#ffcc4d', color: '#000' }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => navigate(`/learn/lesson/${(selectedLevel - 1) * 3 + stage}?quiz=true`)}
+                          style={{
+                            padding: '0 15px',
+                            background: 'rgba(255, 204, 77, 0.15)',
+                            color: '#e6bb45',
+                            border: '2px solid #ffcc4d',
+                            borderRadius: '20px',
+                            cursor: 'pointer',
+                            fontWeight: '700',
+                            fontSize: '0.9rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Quiz ✍️
+                        </motion.button>
+                      )}
+                    </div>
                   );
                 })}
               </div>
