@@ -5,7 +5,7 @@ import { registerBusiness, getBusinesses, deleteBusiness, addComment, deleteComm
 // Route: GET and POST /api/business
 router.route('/')
     .get(getBusinesses)
-    .post(upload.single('photo'), registerBusiness); // Using single()
+    .post(upload.array('photos', 10), registerBusiness); 
 
 router.route('/:id')
     .delete(deleteBusiness);

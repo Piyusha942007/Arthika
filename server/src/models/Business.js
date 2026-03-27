@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const BusinessSchema = new mongoose.Schema({
   businessName: { type: String, required: true }, // Store as CamelCase
   ownerName: String,
-  clerkId: { type: String, required: true }, // To identify who can delete the post
+  clerkId: String, // To identify who can delete the post
   contact: { type: String, required: true }, // Format: +91 XXXXXXXXXX
   location: String,
   category: { 
@@ -11,7 +11,7 @@ const BusinessSchema = new mongoose.Schema({
     enum: ['Health', 'Education', 'Food', 'Handicrafts', 'Finance', 'Other'] 
   },
   description: String,
-  imageUrl: String, // Cloudinary URL
+  imageUrls: [String], // Array of Cloudinary URLs
   comments: [{
     clerkId: String, // Authenticate comment ownership
     userName: String,

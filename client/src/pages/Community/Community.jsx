@@ -60,7 +60,7 @@ export default function Community() {
         description: '',
         category: 'Other'
     });
-    const [photo, setPhoto] = useState(null);
+    const [photos, setPhotos] = useState([]);
     const [shgs, setShgs] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [businesses, setBusinesses] = useState([]);
@@ -74,7 +74,7 @@ export default function Community() {
     const [commentText, setCommentText] = useState('');
     const [locLoading, setLocLoading] = useState(false);
     const [selectedBusiness, setSelectedBusiness] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [previews, setPreviews] = useState([]);
     const [commentsLoading, setCommentsLoading] = useState(false);
     const [postStatus, setPostStatus] = useState('idle'); // 'idle', 'loading', 'success'
     const [likedBusinesses, setLikedBusinesses] = useState(new Set());
@@ -140,8 +140,10 @@ export default function Community() {
         formData.append('category', businessForm.category);
         formData.append('description', businessForm.description);
 
-        if (photo) {
-            formData.append('photo', photo);
+        if (photos && photos.length > 0) {
+            photos.forEach(p => {
+                formData.append('photos', p);
+            });
         }
 
         try {
@@ -151,8 +153,8 @@ export default function Community() {
             if (res.data.success) {
                 alert('Business added successfully to the community!');
                 setBusinessForm({ businessName: '', ownerName: '', contact: '', location: '', description: '', category: 'Other' });
-                setPhoto(null);
-                setPreview(null);
+                setPhotos([]);
+                setPreviews([]);
                 if (fileInputRef.current) fileInputRef.current.value = "";
                 fetchBusinesses(); // refresh the list
             }
@@ -179,27 +181,40 @@ export default function Community() {
     };
 
     const handlePostComment = async () => {
-        if (!commentText.trim() || !selectedBusiness) return;
+        if (!user || !user.id) {
+            alert("You must be logged in to comment! Please sign in first.");
+            return;
+        }
+        if (!commentText.trim()) {
+            alert("Please type a comment first!");
+            return;
+        }
+        if (!selectedBusiness || !selectedBusiness._id) {
+            alert("Error: No business selected!");
+            return;
+        }
+
         setPostStatus('loading');
         const commentData = {
-            clerkId: user?.id || '',
-            userName: user?.fullName || 'Anonymous',
-            userImage: user?.imageUrl || '',
-            text: commentText
+            clerkId: user.id,
+            userName: user.fullName || 'Member',
+            userImage: user.imageUrl || '',
+            text: commentText.trim()
         };
+        console.log("Posting comment to:", `${API_BASE_URL}/api/business/${selectedBusiness._id}/comments`);
+        console.log("Comment data:", commentData);
         try {
             const res = await axios.post(`${API_BASE_URL}/api/business/${selectedBusiness._id}/comments`, commentData);
             if (res.data.success) {
+                setSelectedBusiness(res.data.data);
+                setCommentText('');
                 setPostStatus('success');
-                setTimeout(() => {
-                    setSelectedBusiness(res.data.data); // Update modal live
-                    setCommentText('');
-                    setPostStatus('idle');
-                }, 1000);
-                fetchBusinesses(); // Keep background state fresh
+                setTimeout(() => setPostStatus('idle'), 1500);
+                fetchBusinesses();
             }
         } catch (error) {
-            console.error("Failed to post comment", error);
+            console.error("Comment post error:", error);
+            alert(`Error: ${error.response?.data?.message || error.message}`);
             setPostStatus('idle');
         }
     };
@@ -254,23 +269,26 @@ export default function Community() {
     ];
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setPhoto(file);
-            setPreview(URL.createObjectURL(file));
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setPhotos(prev => [...prev, ...files]);
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setPreviews(prev => [...prev, ...newPreviews]);
         }
     };
 
-    const removePhoto = () => {
-        setPhoto(null);
-        setPreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+    const removePhoto = (index) => {
+        setPhotos(prev => prev.filter((_, i) => i !== index));
+        setPreviews(prev => {
+            const updated = prev.filter((_, i) => i !== index);
+            if (prev[index]) URL.revokeObjectURL(prev[index]);
+            return updated;
+        });
     };
 
     const handlePhoneChange = (e) => {
-        let val = e.target.value.replace(/\D/g, '').slice(0, 10);
-        if (val.startsWith('91') && val.length > 2) val = val.substring(2);
-        setBusinessForm(prev => ({ ...prev, contact: val.length > 0 ? "+91 " + val : "" }));
+        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+        setBusinessForm(prev => ({ ...prev, contact: val }));
     };
 
     const getLocation = () => {
@@ -496,7 +514,7 @@ export default function Community() {
                     <form onSubmit={handleSubmitBusiness} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         <input type="text" name="businessName" placeholder="Enter business name" value={businessForm.businessName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', textTransform: 'capitalize' }} required />
                         <input type="text" name="ownerName" placeholder="Enter your name" value={businessForm.ownerName} onChange={handleInputChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
-                        <input type="text" name="contact" placeholder="Enter your contact (10 digits)" value={businessForm.contact} onChange={handlePhoneChange} style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
+                        <input type="text" name="contact" placeholder="Enter your contact (10 digits)" value={businessForm.contact} onChange={handlePhoneChange} pattern="[6-9][0-9]{9}" title="Please enter a valid 10-digit Indian mobile number" style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none' }} required />
 
                         {/* CHANGE THIS BLOCK */}
                         <div style={{ display: 'flex', gap: '10px' }}>
@@ -526,16 +544,18 @@ export default function Community() {
                         <textarea name="description" placeholder="Enter description of your business" value={businessForm.description} onChange={handleInputChange} rows="3" style={{ width: '100%', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', outline: 'none', resize: 'vertical' }} required></textarea>
 
                         <div className="upload-zone" onClick={() => fileInputRef.current.click()}>
-                            <p style={{ margin: 0, fontSize: '16px', color: '#555', fontWeight: '600' }}>Drop photos here or click to upload</p>
-                            <div style={{ background: '#FFCC4D', borderRadius: '20px', padding: '5px 15px', display: 'inline-block', marginTop: '10px', fontWeight: 'bold', fontSize: '14px', color: '#000' }}>choose file</div>
-                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+                            <p style={{ margin: 0, fontSize: '16px', color: '#555', fontWeight: '600' }}>Drop photos here or click to upload (up to 10)</p>
+                            <div style={{ background: '#FFCC4D', borderRadius: '20px', padding: '5px 15px', display: 'inline-block', marginTop: '10px', fontWeight: 'bold', fontSize: '14px', color: '#000' }}>choose files</div>
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} multiple />
 
-                            {preview && (
-                                <div className="preview-container" onClick={e => e.stopPropagation()}>
-                                    <div className="preview-wrapper">
-                                        <img src={preview} alt="preview" className="preview-thumb" />
-                                        <button type="button" className="remove-thumb-btn" onClick={removePhoto}>X</button>
-                                    </div>
+                            {previews.length > 0 && (
+                                <div className="preview-container" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '15px' }}>
+                                    {previews.map((url, idx) => (
+                                        <div key={idx} className="preview-wrapper" style={{ position: 'relative' }}>
+                                            <img src={url} alt="preview" className="preview-thumb" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px' }} />
+                                            <button type="button" className="remove-thumb-btn" onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ff4d4d', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '12px' }}>✕</button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -604,8 +624,8 @@ export default function Community() {
                                         <button className="delete-btn" onClick={(e) => handleDeletePost(biz._id, e)} style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10, padding: '8px 12px' }}>🗑️ Delete</button>
                                     )}
                                     <div className="biz-card-header">{biz.businessName}</div>
-                                    {biz.imageUrl ? (
-                                        <img src={biz.imageUrl} alt="business" className="biz-card-image" />
+                                    {biz.imageUrls && biz.imageUrls.length > 0 ? (
+                                        <img src={biz.imageUrls[0]} alt="business" className="biz-card-image" />
                                     ) : (
                                         <div className="biz-card-image" style={{ background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <span style={{ color: '#aaa' }}>No image</span>
@@ -646,7 +666,23 @@ export default function Community() {
                         <div className="modal-container" onClick={e => e.stopPropagation()}>
                             <button className="close-modal-btn" onClick={() => setSelectedBusiness(null)}>✕</button>
 
-                            <TiltImage src={selectedBusiness.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'} />
+                            <div className="modal-left-side">
+                                <TiltImage src={selectedBusiness.imageUrls && selectedBusiness.imageUrls.length > 0 ? selectedBusiness.imageUrls[0] : 'https://via.placeholder.com/600x400?text=No+Image'} />
+                                
+                                {selectedBusiness.imageUrls && selectedBusiness.imageUrls.length > 1 && (
+                                    <div className="modal-gallery">
+                                        {selectedBusiness.imageUrls.slice(1).map((url, idx) => (
+                                            <img key={idx} src={url} alt={`Gallery ${idx}`} onClick={() => {
+                                                const newUrls = [...selectedBusiness.imageUrls];
+                                                const temp = newUrls[0];
+                                                newUrls[0] = newUrls[idx+1];
+                                                newUrls[idx+1] = temp;
+                                                setSelectedBusiness({...selectedBusiness, imageUrls: newUrls});
+                                            }} />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="modal-right-content">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -695,13 +731,14 @@ export default function Community() {
                                             onKeyDown={e => e.key === 'Enter' && handlePostComment()}
                                             disabled={postStatus !== 'idle'}
                                         />
-                                        <MagneticButton
+                                        <button
                                             className="comment-post-btn"
                                             onClick={handlePostComment}
-                                            disabled={postStatus !== 'idle' || !commentText.trim()}
+                                            disabled={postStatus !== 'idle'}
+                                            style={{ cursor: postStatus === 'idle' ? 'pointer' : 'not-allowed', opacity: postStatus === 'idle' ? 1 : 0.7 }}
                                         >
                                             {postStatus === 'loading' ? '⌛' : postStatus === 'success' ? '✅' : 'Post'}
-                                        </MagneticButton>
+                                        </button>
                                     </div>
 
                                     <div className="comments-scroll-area">
