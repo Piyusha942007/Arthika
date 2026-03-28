@@ -20,6 +20,9 @@ app.use("/api/business", businessRoutes);
 
 const PORT = process.env.PORT || 8000;
 
+
+
+
 // Connect to MongoDB if URI is provided, but don't crash if it's missing (allows Gemini chat to stay up)
 if (process.env.MONGODB_URI) {
     mongoose.connect(process.env.MONGODB_URI)

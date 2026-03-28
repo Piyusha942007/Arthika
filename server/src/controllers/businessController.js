@@ -13,12 +13,17 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'arthika_community',
-        allowed_formats: ['jpeg', 'jpg', 'png']
+        folder: 'arthika_community'
     }
 });
 
+<<<<<<< Updated upstream
 const upload = multer({ 
+=======
+
+
+const upload = multer({
+>>>>>>> Stashed changes
     storage,
     limits: { fileSize: 5000000 }
 });
@@ -52,6 +57,10 @@ const registerBusiness = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error registering business' });
     }
 };
+
+
+
+
 
 // @desc    Get all businesses
 // @route   GET /api/business
