@@ -629,15 +629,11 @@
   }
 }
 
-.modal-left-side {
-  display: flex;
-  flex-direction: column;
-  background: #fdfdfd;
-}
-
 .modal-left-img-wrapper {
-  flex: 1;
-  min-height: 0;
+  width: 100%;
+  height: 40vh;
+  /* Mobile: 40% height */
+  background: #fdfdfd;
   overflow: hidden;
   position: relative;
   perspective: 1000px;
@@ -646,38 +642,8 @@
 .modal-left-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Changed to contain to avoid cropping */
-  transition: transform 0.1s ease-out;
-}
-
-.modal-gallery {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 15px;
-  background: #fff;
-  border-top: 1px solid rgba(0,0,0,0.05);
-  scrollbar-width: thin;
-}
-
-.modal-gallery::-webkit-scrollbar {
-  height: 4px;
-}
-
-.modal-gallery img {
-  width: 70px;
-  height: 70px;
-  flex-shrink: 0;
   object-fit: cover;
-  border-radius: 12px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.modal-gallery img:hover {
-  border-color: #F48FB1;
-  transform: scale(1.05);
+  transition: transform 0.1s ease-out;
 }
 
 .modal-right-content {
@@ -711,7 +677,7 @@
     border-radius: 32px;
   }
 
-  .modal-left-side {
+  .modal-left-img-wrapper {
     width: 50%;
     /* 50/50 Split */
     height: 100%;
@@ -736,7 +702,7 @@
     max-height: 850px;
   }
 
-  .modal-left-side {
+  .modal-left-img-wrapper {
     width: 55%;
     /* Keep desktop slightly favoring image */
   }
@@ -851,7 +817,6 @@
   mask-composite: exclude;
   animation: rainbow-anim 4s linear infinite;
   opacity: 0.5;
-  pointer-events: none; /* Add this to prevent blocking clicks */
 }
 
 @keyframes rainbow-anim {
@@ -889,12 +854,6 @@
   justify-content: center;
   min-width: 100px;
   transition: all 0.3s;
-}
-
-.comment-post-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(1);
 }
 
 /* Skeleton Loading */
@@ -993,4 +952,4 @@
   display: block;
   margin-bottom: 5px;
   color: #000;
-}
+}

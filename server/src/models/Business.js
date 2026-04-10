@@ -3,15 +3,15 @@ import mongoose from 'mongoose';
 const BusinessSchema = new mongoose.Schema({
   businessName: { type: String, required: true }, // Store as CamelCase
   ownerName: String,
-  clerkId: String, // To identify who can delete the post
+  clerkId: { type: String, required: true }, // To identify who can delete the post
   contact: { type: String, required: true }, // Format: +91 XXXXXXXXXX
   location: String,
-  category: { 
-    type: String, 
-    enum: ['Health', 'Education', 'Food', 'Handicrafts', 'Finance', 'Other'] 
+  category: {
+    type: String,
+    enum: ['Health', 'Education', 'Food', 'Handicrafts', 'Finance', 'Other']
   },
   description: String,
-  imageUrls: [String], // Array of Cloudinary URLs
+  imageUrl: String, // Cloudinary URL
   comments: [{
     clerkId: String, // Authenticate comment ownership
     userName: String,

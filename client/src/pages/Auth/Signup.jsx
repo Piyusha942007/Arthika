@@ -12,8 +12,8 @@ export default function Signup({ isContinue = false }) {
   const [method, setMethod] = useState("email");
 
   const [form, setForm] = useState({
-    username: "Piyusha",
-    email: "piyushaamrutkar41@gmail.com",
+    username: "",
+    email: "",
     phone: "",
     password: ""
   });
@@ -176,7 +176,6 @@ export default function Signup({ isContinue = false }) {
               <label>Username</label>
               <input
                 required
-                value={form.username}
                 onChange={e => setForm({ ...form, username: e.target.value })}
               />
 
@@ -186,7 +185,6 @@ export default function Signup({ isContinue = false }) {
                   <input
                     required
                     type="email"
-                    value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
                   />
                 </>

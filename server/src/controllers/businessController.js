@@ -33,7 +33,7 @@ const registerBusiness = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Missing required fields (businessName, clerkId, contact)' });
         }
 
-        const imageUrls = req.files ? req.files.map(file => file.path) : [];
+        const imageUrl = req.file ? req.file.path : '';
 
         const newBusiness = await Business.create({
             businessName,
@@ -43,7 +43,7 @@ const registerBusiness = async (req, res) => {
             location,
             category,
             description,
-            imageUrls
+            imageUrl
         });
 
         res.status(201).json({ success: true, data: newBusiness });
@@ -97,17 +97,14 @@ const addComment = async (req, res) => {
             {
                 $push: { comments: { clerkId, userName, userImage, text } }
             },
-            { new: true }
+            { new: true, runValidators: true }
         );
-
-        if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
 
         if (!business) return res.status(404).json({ success: false, message: 'Business not found' });
 
         res.status(201).json({ success: true, data: business });
     } catch (error) {
-        console.error("DEBUG: addComment error:", error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: 'Server Error adding comment' });
     }
 };
 
